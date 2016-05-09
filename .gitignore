@@ -31,3 +31,6 @@ sysinfo.txt
 *.unitypackage
 
 .vscode/launch.json
+
+# OS generated files
+Thumbs.db
