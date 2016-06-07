@@ -65,4 +65,21 @@ public static class Utils
         }
         return components[0].gameObject;
     }
+
+    /// <summary>
+    /// Find a component of specified type in the scene and throw an exception if it was not found or multiple were found.
+    /// </summary>
+    public static ComponentT FindComponentInScene<ComponentT>() where ComponentT : Component
+    {
+        var components = UnityEngine.Object.FindObjectsOfType<ComponentT>();
+        if (components.Length < 1)
+        {
+            throw new ApplicationException(string.Format("Tried to find an instance of {0} in the scene but it was not present.", typeof(ComponentT).Name));
+        }
+        else if (components.Length > 1)
+        {
+            throw new ApplicationException(string.Format("Tried to find a single instance of {0} in the scene but multiple were found.", typeof(ComponentT).Name));
+        }
+        return components[0];
+    }
 }
