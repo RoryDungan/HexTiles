@@ -67,6 +67,24 @@ public static class Utils
     }
 
     /// <summary>
+    /// Expect a component to exist on a specified GameObject and throw an exception if it doesn't.
+    /// Unity's built-in GameObject.GetComponet just returns null if the component doesn't exist, which can lead to 
+    /// NullRefrenceExceptions later on if a component has been removed in the inspector but is still referenced in code.
+    /// This way, we get an early warning as soon as we look for the component, which makes these kind of errors easier to
+    /// track down.
+    /// </summary>
+    public static ComponentT ExpectComponent<ComponentT>(this GameObject gameObject) where ComponentT : Component
+    {
+        var component = gameObject.GetComponent<ComponentT>();
+        if (component == null)
+        {
+            throw new ApplicationException(string.Format("Tried to get component of type {0} on object {1} but it could not be found", typeof(ComponentT).Name, gameObject.name));
+        }
+
+        return component;
+    }
+
+    /// <summary>
     /// Find a component of specified type in the scene and throw an exception if it was not found or multiple were found.
     /// </summary>
     public static ComponentT ExpectComponentInScene<ComponentT>() where ComponentT : Component
