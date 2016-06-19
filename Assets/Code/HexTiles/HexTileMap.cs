@@ -1,40 +1,43 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HexTileMap : MonoBehaviour
+namespace HexTiles
 {
-    // Use this for initialization
-    void Start()
+    public class HexTileMap : MonoBehaviour
     {
-    
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
-    
-    }
-
-    void OnDrawGizmos()
-    {
-        DrawGizmos(false);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        DrawGizmos(true);
-    }
-
-    void DrawGizmos(bool selected)
-    {
-        if (selected)
+        // Use this for initialization
+        void Start()
         {
-            Gizmos.color = Color.green;
+
         }
-        else
+
+        // Update is called once per frame
+        void Update()
         {
-            Gizmos.color = Color.gray;
+
         }
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 4);
+
+        void OnDrawGizmos()
+        {
+            DrawGizmos(false);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            DrawGizmos(true);
+        }
+
+        void DrawGizmos(bool selected)
+        {
+            if (selected)
+            {
+                Gizmos.color = Color.green;
+            }
+            else
+            {
+                Gizmos.color = Color.gray;
+            }
+            Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 4);
+        }
     }
 }
