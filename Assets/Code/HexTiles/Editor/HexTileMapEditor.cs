@@ -42,6 +42,22 @@ namespace HexTiles.Editor
             GUILayout.Label("Select");
             GUILayout.Label("Pick a hex tile to manually edit its properties.", EditorStyles.wordWrappedMiniLabel);
             GUILayout.EndVertical();
+
+            GUILayout.Label("Settings", EditorStyles.boldLabel);
+
+            GUI.enabled = false;
+            EditorGUILayout.Vector2Field("Coordinates", Vector2.zero);
+            GUI.enabled = true;
+
+            EditorGUILayout.FloatField("Height", 1f);
+
+            EditorGUILayout.ObjectField("Material", null, typeof(HexTileMaterial), false);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Button("Manage materials", EditorStyles.miniButton);
+            GUILayout.EndHorizontal();
+
         }
 
         void OnEnable()
