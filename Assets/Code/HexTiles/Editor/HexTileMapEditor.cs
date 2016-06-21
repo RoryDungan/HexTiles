@@ -17,9 +17,30 @@ namespace HexTiles.Editor
         private Texture2D eraseButtonIcon;
         private Texture2D settingsButtonIcon;
 
+        private static int hexTileEditorHash = "HexTileEditor".GetHashCode();
+
         void OnSceneGUI()
         {
-            //Debug.Log(Event.current.mousePosition);
+            var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);
+            switch (Event.current.GetTypeForControl(controlId))
+            {
+                case EventType.MouseDown:
+                case EventType.MouseDrag:
+                    if (Event.current.button == 0)
+                    {
+                        Debug.Log(Event.current.mousePosition);
+                        Event.current.Use();
+                    }
+                    break;
+                case EventType.layout:
+                    HandleUtility.AddDefaultControl(controlId);
+                    break;
+            }
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(target);
+            }
         }
 
         public override void OnInspectorGUI()
@@ -57,7 +78,6 @@ namespace HexTiles.Editor
             GUILayout.FlexibleSpace();
             GUILayout.Button("Manage materials", EditorStyles.miniButton);
             GUILayout.EndHorizontal();
-
         }
 
         void OnEnable()
