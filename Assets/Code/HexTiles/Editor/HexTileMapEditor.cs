@@ -13,6 +13,7 @@ namespace HexTiles.Editor
     public class HexTileMapEditor : UnityEditor.Editor
     {
         private Texture2D selectButtonIcon;
+        private Texture2D selectButtonIcon_selected;
         private Texture2D paintButtonIcon;
         private Texture2D eraseButtonIcon;
         private Texture2D settingsButtonIcon;
@@ -47,7 +48,7 @@ namespace HexTiles.Editor
         {
             var toolIcons = new GUIContent[]
             {
-                new GUIContent(selectButtonIcon, "Select"),
+                new GUIContent(selectButtonIcon_selected, "Select"),
                 new GUIContent(paintButtonIcon, "Paint"),
                 new GUIContent(eraseButtonIcon, "Delete"),
                 new GUIContent(settingsButtonIcon, "Settings")
@@ -83,6 +84,7 @@ namespace HexTiles.Editor
         void OnEnable()
         {
             selectButtonIcon = LoadImage("mouse-pointer_44");
+            selectButtonIcon_selected = LoadImage("mouse-pointer_44_selected");
             paintButtonIcon = LoadImage("paint-brush_44");
             eraseButtonIcon = LoadImage("eraser_44");
             settingsButtonIcon = LoadImage("cog_44");
