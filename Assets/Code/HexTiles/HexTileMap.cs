@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
+using System;
 
 namespace HexTiles
 {
@@ -53,6 +54,54 @@ namespace HexTiles
             {
                 Gizmos.DrawLine(verts[i], verts[(i + 1) % verts.Length]);
             }
+        }
+
+        /// <summary>
+        /// Take a vector in world space and return the closest hex coords.
+        /// </summary>
+        public HexCoords QuantizeVector3ToHexCoords(Vector3 vIn)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get the world space position of the specified hex coords.
+        /// This uses odd-q layout for the hexes.
+        /// </summary>
+        public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
+        {
+            var x = hIn.longitude * hexWidth;
+            var z = hIn.latitude * hexWidth * HexMetrics.hexHeightToWidth +
+                hIn.latitude % 2 == 0 ? 0 : hexWidth * HexMetrics.hexHeightToWidth;
+            var y = hIn.elevation;
+            return new Vector3(x, y, z);
+        }
+
+        /// <summary>
+        /// Returns the nearest hex tile position in world space 
+        /// to the specified position.
+        /// </summary>
+        public Vector3 QuantizePositionToHexGrid(Vector3 vIn)
+        {
+            return HexCoordsToWorldPosition(QuantizeVector3ToHexCoords(vIn));
+        }
+
+        /// <summary>
+        /// Add a tile to the map. Returns the newly added hex tile.
+        /// </summary>
+        public HexTile AddHexTile(HexCoords position)
+        {
+            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.longitude, position.latitude));
+            newObject.transform.parent = transform;
+            newObject.transform.position = HexCoordsToWorldPosition(position);
+
+            var hex = newObject.AddComponent<HexTile>();
+            hex.size = hexWidth;
+            hex.GenerateMesh();
+
+            // TODO Rory 26/06/16: Set up material.
+
+            return hex;
         }
     }
 }
