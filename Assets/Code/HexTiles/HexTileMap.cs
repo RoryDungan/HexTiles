@@ -70,9 +70,8 @@ namespace HexTiles
         /// </summary>
         public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
         {
-            var x = hexWidth * hIn.col;
-            var z = hIn.row * hexWidth * HexMetrics.hexHeightToWidth +
-                hIn.row % 2 == 0 ? 0 : hexWidth * HexMetrics.hexHeightToWidth;
+            var x = hexWidth/2f * 3/2 * hIn.col;
+            var z = hexWidth/2f * (float)Math.Sqrt(3f) * (hIn.row + 0.5f * (hIn.col & 1));
             var y = hIn.elevation;
             return new Vector3(x, y, z);
         }
