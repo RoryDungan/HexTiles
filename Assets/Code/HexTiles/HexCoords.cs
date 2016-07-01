@@ -11,10 +11,10 @@ namespace HexTiles
     [Serializable]
     public class HexCoords : Object
     {
-        public int col = 0;
+        public int Q = 0;
 
-        public int row = 0;
+        public int R = 0;
 
-        public float elevation = 0f;
+        public float Elevation = 0f;
     }
 }

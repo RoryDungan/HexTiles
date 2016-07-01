@@ -35,7 +35,7 @@ namespace HexTiles
 
         void DrawGizmos(bool selected)
         {
-            DrawHexGizmo(Vector3.zero, selected);
+            DrawHexGizmo(HexCoordsToWorldPosition(testHexPosition), selected);
         }
 
         /// <summary>
@@ -66,13 +66,13 @@ namespace HexTiles
 
         /// <summary>
         /// Get the world space position of the specified hex coords.
-        /// This uses odd-q layout for the hexes.
+        /// This uses axial coordinates for the hexes.
         /// </summary>
         public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
         {
-            var x = hexWidth/2f * 3/2 * hIn.col;
-            var z = hexWidth/2f * (float)Math.Sqrt(3f) * (hIn.row + 0.5f * (hIn.col & 1));
-            var y = hIn.elevation;
+            var x = hexWidth/2f * 3/2 * hIn.Q;
+            var z = hexWidth/2f * (float)Math.Sqrt(3f) * ((float)hIn.R + (float)hIn.Q / 2f);
+            var y = hIn.Elevation;
             return new Vector3(x, y, z);
         }
 
@@ -90,7 +90,7 @@ namespace HexTiles
         /// </summary>
         public HexTile AddHexTile(HexCoords position)
         {
-            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.col, position.row));
+            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.Q, position.R));
             newObject.transform.parent = transform;
             newObject.transform.position = HexCoordsToWorldPosition(position);
 
