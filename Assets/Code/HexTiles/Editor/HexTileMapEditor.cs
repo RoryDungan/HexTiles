@@ -112,7 +112,7 @@ namespace HexTiles.Editor
                         hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
                         if (position != null)
                         {
-                            hexMap.selectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                         }
                         Event.current.Use();
                     }

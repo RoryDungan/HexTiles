@@ -35,7 +35,18 @@ namespace HexTiles
         /// <summary>
         /// Highlighted tile for editing
         /// </summary>
-        public HexCoords selectedTile;
+        public HexCoords SelectedTile
+        {
+            get
+            {
+                return selectedTile;
+            }
+            private set
+            {
+                selectedTile = value;
+            }
+        }
+        private HexCoords selectedTile;
 
         void OnDrawGizmos()
         {
@@ -49,7 +60,7 @@ namespace HexTiles
 
         void DrawGizmos(bool selected)
         {
-            DrawHexGizmo(HexCoordsToWorldPosition(selectedTile), selected);
+            DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), selected);
         }
 
         /// <summary>
