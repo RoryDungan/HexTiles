@@ -66,9 +66,9 @@ namespace HexTiles
 
         void OnDrawGizmos()
         {
-            DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), Color.green);
-
             DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile), Color.grey);
+            
+            DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), Color.green);
         }
 
         /// <summary>
