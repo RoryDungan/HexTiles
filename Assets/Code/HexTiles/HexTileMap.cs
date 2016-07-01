@@ -41,35 +41,43 @@ namespace HexTiles
             {
                 return selectedTile;
             }
-            private set
+            set
             {
                 selectedTile = value;
             }
         }
         private HexCoords selectedTile;
 
+        /// <summary>
+        /// Tile that the mouse is currently hovering over.
+        /// </summary>
+        public HexCoords HighlightedTile
+        {
+            get
+            {
+                return highlightedTile;
+            }
+            set
+            {
+                highlightedTile = value;
+            }
+        }
+        private HexCoords highlightedTile;
+
         void OnDrawGizmos()
         {
-            DrawGizmos(false);
-        }
+            DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), Color.green);
 
-        void OnDrawGizmosSelected()
-        {
-            DrawGizmos(true);
-        }
-
-        void DrawGizmos(bool selected)
-        {
-            DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), selected);
+            DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile), Color.grey);
         }
 
         /// <summary>
         /// Draws the outline of a hex at the specified position.
         /// Can be grey or green depending on whether it's highlighted or not.
         /// </summary>
-        private void DrawHexGizmo(Vector3 position, bool highlight = false)
+        private void DrawHexGizmo(Vector3 position, Color color)
         {
-            Gizmos.color = highlight ? Color.green : Color.gray;
+            Gizmos.color = color;
 
             var verts = HexMetrics.GetHexVertices(hexWidth)
                 .Select(v => v + position)
