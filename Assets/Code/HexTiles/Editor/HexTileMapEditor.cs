@@ -53,6 +53,11 @@ namespace HexTiles.Editor
         /// </summary>
         private float placementHeight = 0f;
 
+        /// <summary>
+        /// The object we're editing.
+        /// </summary>
+        private HexTileMap hexMap;
+
         public HexTileMapEditor()
         {
             rootState = new StateMachineBuilder()
@@ -89,10 +94,30 @@ namespace HexTiles.Editor
                         ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
                     })
                 .End()
-                .State("Settings")
+                .State<SettingsState>("Settings")
+                    .Enter(state => state.HexSize = hexMap.hexWidth)
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Settings", "Configure options for the whole tile map.");
+
+                        state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
+                        if (state.HexSize != hexMap.hexWidth)
+                        {
+                            state.Dirty = true;
+                        }
+
+                        GUI.enabled = state.Dirty;
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("Save"))
+                        {
+                            Debug.Log("Saving settings");
+
+                            state.Dirty = false;
+                        }
+                        GUILayout.FlexibleSpace();
+                        EditorGUILayout.EndHorizontal();
+                        GUI.enabled = true;
                     })
                 .End()
                 .Build();
@@ -108,8 +133,6 @@ namespace HexTiles.Editor
 
         void OnSceneGUI()
         {
-            var hexMap = (HexTileMap)target;
-
             var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);
             switch (Event.current.GetTypeForControl(controlId))
             {
@@ -144,6 +167,11 @@ namespace HexTiles.Editor
             {
                 EditorUtility.SetDirty(target);
             }
+        }
+
+        void OnEnable()
+        {
+            hexMap = (HexTileMap)target;
         }
 
         public override void OnInspectorGUI()
@@ -217,6 +245,16 @@ namespace HexTiles.Editor
             }
 
             return null;
+        }
+
+        private class SettingsState : AbstractState
+        {
+            /// <summary>
+            /// Whether or not a value has been changed and needs to be saved.
+            /// </summary>
+            public bool Dirty = false;
+
+            public float HexSize;
         }
     }
 }

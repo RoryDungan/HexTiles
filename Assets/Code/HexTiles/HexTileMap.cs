@@ -7,8 +7,7 @@ namespace HexTiles
 {
     public class HexTileMap : MonoBehaviour
     {
-        [SerializeField]
-        private float hexWidth = 1f;
+        public float hexWidth = 1f;
 
         /// <summary>
         /// Hashtable of all hex tiles that are part of this map.
@@ -67,7 +66,7 @@ namespace HexTiles
         void OnDrawGizmos()
         {
             DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile), Color.grey);
-            
+
             DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), Color.green);
         }
 
