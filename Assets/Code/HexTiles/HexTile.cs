@@ -27,8 +27,6 @@ namespace HexTiles
             }
         }
 
-        private Vector3[] vertices;
-
         /// <summary>
         /// sqrt(3)/2
         /// The ratio of a flat-topped hexagon's height to its width.
@@ -44,7 +42,7 @@ namespace HexTiles
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
-            vertices = HexMetrics.GetHexVertices(Diameter);
+            var vertices = HexMetrics.GetHexVertices(Diameter);
             var uv = new Vector2[vertices.Length];
             var tangents = new Vector4[vertices.Length];
 
@@ -64,21 +62,6 @@ namespace HexTiles
             };
 
             mesh.RecalculateNormals();
-        }
-
-        void OnDrawGizmos()
-        {
-            if (vertices == null)
-            {
-                return;
-            }
-
-
-            Gizmos.color = Color.black;
-            for (var i = 0; i < vertices.Length; i++)
-            {
-                Gizmos.DrawSphere(vertices[i], 0.1f);
-            }
         }
     }
 }
