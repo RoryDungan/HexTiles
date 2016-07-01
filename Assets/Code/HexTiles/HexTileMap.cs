@@ -61,8 +61,8 @@ namespace HexTiles
         /// </summary>
         public HexCoords QuantizeVector3ToHexCoords(Vector3 vIn)
         {
-            var q = vIn.x * 2f/3f / hexWidth;
-            var r = (-vIn.x / 3f + Mathf.Sqrt(3f)/3f * vIn.y) / hexWidth;
+            var q = vIn.x * 2f/3f / (hexWidth/2f);
+            var r = (-(float)vIn.x / 3f + Mathf.Sqrt(3f)/3f * (float)vIn.z) / (hexWidth/2f);
 
             return new HexCoords 
             { 
