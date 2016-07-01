@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 using System;
+using RSG;
 
 namespace HexTiles.Editor
 {
@@ -25,6 +26,22 @@ namespace HexTiles.Editor
         private ButtonIcon[] toolIcons = {};
 
         /// <summary>
+        /// States that the UI can be in.
+        /// </summary>
+        private static readonly string[] States = 
+        {
+            "Select",
+            "Paint", 
+            "Erase",
+            "Settings"
+        };
+
+        /// <summary>
+        /// Root state for state machine.
+        /// </summary>
+        private IState rootState;
+
+        /// <summary>
         /// Index of the currently selected tool.
         /// </summary>
         private int selectedToolIndex = 0;
@@ -38,6 +55,40 @@ namespace HexTiles.Editor
 
         public HexTileMapEditor()
         {
+            rootState = new StateMachineBuilder()
+                .State("Select")
+                    .Update((state, dt) =>
+                    {
+                        GUILayout.BeginVertical(EditorStyles.helpBox);
+                        GUILayout.Label("Select");
+                        GUILayout.Label("Pick a hex tile to manually edit its properties.", EditorStyles.wordWrappedMiniLabel);
+                        GUILayout.EndVertical();
+
+                        GUILayout.Label("Settings", EditorStyles.boldLabel);
+
+                        GUI.enabled = false;
+                        EditorGUILayout.Vector2Field("Coordinates", Vector2.zero);
+                        GUI.enabled = true;
+
+                        EditorGUILayout.FloatField("Height", 1f);
+
+                        EditorGUILayout.ObjectField("Material", null, typeof(HexTileMaterial), false);
+
+                        GUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        GUILayout.Button("Manage materials", EditorStyles.miniButton);
+                        GUILayout.EndHorizontal();
+                    })
+                .End()
+                .State("Paint")
+                .End()
+                .State("Erase")
+                .End()
+                .State("Settings")
+                .End()
+                .Build();
+            
+            rootState.ChangeState("Select");
             toolIcons = new ButtonIcon[] {
                 new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
                 new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
@@ -89,29 +140,18 @@ namespace HexTiles.Editor
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Toolbar(selectedToolIndex, toolbarContent, "command");
+
+            var newSelectedTool = GUILayout.Toolbar(selectedToolIndex, toolbarContent, "command");
+            if (newSelectedTool != selectedToolIndex)
+            {
+                selectedToolIndex = newSelectedTool;
+                rootState.ChangeState(States[selectedToolIndex]);
+            }
+            
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("Select");
-            GUILayout.Label("Pick a hex tile to manually edit its properties.", EditorStyles.wordWrappedMiniLabel);
-            GUILayout.EndVertical();
-
-            GUILayout.Label("Settings", EditorStyles.boldLabel);
-
-            GUI.enabled = false;
-            EditorGUILayout.Vector2Field("Coordinates", Vector2.zero);
-            GUI.enabled = true;
-
-            EditorGUILayout.FloatField("Height", 1f);
-
-            EditorGUILayout.ObjectField("Material", null, typeof(HexTileMaterial), false);
-
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Button("Manage materials", EditorStyles.miniButton);
-            GUILayout.EndHorizontal();
+            rootState.Update(Time.deltaTime);
         }
 
         /// <summary>
