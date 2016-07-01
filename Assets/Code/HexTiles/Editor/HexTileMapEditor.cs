@@ -25,7 +25,6 @@ namespace HexTiles.Editor
         /// </summary>
         private float placementHeight = 0f;
 
-
         void OnSceneGUI()
         {
             var hexMap = (HexTileMap)target;
@@ -39,6 +38,10 @@ namespace HexTiles.Editor
                     {
                         var position = GetWorldPositionForMouseClick(Event.current.mousePosition);
                         hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(Event.current.mousePosition));
+                        if (position != null)
+                        {
+                            hexMap.selectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                        }
                         Event.current.Use();
                     }
                     break;
