@@ -96,7 +96,7 @@ namespace HexTiles
             newObject.transform.position = HexCoordsToWorldPosition(position);
 
             var hex = newObject.AddComponent<HexTile>();
-            hex.size = hexWidth;
+            hex.Diameter = hexWidth;
             hex.GenerateMesh();
 
             // TODO Rory 26/06/16: Set up material.

@@ -9,7 +9,23 @@ namespace HexTiles
         /// <summary>
         /// Total diameter of the hex.
         /// </summary>
-        public float size = 1f;
+        [HideInInspector]
+        private float size = 1f;
+
+        /// <summary>
+        /// Total diameter of the hex.
+        /// </summary>
+        public float Diameter
+        {
+            get
+            {
+                return size;
+            }
+            set
+            {
+                size = value;
+            }
+        }
 
         private Vector3[] vertices;
 
@@ -28,7 +44,7 @@ namespace HexTiles
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
-            vertices = HexMetrics.GetHexVertices(size);
+            vertices = HexMetrics.GetHexVertices(Diameter);
             var uv = new Vector2[vertices.Length];
             var tangents = new Vector4[vertices.Length];
 
