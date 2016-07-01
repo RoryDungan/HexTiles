@@ -106,12 +106,21 @@ namespace HexTiles.Editor
                             state.Dirty = true;
                         }
 
+                        if (GUILayout.Button("Clear all tiles"))
+                        {
+                            hexMap.ClearAllTiles();
+                        }
+
+                        EditorGUILayout.Space();
+
                         GUI.enabled = state.Dirty;
                         EditorGUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Save"))
+                        if (GUILayout.Button("Apply", GUILayout.Width(160)))
                         {
                             Debug.Log("Saving settings");
+                            hexMap.hexWidth = state.HexSize;
+                            hexMap.RegenerateAllTiles();
 
                             state.Dirty = false;
                         }
@@ -150,7 +159,7 @@ namespace HexTiles.Editor
                     if (Event.current.button == 0)
                     {
                         var position = GetWorldPositionForMouse(Event.current.mousePosition);
-                        hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                        hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
                         if (position != null)
                         {
                             hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace HexTiles
 {
@@ -126,10 +127,26 @@ namespace HexTiles
         }
 
         /// <summary>
+        /// Re-position and re-generate geometry for all tiles.
+        /// Needed after changing global settings that affect all the tiles
+        /// such as the tile size.
+        /// </summary>
+        public void RegenerateAllTiles()
+        {
+            foreach (var tileCoords in Tiles.Keys)
+            {
+                var hexTile = (HexTile)Tiles[tileCoords];
+                hexTile.Diameter = hexWidth;
+                hexTile.transform.position = HexCoordsToWorldPosition((HexCoords)tileCoords);
+                hexTile.GenerateMesh();
+            }
+        }
+
+        /// <summary>
         /// Add a tile to the map. Returns the newly added hex tile.
         /// If a tile already exists at that position then that is returned instead.
         /// </summary>
-        public HexTile AddHexTile(HexCoords position)
+        public HexTile CreateAndAddTile(HexCoords position)
         {
             // See if there's already a tile at the specified position.
             if (Tiles.Contains(position))
@@ -137,11 +154,9 @@ namespace HexTiles
                 return (HexTile)Tiles[position];
             }
 
-            var newObject = new GameObject("Tile [" + position.Q + ", " + position.R + "]");
-            newObject.transform.parent = transform;
-            newObject.transform.position = HexCoordsToWorldPosition(position);
+            var obj = SpawnTileObject(position);
 
-            var hex = newObject.AddComponent<HexTile>();
+            var hex = obj.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
             hex.GenerateMesh();
 
@@ -150,6 +165,33 @@ namespace HexTiles
             // TODO Rory 26/06/16: Set up material.
 
             return hex;
+        }
+
+        private GameObject SpawnTileObject(HexCoords position)
+        {
+            var newObject = new GameObject("Tile [" + position.Q + ", " + position.R + "]");
+            newObject.transform.parent = transform;
+            newObject.transform.position = HexCoordsToWorldPosition(position);
+
+            return newObject;
+        }
+
+        /// <summary>
+        /// Destroy all child tiles and clear hashtable.
+        /// </summary>
+        public void ClearAllTiles()
+        {
+            Tiles.Clear();
+
+            // Note that we must add all children to a list first because if we
+            // destroy children as we loop through them, the array we're looping 
+            // through will change and we can miss some.
+            var children = new List<GameObject>();
+            foreach (Transform child in transform) 
+            {
+                children.Add(child.gameObject);
+            }
+            children.ForEach(child => DestroyImmediate(child));
         }
     }
 }
