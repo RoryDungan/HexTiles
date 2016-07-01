@@ -104,11 +104,20 @@ namespace HexTiles.Editor
             var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);
             switch (Event.current.GetTypeForControl(controlId))
             {
+                case EventType.MouseMove:
+                    var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition);
+                    if (highlightedPosition != null)
+                    {
+                        hexMap.HighlightedTile = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                    }
+                    Event.current.Use();
+                    
+                    break;
                 case EventType.MouseDown:
                 case EventType.MouseDrag:
                     if (Event.current.button == 0)
                     {
-                        var position = GetWorldPositionForMouseClick(Event.current.mousePosition);
+                        var position = GetWorldPositionForMouse(Event.current.mousePosition);
                         hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
                         if (position != null)
                         {
@@ -176,7 +185,7 @@ namespace HexTiles.Editor
         /// <summary>
         /// Return the point we would hit at the specified height for the specified mouse position.
         /// </summary>
-        private Nullable<Vector3> GetWorldPositionForMouseClick(Vector2 mousePosition)
+        private Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
@@ -187,8 +196,6 @@ namespace HexTiles.Editor
                 return ray.GetPoint(distance);
             }
 
-            // Could not get ray cast point
-            Debug.LogError("Could not find or place tile at the specified position");
             return null;
         }
     }
