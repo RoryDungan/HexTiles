@@ -20,8 +20,16 @@ namespace HexTiles.Editor
 
         private static int hexTileEditorHash = "HexTileEditor".GetHashCode();
 
+        /// <summary>
+        /// Height to place new tiles at.
+        /// </summary>
+        private float placementHeight = 0f;
+
+
         void OnSceneGUI()
         {
+            var hexMap = (HexTileMap)target;
+
             var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);
             switch (Event.current.GetTypeForControl(controlId))
             {
@@ -29,7 +37,8 @@ namespace HexTiles.Editor
                 case EventType.MouseDrag:
                     if (Event.current.button == 0)
                     {
-                        Debug.Log(Event.current.mousePosition);
+                        var position = GetWorldPositionForMouseClick(Event.current.mousePosition);
+                        hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(Event.current.mousePosition));
                         Event.current.Use();
                     }
                     break;
@@ -99,6 +108,25 @@ namespace HexTiles.Editor
             }
 
             return image;
+        }
+
+        /// <summary>
+        /// Return the point we would hit at the specified height for the specified mouse position.
+        /// </summary>
+        private Nullable<Vector3> GetWorldPositionForMouseClick(Vector2 mousePosition)
+        {
+            var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+            var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
+
+            var distance = 0f;
+            if (plane.Raycast(ray, out distance))
+            {
+                return ray.GetPoint(distance);
+            }
+
+            // Could not get ray cast point
+            Debug.LogError("Could not find or place tile at the specified position");
+            return null;
         }
     }
 }
