@@ -59,10 +59,7 @@ namespace HexTiles.Editor
                 .State("Select")
                     .Update((state, dt) =>
                     {
-                        GUILayout.BeginVertical(EditorStyles.helpBox);
-                        GUILayout.Label("Select");
-                        GUILayout.Label("Pick a hex tile to manually edit its properties.", EditorStyles.wordWrappedMiniLabel);
-                        GUILayout.EndVertical();
+                        ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
                         GUILayout.Label("Settings", EditorStyles.boldLabel);
 
@@ -81,10 +78,22 @@ namespace HexTiles.Editor
                     })
                 .End()
                 .State("Paint")
+                    .Update((state, dt) =>
+                    {
+                        ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
+                    })
                 .End()
                 .State("Erase")
+                    .Update((state, dt) => 
+                    {
+                        ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
+                    })
                 .End()
                 .State("Settings")
+                    .Update((state, dt) =>
+                    {
+                        ShowHelpBox("Settings", "Configure options for the whole tile map.");
+                    })
                 .End()
                 .Build();
             
@@ -180,6 +189,17 @@ namespace HexTiles.Editor
             }
 
             return image;
+        }
+
+        /// <summary>
+        /// Show a UI with some information about the selected tool.
+        /// </summary>
+        private void ShowHelpBox(string toolName, string description)
+        {
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label(toolName);
+            GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
+            GUILayout.EndVertical();
         }
 
         /// <summary>
