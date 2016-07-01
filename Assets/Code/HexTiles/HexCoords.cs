@@ -11,9 +11,9 @@ namespace HexTiles
     [Serializable]
     public class HexCoords : Object
     {
-        public int longitude = 0;
+        public int col = 0;
 
-        public int latitude = 0;
+        public int row = 0;
 
         public float elevation = 0f;
     }

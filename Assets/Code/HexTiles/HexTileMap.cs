@@ -70,9 +70,9 @@ namespace HexTiles
         /// </summary>
         public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
         {
-            var x = hIn.longitude * hexWidth;
-            var z = hIn.latitude * hexWidth * HexMetrics.hexHeightToWidth +
-                hIn.latitude % 2 == 0 ? 0 : hexWidth * HexMetrics.hexHeightToWidth;
+            var x = hexWidth * hIn.col;
+            var z = hIn.row * hexWidth * HexMetrics.hexHeightToWidth +
+                hIn.row % 2 == 0 ? 0 : hexWidth * HexMetrics.hexHeightToWidth;
             var y = hIn.elevation;
             return new Vector3(x, y, z);
         }
@@ -91,7 +91,7 @@ namespace HexTiles
         /// </summary>
         public HexTile AddHexTile(HexCoords position)
         {
-            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.longitude, position.latitude));
+            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.col, position.row));
             newObject.transform.parent = transform;
             newObject.transform.position = HexCoordsToWorldPosition(position);
 
