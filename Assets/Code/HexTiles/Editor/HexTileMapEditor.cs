@@ -37,7 +37,7 @@ namespace HexTiles.Editor
                     if (Event.current.button == 0)
                     {
                         var position = GetWorldPositionForMouseClick(Event.current.mousePosition);
-                        hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(Event.current.mousePosition));
+                        hexMap.AddHexTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
                         if (position != null)
                         {
                             hexMap.selectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());

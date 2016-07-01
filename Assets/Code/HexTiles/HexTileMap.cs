@@ -10,18 +10,28 @@ namespace HexTiles
         [SerializeField]
         private float hexWidth = 1f;
 
-
-        // Use this for initialization
-        void Start()
+        /// <summary>
+        /// Hashtable of all hex tiles that are part of this map.
+        /// </summary>
+        private Hashtable Tiles
         {
-
+            get
+            {
+                // Lazy init hexes hashtable
+                if (tiles == null)
+                {
+                    // Add all the existing tiles in the scene that are part of this map
+                    tiles = new Hashtable();
+                    foreach (var tile in GetComponentsInChildren<HexTile>())
+                    {
+                        tiles.Add(QuantizeVector3ToHexCoords(tile.transform.position), tile);
+                    }
+                }
+                return tiles;
+            }
         }
+        private Hashtable tiles;
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
         /// <summary>
         /// Highlighted tile for editing
         /// </summary>
@@ -99,16 +109,25 @@ namespace HexTiles
 
         /// <summary>
         /// Add a tile to the map. Returns the newly added hex tile.
+        /// If a tile already exists at that position then that is returned instead.
         /// </summary>
         public HexTile AddHexTile(HexCoords position)
         {
-            var newObject = new GameObject(string.Format("Tile_{0}-{1}", position.Q, position.R));
+            // See if there's already a tile at the specified position.
+            if (Tiles.Contains(position))
+            {
+                return (HexTile)Tiles[position];
+            }
+
+            var newObject = new GameObject("Tile [" + position.Q + ", " + position.R + "]");
             newObject.transform.parent = transform;
             newObject.transform.position = HexCoordsToWorldPosition(position);
 
             var hex = newObject.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
             hex.GenerateMesh();
+
+            Tiles.Add(position, hex);
 
             // TODO Rory 26/06/16: Set up material.
 
