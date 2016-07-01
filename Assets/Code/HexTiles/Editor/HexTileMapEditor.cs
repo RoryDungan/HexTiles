@@ -12,11 +12,22 @@ namespace HexTiles.Editor
     [CustomEditor(typeof(HexTileMap))]
     public class HexTileMapEditor : UnityEditor.Editor
     {
-        private Texture2D selectButtonIcon;
-        private Texture2D selectButtonIcon_selected;
-        private Texture2D paintButtonIcon;
-        private Texture2D eraseButtonIcon;
-        private Texture2D settingsButtonIcon;
+        /// <summary>
+        /// Struct containg normal and selected icons for tool buttons.
+        /// </summary>
+        private struct ButtonIcon
+        {
+            public Texture2D NormalIcon;
+
+            public Texture2D SelectedIcon;
+        }
+
+        private ButtonIcon[] toolIcons = {};
+
+        /// <summary>
+        /// Index of the currently selected tool.
+        /// </summary>
+        private int selectedToolIndex = 0;
 
         private static int hexTileEditorHash = "HexTileEditor".GetHashCode();
 
@@ -24,6 +35,16 @@ namespace HexTiles.Editor
         /// Height to place new tiles at.
         /// </summary>
         private float placementHeight = 0f;
+
+        public HexTileMapEditor()
+        {
+            toolIcons = new ButtonIcon[] {
+                new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
+                new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
+                new ButtonIcon{ NormalIcon = LoadImage("eraser_44"), SelectedIcon = LoadImage("eraser_44_selected") },
+                new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
+            };
+        }
 
         void OnSceneGUI()
         {
@@ -58,17 +79,17 @@ namespace HexTiles.Editor
 
         public override void OnInspectorGUI()
         {
-            var toolIcons = new GUIContent[]
+            var toolbarContent = new GUIContent[]
             {
-                new GUIContent(selectButtonIcon_selected, "Select"),
-                new GUIContent(paintButtonIcon, "Paint"),
-                new GUIContent(eraseButtonIcon, "Delete"),
-                new GUIContent(settingsButtonIcon, "Settings")
+                new GUIContent(GetToolButtonIcon(0), "Select"),
+                new GUIContent(GetToolButtonIcon(1), "Paint"),
+                new GUIContent(GetToolButtonIcon(2), "Delete"),
+                new GUIContent(GetToolButtonIcon(3), "Settings")
             };
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Toolbar(0, toolIcons, "command");
+            GUILayout.Toolbar(selectedToolIndex, toolbarContent, "command");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -93,13 +114,12 @@ namespace HexTiles.Editor
             GUILayout.EndHorizontal();
         }
 
-        void OnEnable()
+        /// <summary>
+        /// Helper function to get the correct icon for a tool button.
+        /// </summary>
+        private Texture2D GetToolButtonIcon(int index)
         {
-            selectButtonIcon = LoadImage("mouse-pointer_44");
-            selectButtonIcon_selected = LoadImage("mouse-pointer_44_selected");
-            paintButtonIcon = LoadImage("paint-brush_44");
-            eraseButtonIcon = LoadImage("eraser_44");
-            settingsButtonIcon = LoadImage("cog_44");
+            return selectedToolIndex == index ? toolIcons[index].SelectedIcon : toolIcons[index].NormalIcon;
         }
 
         Texture2D LoadImage(string resource)
