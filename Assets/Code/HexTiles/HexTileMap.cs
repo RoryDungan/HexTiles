@@ -61,7 +61,15 @@ namespace HexTiles
         /// </summary>
         public HexCoords QuantizeVector3ToHexCoords(Vector3 vIn)
         {
-            throw new NotImplementedException();
+            var q = vIn.x * 2f/3f / hexWidth;
+            var r = (-vIn.x / 3f + Mathf.Sqrt(3f)/3f * vIn.y) / hexWidth;
+
+            return new HexCoords 
+            { 
+                Q = Mathf.RoundToInt(q), 
+                R = Mathf.RoundToInt(r),
+                Elevation = vIn.y
+            };
         }
 
         /// <summary>
@@ -70,8 +78,8 @@ namespace HexTiles
         /// </summary>
         public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
         {
-            var x = hexWidth/2f * 3/2 * hIn.Q;
-            var z = hexWidth/2f * (float)Math.Sqrt(3f) * ((float)hIn.R + (float)hIn.Q / 2f);
+            var x = hexWidth/2f * 3f/2f * hIn.Q;
+            var z = hexWidth/2f * Mathf.Sqrt(3f) * ((float)hIn.R + (float)hIn.Q / 2f);
             var y = hIn.Elevation;
             return new Vector3(x, y, z);
         }
