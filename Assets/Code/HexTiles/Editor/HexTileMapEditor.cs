@@ -145,7 +145,13 @@ namespace HexTiles.Editor
 
                         if (GUILayout.Button("Clear all tiles"))
                         {
-                            hexMap.ClearAllTiles();
+                            if (EditorUtility.DisplayDialog("Clear all tiles", 
+                                "Are you sure you want to delete all tiles in this hex tile map?", 
+                                "Clear", 
+                                "Cancel"))
+                            {
+                                hexMap.ClearAllTiles();
+                            }
                         }
 
                         EditorGUILayout.Space();
