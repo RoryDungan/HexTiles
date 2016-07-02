@@ -82,12 +82,31 @@ namespace HexTiles.Editor
                         GUILayout.Button("Manage materials", EditorStyles.miniButton);
                         GUILayout.EndHorizontal();
                     })
+                    .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
+                    {
+                        var position = GetWorldPositionForMouse(eventArgs.Position);
+                        if (position != null)
+                        {
+                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                        }
+                    })
                 .End()
                 .State("Paint")
                     .Enter(evt => selectedToolIndex = 1)
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
+                    })
+                    .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
+                    {
+                        var position = GetWorldPositionForMouse(eventArgs.Position);
+                        if (position != null)
+                        {
+                            // Select the tile that was clicked on.
+                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                            // Create tile
+                            hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                        }
                     })
                 .End()
                 .State("Erase")
@@ -164,14 +183,17 @@ namespace HexTiles.Editor
                     break;
                 case EventType.MouseDown:
                 case EventType.MouseDrag:
+
+                    var eventArgs = new SceneClickedEventArgs { 
+                        Button = Event.current.button, 
+                        Position = Event.current.mousePosition
+                    };
+                    rootState.TriggerEvent("SceneClicked", eventArgs);
+
+                    // Disable the normal interaction with objects in the scene so that we 
+                    // can do things with tiles.
                     if (Event.current.button == 0)
                     {
-                        var position = GetWorldPositionForMouse(Event.current.mousePosition);
-                        hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
-                        if (position != null)
-                        {
-                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
-                        }
                         Event.current.Use();
                     }
                     break;
@@ -271,6 +293,17 @@ namespace HexTiles.Editor
             public bool Dirty = false;
 
             public float HexSize;
+        }
+
+        /// <summary>
+        /// Event args for when the user clicks in the scene. Passed on to whatever
+        /// the active tool is.
+        /// </summary>
+        private class SceneClickedEventArgs : EventArgs
+        {
+            public int Button;
+
+            public Vector2 Position;
         }
     }
 }
