@@ -67,13 +67,33 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
-                        GUILayout.Label("Settings", EditorStyles.boldLabel);
+                        // Tile info
+                        GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("Column", GUILayout.Width(EditorGUIUtility.labelWidth));
                         GUI.enabled = false;
-                        EditorGUILayout.Vector2Field("Coordinates", Vector2.zero);
+                        EditorGUILayout.IntField(hexMap.SelectedTile.Q);
                         GUI.enabled = true;
+                        EditorGUILayout.EndHorizontal();
 
-                        EditorGUILayout.FloatField("Height", 1f);
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("Row", GUILayout.Width(EditorGUIUtility.labelWidth));
+                        GUI.enabled = false;
+                        EditorGUILayout.IntField(hexMap.SelectedTile.R);
+                        GUI.enabled = true;
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
+                        GUI.enabled = false;
+                        EditorGUILayout.FloatField(hexMap.SelectedTile.Elevation);
+                        GUI.enabled = true;
+                        EditorGUILayout.EndHorizontal();
+
+
+                        // Tile settings
+                        GUILayout.Label("Settings", EditorStyles.boldLabel);
 
                         EditorGUILayout.ObjectField("Material", null, typeof(HexTileMaterial), false);
 
@@ -211,6 +231,7 @@ namespace HexTiles.Editor
                     // can do things with tiles.
                     if (Event.current.button == 0)
                     {
+                        Repaint();
                         Event.current.Use();
                     }
                     break;
