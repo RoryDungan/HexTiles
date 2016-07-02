@@ -115,6 +115,17 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
                     })
+                    .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
+                    {
+                        var position = GetWorldPositionForMouse(eventArgs.Position);
+                        if (position != null)
+                        {
+                            // Select the tile that was clicked on.
+                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                            // Create tile
+                            hexMap.TryRemovingTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                        }
+                    })
                 .End()
                 .State<SettingsState>("Settings")
                     .Enter(state => 

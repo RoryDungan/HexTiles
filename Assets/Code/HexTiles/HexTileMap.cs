@@ -50,7 +50,6 @@ namespace HexTiles
 
         /// <summary>
         /// Tile that the mouse is currently hovering over.
-        /// </summary>
         public HexCoords HighlightedTile
         {
             get
@@ -165,6 +164,24 @@ namespace HexTiles
             // TODO Rory 26/06/16: Set up material.
 
             return hex;
+        }
+
+        /// <summary>
+        /// Attempt to remove the tile at the specified position.
+        /// Returns true if it was removed successfully, false if no tile was found at that position.
+        /// </summary>
+        public bool TryRemovingTile(HexCoords position)
+        {
+            if (!Tiles.Contains(position))
+            {
+                return false;
+            }
+
+            var tile = (HexTile)Tiles[position];
+            DestroyImmediate(tile.gameObject);
+            tiles.Remove(position);
+
+            return true;
         }
 
         private GameObject SpawnTileObject(HexCoords position)
