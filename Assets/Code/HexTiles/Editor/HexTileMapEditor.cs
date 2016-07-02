@@ -62,6 +62,7 @@ namespace HexTiles.Editor
         {
             rootState = new StateMachineBuilder()
                 .State("Select")
+                    .Enter(evt => selectedToolIndex = 0)
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
@@ -83,19 +84,25 @@ namespace HexTiles.Editor
                     })
                 .End()
                 .State("Paint")
+                    .Enter(evt => selectedToolIndex = 1)
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
                     })
                 .End()
                 .State("Erase")
+                    .Enter(evt => selectedToolIndex = 2)
                     .Update((state, dt) => 
                     {
                         ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
                     })
                 .End()
                 .State<SettingsState>("Settings")
-                    .Enter(state => state.HexSize = hexMap.hexWidth)
+                    .Enter(state => 
+                    {
+                        selectedToolIndex = 3;
+                        state.HexSize = hexMap.hexWidth;
+                    })
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Settings", "Configure options for the whole tile map.");
@@ -132,6 +139,7 @@ namespace HexTiles.Editor
                 .Build();
             
             rootState.ChangeState("Select");
+
             toolIcons = new ButtonIcon[] {
                 new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
                 new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
@@ -199,8 +207,7 @@ namespace HexTiles.Editor
             var newSelectedTool = GUILayout.Toolbar(selectedToolIndex, toolbarContent, "command");
             if (newSelectedTool != selectedToolIndex)
             {
-                selectedToolIndex = newSelectedTool;
-                rootState.ChangeState(States[selectedToolIndex]);
+                rootState.ChangeState(States[newSelectedTool]);
             }
             
             GUILayout.FlexibleSpace();
