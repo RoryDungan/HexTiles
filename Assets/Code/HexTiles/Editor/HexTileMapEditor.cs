@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEditor;
 using System;
 using RSG;
+using System.Linq;
 
 namespace HexTiles.Editor
 {
@@ -47,11 +48,6 @@ namespace HexTiles.Editor
         private int selectedToolIndex = 0;
 
         private static int hexTileEditorHash = "HexTileEditor".GetHashCode();
-
-        /// <summary>
-        /// Height to place new tiles at.
-        /// </summary>
-        private float placementHeight = 0f;
 
         /// <summary>
         /// The object we're editing.
@@ -104,22 +100,33 @@ namespace HexTiles.Editor
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var position = GetWorldPositionForMouse(eventArgs.Position);
-                        if (position != null)
+                        var tile = TryFindTileForMousePosition(eventArgs.Position);
+                        if (tile != null)
                         {
-                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                            hexMap.SelectedTile = tile;
                         }
                     })
                 .End()
-                .State("Paint")
+                .State<PaintState>("Paint")
                     .Enter(evt => selectedToolIndex = 1)
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
+
+                        state.PaintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
+                    })
+                    .Event("MouseMove", state =>
+                    {
+                        var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
+                        if (highlightedPosition != null)
+                        {
+                            hexMap.HighlightedTile = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                        }
+                        Event.current.Use();
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var position = GetWorldPositionForMouse(eventArgs.Position);
+                        var position = GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
                         if (position != null)
                         {
                             // Select the tile that was clicked on.
@@ -137,13 +144,13 @@ namespace HexTiles.Editor
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var position = GetWorldPositionForMouse(eventArgs.Position);
-                        if (position != null)
+                        var tile = TryFindTileForMousePosition(eventArgs.Position);
+                        if (tile != null)
                         {
                             // Select the tile that was clicked on.
-                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                            hexMap.SelectedTile = tile;
                             // Create tile
-                            hexMap.TryRemovingTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                            hexMap.TryRemovingTile(tile);
                         }
                     })
                 .End()
@@ -222,12 +229,8 @@ namespace HexTiles.Editor
             switch (Event.current.GetTypeForControl(controlId))
             {
                 case EventType.MouseMove:
-                    var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition);
-                    if (highlightedPosition != null)
-                    {
-                        hexMap.HighlightedTile = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
-                    }
-                    Event.current.Use();
+
+                    rootState.TriggerEvent("MouseMove");
                     
                     break;
                 case EventType.MouseDown:
@@ -321,7 +324,7 @@ namespace HexTiles.Editor
         /// <summary>
         /// Return the point we would hit at the specified height for the specified mouse position.
         /// </summary>
-        private Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition)
+        private Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition, float placementHeight)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
@@ -335,6 +338,27 @@ namespace HexTiles.Editor
             return null;
         }
 
+        private HexCoords TryFindTileForMousePosition(Vector2 mousePosition)
+        {
+            var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+            return Physics.RaycastAll(ray, 1000f)
+                .Where(hit => hit.collider.GetComponent<HexTile>() != null)
+                .OrderBy(hit => hit.distance)
+                .Select(hit => hexMap.QuantizeVector3ToHexCoords(hit.point))
+                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// State for when we're painting tiles.
+        /// </summary>
+        private class PaintState : AbstractState
+        {
+            public float PaintHeight;
+        }
+
+        /// <summary>
+        /// State for when we're in the map settings mode.
+        /// </summary>
         private class SettingsState : AbstractState
         {
             /// <summary>
