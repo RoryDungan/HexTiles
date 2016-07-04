@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace HexTiles
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class HexTile : MonoBehaviour
     {
         /// <summary>
@@ -62,6 +62,8 @@ namespace HexTiles
             };
 
             mesh.RecalculateNormals();
+
+            GetComponent<MeshCollider>().sharedMesh = mesh;
         }
     }
 }
