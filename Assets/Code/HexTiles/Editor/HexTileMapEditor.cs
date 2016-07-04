@@ -196,12 +196,24 @@ namespace HexTiles.Editor
             
             rootState.ChangeState("Select");
 
-            toolIcons = new ButtonIcon[] {
-                new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
-                new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
-                new ButtonIcon{ NormalIcon = LoadImage("eraser_44"), SelectedIcon = LoadImage("eraser_44_selected") },
-                new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
-            };
+            if (EditorGUIUtility.isProSkin)
+            {
+                toolIcons = new ButtonIcon[] {
+                    new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44_pro"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44_pro"), SelectedIcon = LoadImage("paint-brush_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("eraser_44_pro"), SelectedIcon = LoadImage("eraser_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("cog_44_pro"), SelectedIcon = LoadImage("cog_44_selected") },
+                };
+            }
+            else
+            {
+                toolIcons = new ButtonIcon[] {
+                    new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("eraser_44"), SelectedIcon = LoadImage("eraser_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
+                };
+            }
         }
 
         void OnSceneGUI()
