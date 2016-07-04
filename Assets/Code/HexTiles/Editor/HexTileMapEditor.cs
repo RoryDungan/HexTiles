@@ -338,6 +338,10 @@ namespace HexTiles.Editor
             return null;
         }
 
+        /// <summary>
+        /// Try to find a tile by raycasting from the specified mouse position. 
+        /// Returns null if no tile was found.
+        /// </summary>
         private HexCoords TryFindTileForMousePosition(Vector2 mousePosition)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
