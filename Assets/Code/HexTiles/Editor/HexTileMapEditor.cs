@@ -100,10 +100,13 @@ namespace HexTiles.Editor
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var tile = TryFindTileForMousePosition(eventArgs.Position);
-                        if (tile != null)
+                        if (eventArgs.Button == 0)
                         {
-                            hexMap.SelectedTile = tile;
+                            var tile = TryFindTileForMousePosition(eventArgs.Position);
+                            if (tile != null)
+                            {
+                                hexMap.SelectedTile = tile;
+                            }
                         }
                     })
                 .End()
@@ -126,13 +129,16 @@ namespace HexTiles.Editor
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var position = GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
-                        if (position != null)
+                        if (eventArgs.Button == 0)
                         {
-                            // Select the tile that was clicked on.
-                            hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
-                            // Create tile
-                            hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                            var position = GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
+                            if (position != null)
+                            {
+                                // Select the tile that was clicked on.
+                                hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                                // Create tile
+                                hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                            }
                         }
                     })
                 .End()
@@ -144,13 +150,16 @@ namespace HexTiles.Editor
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
-                        var tile = TryFindTileForMousePosition(eventArgs.Position);
-                        if (tile != null)
+                        if (eventArgs.Button == 0)
                         {
-                            // Select the tile that was clicked on.
-                            hexMap.SelectedTile = tile;
-                            // Create tile
-                            hexMap.TryRemovingTile(tile);
+                            var tile = TryFindTileForMousePosition(eventArgs.Position);
+                            if (tile != null)
+                            {
+                                // Select the tile that was clicked on.
+                                hexMap.SelectedTile = tile;
+                                // Create tile
+                                hexMap.TryRemovingTile(tile);
+                            }
                         }
                     })
                 .End()
