@@ -11,9 +11,9 @@ namespace HexTiles
         public float hexWidth = 1f;
 
         /// <summary>
-        /// Hashtable of all hex tiles that are part of this map.
+        /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        private Hashtable Tiles
+        private IHexTileCollection Tiles
         {
             get
             {
@@ -21,7 +21,7 @@ namespace HexTiles
                 if (tiles == null)
                 {
                     // Add all the existing tiles in the scene that are part of this map
-                    tiles = new Hashtable();
+                    tiles = new HexTileCollection();
                     foreach (var tile in GetComponentsInChildren<HexTile>())
                     {
                         tiles.Add(QuantizeVector3ToHexCoords(tile.transform.position), tile);
@@ -30,7 +30,7 @@ namespace HexTiles
                 return tiles;
             }
         }
-        private Hashtable tiles;
+        private IHexTileCollection tiles;
 
         /// <summary>
         /// Highlighted tile for editing
@@ -134,9 +134,9 @@ namespace HexTiles
         {
             foreach (var tileCoords in Tiles.Keys)
             {
-                var hexTile = (HexTile)Tiles[tileCoords];
+                var hexTile = Tiles[tileCoords];
                 hexTile.Diameter = hexWidth;
-                hexTile.transform.position = HexCoordsToWorldPosition((HexCoords)tileCoords);
+                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords);
                 hexTile.GenerateMesh();
             }
         }
@@ -150,7 +150,7 @@ namespace HexTiles
             // See if there's already a tile at the specified position.
             if (Tiles.Contains(position))
             {
-                return (HexTile)Tiles[position];
+                return Tiles[position];
             }
 
             var obj = SpawnTileObject(position);
@@ -177,9 +177,9 @@ namespace HexTiles
                 return false;
             }
 
-            var tile = (HexTile)Tiles[position];
+            var tile = Tiles[position];
             DestroyImmediate(tile.gameObject);
-            tiles.Remove(position);
+            Tiles.Remove(position);
 
             return true;
         }
