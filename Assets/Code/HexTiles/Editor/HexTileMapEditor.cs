@@ -63,29 +63,32 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
-                        // Tile info
-                        GUILayout.Label("Tile position", EditorStyles.boldLabel);
+                        if (hexMap.SelectedTile != null)
+                        {
+                            // Tile info
+                            GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
-                        EditorGUILayout.BeginHorizontal();
-                        GUILayout.Label("Column", GUILayout.Width(EditorGUIUtility.labelWidth));
-                        GUI.enabled = false;
-                        EditorGUILayout.IntField(hexMap.SelectedTile.Q);
-                        GUI.enabled = true;
-                        EditorGUILayout.EndHorizontal();
+                            EditorGUILayout.BeginHorizontal();
+                            GUILayout.Label("Column", GUILayout.Width(EditorGUIUtility.labelWidth));
+                            GUI.enabled = false;
+                            EditorGUILayout.IntField(hexMap.SelectedTile.Q);
+                            GUI.enabled = true;
+                            EditorGUILayout.EndHorizontal();
 
-                        EditorGUILayout.BeginHorizontal();
-                        GUILayout.Label("Row", GUILayout.Width(EditorGUIUtility.labelWidth));
-                        GUI.enabled = false;
-                        EditorGUILayout.IntField(hexMap.SelectedTile.R);
-                        GUI.enabled = true;
-                        EditorGUILayout.EndHorizontal();
+                            EditorGUILayout.BeginHorizontal();
+                            GUILayout.Label("Row", GUILayout.Width(EditorGUIUtility.labelWidth));
+                            GUI.enabled = false;
+                            EditorGUILayout.IntField(hexMap.SelectedTile.R);
+                            GUI.enabled = true;
+                            EditorGUILayout.EndHorizontal();
 
-                        EditorGUILayout.BeginHorizontal();
-                        GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
-                        GUI.enabled = false;
-                        EditorGUILayout.FloatField(hexMap.SelectedTile.Elevation);
-                        GUI.enabled = true;
-                        EditorGUILayout.EndHorizontal();
+                            EditorGUILayout.BeginHorizontal();
+                            GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
+                            GUI.enabled = false;
+                            EditorGUILayout.FloatField(hexMap.SelectedTile.Elevation);
+                            GUI.enabled = true;
+                            EditorGUILayout.EndHorizontal();
+                        }
 
 
                         // Tile settings
