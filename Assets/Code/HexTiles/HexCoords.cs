@@ -23,6 +23,15 @@ namespace HexTiles
 
         public float Elevation = 0f;
 
+        public static HexCoords operator+(HexCoords a, HexCoords b)
+        {
+            return new HexCoords(a.Q + b.Q, a.R + b.R);
+        }
+
+        public static HexCoords operator-(HexCoords a, HexCoords b)
+        {
+            return new HexCoords(a.Q - b.Q, a.R - b.R);
+        }
         // override object.GetHashCode
         // Taken from http://stackoverflow.com/questions/5221396/what-is-an-appropriate-gethashcode-algorithm-for-a-2d-point-struct-avoiding
         public override int GetHashCode()
