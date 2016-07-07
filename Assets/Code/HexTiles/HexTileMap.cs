@@ -156,7 +156,16 @@ namespace HexTiles
             // See if there's already a tile at the specified position.
             if (Tiles.Contains(position))
             {
-                return Tiles[position];
+                var tile = Tiles[position];
+
+                // If a tlie at that position and that height already exists, return it.
+                if (tile.transform.localPosition.y == position.Elevation)
+                {
+                    return tile;
+                }
+
+                // Remove the tile before adding a new one.
+                TryRemovingTile(position);
             }
 
             var obj = SpawnTileObject(position);
