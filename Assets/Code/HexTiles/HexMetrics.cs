@@ -14,6 +14,9 @@ namespace HexTiles
         /// </summary>
         public static readonly float hexHeightToWidth = 0.86602540378f;
 
+        /// <summary>
+        /// Returns the 6 vertices of a hex of a certain size.
+        /// </summary>
         public static Vector3[] GetHexVertices(float size)
         {
             var vertices = new Vector3[6];
@@ -27,5 +30,18 @@ namespace HexTiles
 
             return vertices;
         }
+
+        /// <summary>
+        /// Array of possible locations for adjacent hexes.
+        /// </summary>
+        public static readonly HexCoords[] AdjacentHexes = new HexCoords[]
+        {
+            new HexCoords( 0, -1),
+            new HexCoords( 1, -1),
+            new HexCoords( 1,  0),
+            new HexCoords( 0,  1),
+            new HexCoords(-1,  1),
+            new HexCoords(-1,  0)
+        };
     }
 }
