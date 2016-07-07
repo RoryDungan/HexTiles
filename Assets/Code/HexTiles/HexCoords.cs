@@ -11,6 +11,12 @@ namespace HexTiles
     [Serializable]
     public class HexCoords : Object
     {
+        public HexCoords(int q, int r)
+        {
+            Q = q;
+            R = r;
+        }
+
         public int Q = 0;
 
         public int R = 0;

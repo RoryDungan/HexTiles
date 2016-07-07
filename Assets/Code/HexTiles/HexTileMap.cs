@@ -102,10 +102,8 @@ namespace HexTiles
             var q = vIn.x * 2f/3f / (hexWidth/2f);
             var r = (-vIn.x / 3f + Mathf.Sqrt(3f)/3f * vIn.z) / (hexWidth/2f);
 
-            return new HexCoords 
+            return new HexCoords (Mathf.RoundToInt(q), Mathf.RoundToInt(r))
             { 
-                Q = Mathf.RoundToInt(q), 
-                R = Mathf.RoundToInt(r),
                 Elevation = vIn.y
             };
         }
