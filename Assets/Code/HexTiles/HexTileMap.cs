@@ -170,7 +170,6 @@ namespace HexTiles
 
             var hex = obj.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
-            hex.GenerateMesh();
 
             // Generate side pieces
             foreach (var side in HexMetrics.AdjacentHexes)
@@ -181,6 +180,8 @@ namespace HexTiles
                     hex.AddSidePiece(side, position.Elevation - adjacentTile.transform.localPosition.y);
                 }
             }
+
+            hex.GenerateMesh();
 
             Tiles.Add(position, hex);
 

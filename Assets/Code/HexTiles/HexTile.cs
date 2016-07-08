@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HexTiles
 {
@@ -46,24 +47,39 @@ namespace HexTiles
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
-            var vertices = HexMetrics.GetHexVertices(Diameter);
-            var uv = new Vector2[vertices.Length];
-            var tangents = new Vector4[vertices.Length];
-
-            for (var i = 0; i < vertices.Length; i++)
+            var vertices = HexMetrics.GetHexVertices(Diameter).ToList();
+            var triangles = new List<int>
             {
-                tangents[i].Set(1f, 0f, 0f, -1f);
-            }
-
-            mesh.vertices = vertices;
-
-            // Calculate triangles.
-            mesh.triangles = new int[] {
+                // Start with the preset triangles for the hex top.
                 0, 1, 5,
                 1, 4, 5,
                 1, 2, 4,
                 2, 3, 4
             };
+            
+            foreach (var sidePiece in sidePieces)
+            {
+                var nextVertexIndex = vertices.Count;
+                vertices.Add(new Vector3(vertices[sidePiece.direction].x, -sidePiece.direction, vertices[sidePiece.direction].z));
+                vertices.Add(new Vector3(vertices[(sidePiece.direction + 1) % 6].x, -sidePiece.direction, vertices[(sidePiece.direction + 1) % 6].z));
+
+                triangles.AddRange(new int[]{
+                    sidePiece.direction, nextVertexIndex + 1, nextVertexIndex,
+                    sidePiece.direction, (sidePiece.direction + 1) % 6, nextVertexIndex + 1
+                });
+            }
+
+            var uv = new Vector2[vertices.Count];
+            var tangents = new Vector4[vertices.Count];
+
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                tangents[i].Set(1f, 0f, 0f, -1f);
+            }
+
+            mesh.vertices = vertices.ToArray();
+
+            mesh.triangles = triangles.ToArray();
 
             // TODO: Generate meshes for side pieces.
 
