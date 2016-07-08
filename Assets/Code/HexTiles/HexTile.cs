@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace HexTiles
 {
@@ -34,6 +35,8 @@ namespace HexTiles
         /// </summary>
         public static readonly float hexHeightToWidth = 0.86602540378f;
 
+        private IList<SidePiece> sidePieces = new List<SidePiece>();
+
         /// <summary>
         /// Create the mesh used to render the hex.
         /// </summary>
@@ -62,6 +65,8 @@ namespace HexTiles
                 2, 3, 4
             };
 
+            // TODO: Generate meshes for side pieces.
+
             mesh.RecalculateNormals();
 
             GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -72,7 +77,30 @@ namespace HexTiles
         /// </summary>
         internal void AddSidePiece(HexCoords side, float height)
         {
-            Debug.Log("Adding side piece on side: " + side + " with height " + height);
+            var sideIndex = Array.IndexOf(HexMetrics.AdjacentHexes, side);
+            if (sideIndex < 0)
+            {
+                throw new ApplicationException("Hex tile " + side + " is not a valid adjacent tile.");
+            }
+
+            sidePieces.Add(new SidePiece { direction = sideIndex, elevationDelta = height });
+        }
+
+        /// <summary>
+        /// Clear all side pieces. Note that this won't affect the actual mesh until GenerateMesh() is called.
+        /// </summary>
+        internal void ResetSidePieces()
+        {
+            sidePieces.Clear();
+        }
+
+        /// <summary>
+        /// Side piece for the hex tile.
+        /// </summary>
+        private struct SidePiece
+        {
+            public int direction;
+            public float elevationDelta;
         }
     }
 }
