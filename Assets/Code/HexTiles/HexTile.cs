@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 namespace HexTiles
 {
@@ -64,6 +65,14 @@ namespace HexTiles
             mesh.RecalculateNormals();
 
             GetComponent<MeshCollider>().sharedMesh = mesh;
+        }
+
+        /// <summary>
+        /// Generates and adds a side piece to the tile.
+        /// </summary>
+        internal void AddSidePiece(HexCoords side, float height)
+        {
+            Debug.Log("Adding side piece on side: " + side + " with height " + height);
         }
     }
 }

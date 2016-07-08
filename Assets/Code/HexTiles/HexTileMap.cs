@@ -172,6 +172,16 @@ namespace HexTiles
             hex.Diameter = hexWidth;
             hex.GenerateMesh();
 
+            // Generate side pieces
+            foreach (var side in HexMetrics.AdjacentHexes)
+            {
+                HexTile adjacentTile;
+                if (Tiles.TryGetValue(position + side, out adjacentTile) && adjacentTile.transform.localPosition.y < position.Elevation)
+                {
+                    hex.AddSidePiece(side, position.Elevation - adjacentTile.transform.localPosition.y);
+                }
+            }
+
             Tiles.Add(position, hex);
 
             // TODO Rory 26/06/16: Set up material.

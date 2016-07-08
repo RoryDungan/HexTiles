@@ -37,6 +37,11 @@ namespace HexTiles
         HexTile this[HexCoords index] { get; }
 
         /// <summary>
+        /// Try to get the value at the specified coordinates and return whether it was successful or not.
+        /// </summary>
+        bool TryGetValue(HexCoords index, out HexTile tile);
+
+        /// <summary>
         /// Enumerable of all the coordinates stored in this collection.
         /// </summary>
         ICollection<HexCoords> Keys { get; }
@@ -101,6 +106,20 @@ namespace HexTiles
         public bool Contains(HexCoords key)
         {
             return tiles.Contains(key);
+        }
+
+        /// <summary>
+        /// Try to get the value at the specified coordinates and return whether it was successful or not.
+        /// </summary>
+        public bool TryGetValue(HexCoords index, out HexTile tile)
+        {
+            if (tiles.Contains(index))
+            {
+                tile = (HexTile)tiles[index];
+                return true;
+            }
+            tile = null;
+            return false;
         }
     }
 }
