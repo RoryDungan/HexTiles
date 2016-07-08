@@ -32,6 +32,7 @@ namespace HexTiles
         {
             return new HexCoords(a.Q - b.Q, a.R - b.R);
         }
+
         // override object.GetHashCode
         // Taken from http://stackoverflow.com/questions/5221396/what-is-an-appropriate-gethashcode-algorithm-for-a-2d-point-struct-avoiding
         public override int GetHashCode()
@@ -62,6 +63,11 @@ namespace HexTiles
 
             var hexCoords = (HexCoords)obj;
             return hexCoords.Q == Q && hexCoords.R == R;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("({0}, {1})", Q, R);
         }
     }
 }
