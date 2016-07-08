@@ -60,12 +60,12 @@ namespace HexTiles
             foreach (var sidePiece in sidePieces)
             {
                 var nextVertexIndex = vertices.Count;
-                vertices.Add(new Vector3(vertices[sidePiece.direction].x, -sidePiece.direction, vertices[sidePiece.direction].z));
-                vertices.Add(new Vector3(vertices[(sidePiece.direction + 1) % 6].x, -sidePiece.direction, vertices[(sidePiece.direction + 1) % 6].z));
+                vertices.Add(new Vector3(vertices[sidePiece.direction].x, -sidePiece.elevationDelta, vertices[sidePiece.direction].z));
+                vertices.Add(new Vector3(vertices[(sidePiece.direction + 1) % 6].x, -sidePiece.elevationDelta, vertices[(sidePiece.direction + 1) % 6].z));
 
                 triangles.AddRange(new int[]{
-                    sidePiece.direction, nextVertexIndex + 1, nextVertexIndex,
-                    sidePiece.direction, (sidePiece.direction + 1) % 6, nextVertexIndex + 1
+                    sidePiece.direction, nextVertexIndex, nextVertexIndex + 1,
+                    sidePiece.direction, nextVertexIndex + 1, (sidePiece.direction + 1) % 6
                 });
             }
 
