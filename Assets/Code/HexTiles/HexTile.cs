@@ -86,7 +86,7 @@ namespace HexTiles
         /// </summary>
         internal void AddSidePiece(HexCoords side, float height)
         {
-            var sideIndex = (Array.IndexOf(HexMetrics.AdjacentHexes, side) + 4) % 6;
+            var sideIndex = Array.IndexOf(HexMetrics.AdjacentHexes, side);
             if (sideIndex < 0)
             {
                 throw new ApplicationException("Hex tile " + side + " is not a valid adjacent tile.");
