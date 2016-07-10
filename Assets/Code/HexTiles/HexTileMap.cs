@@ -171,23 +171,45 @@ namespace HexTiles
             var hex = obj.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
 
+            Tiles.Add(position, hex);
+
             // Generate side pieces
+            // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
+            // Obscured by this one are removed.
+            foreach (var side in HexMetrics.AdjacentHexes)
+            {
+                HexTile adjacentTile;
+                if (Tiles.TryGetValue(position + side, out adjacentTile))
+                {
+                    SetUpSidePiecesForTile(position + side);
+                    adjacentTile.GenerateMesh();
+                }
+            }
+            SetUpSidePiecesForTile(position);
+            hex.GenerateMesh();
+
+
+            // TODO Rory 26/06/16: Set up material.
+
+            return hex;
+        }
+
+        private void SetUpSidePiecesForTile(HexCoords position)
+        {
+            HexTile tile;
+            if (!Tiles.TryGetValue(position, out tile))
+            {
+                throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
+            }
+
             foreach (var side in HexMetrics.AdjacentHexes)
             {
                 HexTile adjacentTile;
                 if (Tiles.TryGetValue(position + side, out adjacentTile) && adjacentTile.transform.localPosition.y < position.Elevation)
                 {
-                    hex.AddSidePiece(side, position.Elevation - adjacentTile.transform.localPosition.y);
+                    tile.AddSidePiece(side, position.Elevation - adjacentTile.transform.localPosition.y);
                 }
             }
-
-            hex.GenerateMesh();
-
-            Tiles.Add(position, hex);
-
-            // TODO Rory 26/06/16: Set up material.
-
-            return hex;
         }
 
         /// <summary>
