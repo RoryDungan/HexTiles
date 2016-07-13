@@ -12,7 +12,6 @@ namespace HexTiles
         /// <summary>
         /// Total diameter of the hex.
         /// </summary>
-        [HideInInspector]
         private float size = 1f;
 
         /// <summary>
@@ -29,12 +28,6 @@ namespace HexTiles
                 size = value;
             }
         }
-
-        /// <summary>
-        /// sqrt(3)/2
-        /// The ratio of a flat-topped hexagon's height to its width.
-        /// </summary>
-        public static readonly float hexHeightToWidth = 0.86602540378f;
 
         private IList<SidePiece> sidePieces = new List<SidePiece>();
 
