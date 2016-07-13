@@ -25,6 +25,7 @@ namespace HexTiles
                     foreach (var tile in GetComponentsInChildren<HexTile>())
                     {
                         tiles.Add(QuantizeVector3ToHexCoords(tile.transform.position), tile);
+                        tile.Diameter = hexWidth;
                     }
                 }
                 return tiles;
