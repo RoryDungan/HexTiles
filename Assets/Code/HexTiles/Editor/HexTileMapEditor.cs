@@ -4,6 +4,8 @@ using UnityEditor;
 using System;
 using RSG;
 using System.Linq;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace HexTiles.Editor
 {
@@ -141,6 +143,7 @@ namespace HexTiles.Editor
                                 hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                                 // Create tile
                                 hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }
                     })
