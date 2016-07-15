@@ -9,7 +9,7 @@ namespace HexTiles
     /// <summary>
     /// Wrapper around our internal data structure for storing hex tiles.
     /// </summary>
-    interface IHexTileCollection
+    interface IHexTileCollection : IEnumerable<HexTile>
     {
         /// <summary>
         /// Add a tile to the collection.
@@ -120,6 +120,19 @@ namespace HexTiles
             }
             tile = null;
             return false;
+        }
+
+        public IEnumerator<HexTile> GetEnumerator()
+        {
+            foreach (var tile in tiles)
+            {
+                yield return (HexTile)tile;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
