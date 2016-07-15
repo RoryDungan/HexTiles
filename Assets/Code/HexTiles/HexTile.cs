@@ -32,6 +32,13 @@ namespace HexTiles
         private IList<SidePiece> sidePieces = new List<SidePiece>();
 
         /// <summary>
+        /// Draw gizmos for debugging the hex vertex placement.
+        /// </summary>
+        [SerializeField]
+        [Tooltip("Draw gizmos for debugging the hex vertex placement")]
+        private bool debugDrawGizmos = false;
+
+        /// <summary>
         /// Create the mesh used to render the hex.
         /// </summary>
         [ContextMenu("Generate mesh")]
@@ -49,7 +56,7 @@ namespace HexTiles
                 1, 2, 4,
                 2, 3, 4
             };
-            
+
             foreach (var sidePiece in sidePieces)
             {
                 var nextVertexIndex = vertices.Count;
@@ -110,6 +117,29 @@ namespace HexTiles
         {
             public int direction;
             public float elevationDelta;
+        }
+
+        void OnDrawGizmos()
+        {
+            if (!debugDrawGizmos)
+            {
+                return;
+            }
+
+            var vertices = HexMetrics.GetHexVertices(size);
+            var gizmoSize = size / 10f;
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(vertices[0], gizmoSize);
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(vertices[1], gizmoSize);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(vertices[2], gizmoSize);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(vertices[3], gizmoSize);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawSphere(vertices[4], gizmoSize);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(vertices[5], gizmoSize);
         }
     }
 }
