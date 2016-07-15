@@ -44,7 +44,7 @@ namespace HexTiles
         /// <summary>
         /// Enumerable of all the coordinates stored in this collection.
         /// </summary>
-        ICollection<HexCoords> Keys { get; }
+        IEnumerable<HexCoords> Keys { get; }
     }
 
     /// <summary>
@@ -92,11 +92,11 @@ namespace HexTiles
         /// <summary>
         /// Enumerable of all the coordinates stored in this collection.
         /// </summary>
-        public ICollection<HexCoords> Keys
+        public IEnumerable<HexCoords> Keys
         {
             get
             {
-                return (ICollection<HexCoords>)tiles.Keys;
+                return tiles.Keys.Cast<HexCoords>();
             }
         }
 
