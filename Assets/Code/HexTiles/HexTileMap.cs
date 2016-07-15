@@ -224,9 +224,16 @@ namespace HexTiles
             foreach (var side in HexMetrics.AdjacentHexes)
             {
                 HexTile adjacentTile;
-                if (Tiles.TryGetValue(position + side, out adjacentTile) && adjacentTile.transform.localPosition.y < position.Elevation)
+                if (Tiles.TryGetValue(position + side, out adjacentTile))
                 {
-                    tile.AddSidePiece(side, position.Elevation - adjacentTile.transform.localPosition.y);
+                    if (adjacentTile.transform.localPosition.y < tile.transform.localPosition.y)
+                    {
+                        tile.AddSidePiece(side, tile.transform.localPosition.y - adjacentTile.transform.localPosition.y);
+                    }
+                    else
+                    {
+                        tile.RemoveSidePiece(side);
+                    }
                 }
             }
         }

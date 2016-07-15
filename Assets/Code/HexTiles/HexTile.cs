@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RSG.Utils;
 
 namespace HexTiles
 {
@@ -100,6 +101,27 @@ namespace HexTiles
             }
 
             sidePieces.Add(new SidePiece { direction = sideIndex, elevationDelta = height });
+        }
+
+        /// <summary>
+        /// Remove the specified side piece from this hex tile.
+        /// </summary>
+        internal void RemoveSidePiece(HexCoords side)
+        {
+            var sideIndex = Array.IndexOf(HexMetrics.AdjacentHexes, side);
+            if (sideIndex < 0)
+            {
+                throw new ApplicationException("Hex tile " + side + " is not a valid adjacent tile.");
+            }
+
+            var sidePiecesToRemove = sidePieces
+                .Where(sidePiece => sidePiece.direction == sideIndex)
+                .ToArray();
+
+            foreach (var sidePiece in sidePiecesToRemove)
+            {
+                sidePieces.Remove(sidePiece);
+            }
         }
 
         /// <summary>
