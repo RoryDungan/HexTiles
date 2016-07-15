@@ -269,6 +269,11 @@ namespace HexTiles.Editor
                     break;
                 case EventType.MouseDown:
                 case EventType.MouseDrag:
+                    // Don't do anything if the user alt-left clicks to rotate the camera.
+                    if (Event.current.button == 0 && Event.current.alt)
+                    {
+                        break;
+                    }
 
                     var eventArgs = new SceneClickedEventArgs { 
                         Button = Event.current.button, 
