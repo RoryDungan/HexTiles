@@ -186,6 +186,7 @@ namespace HexTiles.Editor
                         if (shouldDrawPositionHandles != hexMap.DrawHexPositionHandles)
                         {
                             hexMap.DrawHexPositionHandles = shouldDrawPositionHandles;
+                            SceneView.RepaintAll();
                             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
 
