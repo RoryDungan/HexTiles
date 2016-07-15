@@ -36,11 +36,11 @@ namespace HexTiles
         /// </summary>
         public static readonly HexCoords[] AdjacentHexes = new HexCoords[]
         {
-            new HexCoords( 0, -1),
-            new HexCoords( 1, -1),
-            new HexCoords( 1,  0),
-            new HexCoords( 0,  1),
             new HexCoords(-1,  1),
+            new HexCoords( 0,  1),
+            new HexCoords( 1,  0),
+            new HexCoords( 1, -1),
+            new HexCoords( 0, -1),
             new HexCoords(-1,  0)
         };
     }
