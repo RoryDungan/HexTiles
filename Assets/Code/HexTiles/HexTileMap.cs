@@ -10,10 +10,28 @@ namespace HexTiles
     {
         public float hexWidth = 1f;
 
+        [SerializeField]
+        private bool drawHexPositionGizmos = false;
+
+        /// <summary>
+        /// Whether or not to draw the position of each tile on top of the tile in the editor.
+        /// </summary>
+        public bool DrawHexPositionHandles
+        {
+            get
+            {
+                return drawHexPositionGizmos;
+            }
+            set
+            {
+                drawHexPositionGizmos = value;
+            }
+        }
+
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        private IHexTileCollection Tiles
+        public IHexTileCollection Tiles
         {
             get
             {

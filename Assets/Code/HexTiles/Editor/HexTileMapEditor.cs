@@ -163,8 +163,11 @@ namespace HexTiles.Editor
                             {
                                 // Select the tile that was clicked on.
                                 hexMap.SelectedTile = tile;
-                                // Create tile
-                                hexMap.TryRemovingTile(tile);
+                                // Destroy tile
+                                if (hexMap.TryRemovingTile(tile))
+                                {
+                                    EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                                }
                             }
                         }
                     })
@@ -178,6 +181,13 @@ namespace HexTiles.Editor
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Settings", "Configure options for the whole tile map.");
+
+                        var shouldDrawPositionHandles = EditorGUILayout.Toggle("Draw hex position handles", hexMap.DrawHexPositionHandles);
+                        if (shouldDrawPositionHandles != hexMap.DrawHexPositionHandles)
+                        {
+                            hexMap.DrawHexPositionHandles = shouldDrawPositionHandles;
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                        }
 
                         state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
                         if (state.HexSize != hexMap.hexWidth)
@@ -193,6 +203,7 @@ namespace HexTiles.Editor
                                 "Cancel"))
                             {
                                 hexMap.ClearAllTiles();
+                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }
 
@@ -206,6 +217,7 @@ namespace HexTiles.Editor
                             Debug.Log("Saving settings");
                             hexMap.hexWidth = state.HexSize;
                             hexMap.RegenerateAllTiles();
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 
                             state.Dirty = false;
                         }
@@ -240,6 +252,12 @@ namespace HexTiles.Editor
 
         void OnSceneGUI()
         {
+            if (hexMap.DrawHexPositionHandles)
+            {
+                DrawHexPositionHandles();
+            }
+
+            // Handle mouse input
             var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);
             switch (Event.current.GetTypeForControl(controlId))
             {
@@ -273,6 +291,18 @@ namespace HexTiles.Editor
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(target);
+            }
+        }
+
+        /// <summary>
+        /// Draw handles with the position of each hex tile above that tile in the scene.
+        /// </summary>
+        private void DrawHexPositionHandles()
+        {
+            foreach (var tile in hexMap.Tiles)
+            {
+                var position = tile.transform.position;
+                Handles.Label(position, hexMap.QuantizeVector3ToHexCoords(position).ToString());
             }
         }
 
