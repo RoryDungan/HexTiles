@@ -106,7 +106,7 @@ namespace HexTiles
         /// <summary>
         /// Remove the specified side piece from this hex tile.
         /// </summary>
-        internal void RemoveSidePiece(HexCoords side)
+        internal void TryRemovingSidePiece(HexCoords side)
         {
             var sideIndex = Array.IndexOf(HexMetrics.AdjacentHexes, side);
             if (sideIndex < 0)

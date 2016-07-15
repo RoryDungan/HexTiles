@@ -226,13 +226,10 @@ namespace HexTiles
                 HexTile adjacentTile;
                 if (Tiles.TryGetValue(position + side, out adjacentTile))
                 {
+                    tile.TryRemovingSidePiece(side);
                     if (adjacentTile.transform.localPosition.y < tile.transform.localPosition.y)
                     {
                         tile.AddSidePiece(side, tile.transform.localPosition.y - adjacentTile.transform.localPosition.y);
-                    }
-                    else
-                    {
-                        tile.RemoveSidePiece(side);
                     }
                 }
             }
