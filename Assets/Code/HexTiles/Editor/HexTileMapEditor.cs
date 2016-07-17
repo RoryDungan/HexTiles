@@ -144,7 +144,9 @@ namespace HexTiles.Editor
                                 // Select the tile that was clicked on.
                                 hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                                 // Create tile
-                                hexMap.CreateAndAddTile(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()));
+                                hexMap.CreateAndAddTile(
+                                    hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
+                                    state.TileMaterial);
                                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }

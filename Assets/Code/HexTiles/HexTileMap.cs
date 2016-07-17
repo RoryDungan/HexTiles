@@ -168,7 +168,7 @@ namespace HexTiles
         /// Add a tile to the map. Returns the newly added hex tile.
         /// If a tile already exists at that position then that is returned instead.
         /// </summary>
-        public HexTile CreateAndAddTile(HexCoords position)
+        public HexTile CreateAndAddTile(HexCoords position, Material material)
         {
             // See if there's already a tile at the specified position.
             if (Tiles.Contains(position))
@@ -207,8 +207,8 @@ namespace HexTiles
             SetUpSidePiecesForTile(position);
             hex.GenerateMesh();
 
-
-            // TODO Rory 26/06/16: Set up material.
+            // Set up material
+            hex.GetComponent<Renderer>().material = material;
 
             return hex;
         }
