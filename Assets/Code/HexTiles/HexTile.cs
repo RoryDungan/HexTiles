@@ -30,7 +30,8 @@ namespace HexTiles
             }
         }
 
-        private IList<SidePiece> sidePieces = new List<SidePiece>();
+        [SerializeField]
+        private List<SidePiece> sidePieces = new List<SidePiece>();
 
         /// <summary>
         /// Draw gizmos for debugging the hex vertex placement.
@@ -135,6 +136,7 @@ namespace HexTiles
         /// <summary>
         /// Side piece for the hex tile.
         /// </summary>
+        [Serializable]
         private struct SidePiece
         {
             public int direction;
