@@ -122,6 +122,8 @@ namespace HexTiles.Editor
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
 
                         state.PaintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
+
+                        state.TileMaterial = (Material)EditorGUILayout.ObjectField("Material", state.TileMaterial, typeof(Material), false);
                     })
                     .Event("MouseMove", state =>
                     {
@@ -409,6 +411,11 @@ namespace HexTiles.Editor
         private class PaintState : AbstractState
         {
             public float PaintHeight;
+
+            /// <summary>
+            /// Material to apply to new tiles.
+            /// </summary>
+            public Material TileMaterial;
         }
 
         /// <summary>
