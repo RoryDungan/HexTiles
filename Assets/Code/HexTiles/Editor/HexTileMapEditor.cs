@@ -87,7 +87,7 @@ namespace HexTiles.Editor
                             EditorGUILayout.BeginHorizontal();
                             GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
                             GUI.enabled = false;
-                            EditorGUILayout.FloatField(hexMap.SelectedTile.Elevation);
+                            EditorGUILayout.FloatField(hexMap.Tiles[hexMap.SelectedTile].transform.position.y);
                             GUI.enabled = true;
                             EditorGUILayout.EndHorizontal();
                         }
@@ -146,6 +146,7 @@ namespace HexTiles.Editor
                                 // Create tile
                                 hexMap.CreateAndAddTile(
                                     hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
+                                    state.PaintHeight,
                                     state.TileMaterial);
                                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }

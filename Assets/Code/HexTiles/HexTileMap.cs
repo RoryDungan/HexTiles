@@ -86,12 +86,12 @@ namespace HexTiles
         {
             if (HighlightedTile != null)
             {
-                DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile), Color.grey);
+                DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile, Tiles[HighlightedTile].transform.position.y), Color.grey);
             }
 
             if (SelectedTile != null)
             {
-                DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile), Color.green);
+                DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile, Tiles[SelectedTile].transform.position.y), Color.green);
             }
         }
 
@@ -121,21 +121,18 @@ namespace HexTiles
             var q = vIn.x * 2f/3f / (hexWidth/2f);
             var r = (-vIn.x / 3f + Mathf.Sqrt(3f)/3f * vIn.z) / (hexWidth/2f);
 
-            return new HexCoords (Mathf.RoundToInt(q), Mathf.RoundToInt(r))
-            { 
-                Elevation = vIn.y
-            };
+            return new HexCoords (Mathf.RoundToInt(q), Mathf.RoundToInt(r));
         }
 
         /// <summary>
         /// Get the world space position of the specified hex coords.
         /// This uses axial coordinates for the hexes.
         /// </summary>
-        public Vector3 HexCoordsToWorldPosition(HexCoords hIn)
+        public Vector3 HexCoordsToWorldPosition(HexCoords hIn, float elevation)
         {
             var x = hexWidth/2f * 3f/2f * hIn.Q;
             var z = hexWidth/2f * Mathf.Sqrt(3f) * (hIn.R + hIn.Q / 2f);
-            var y = hIn.Elevation;
+            var y = elevation;
             return new Vector3(x, y, z);
         }
 
@@ -145,7 +142,7 @@ namespace HexTiles
         /// </summary>
         public Vector3 QuantizePositionToHexGrid(Vector3 vIn)
         {
-            return HexCoordsToWorldPosition(QuantizeVector3ToHexCoords(vIn));
+            return HexCoordsToWorldPosition(QuantizeVector3ToHexCoords(vIn), vIn.y);
         }
 
         /// <summary>
@@ -159,7 +156,7 @@ namespace HexTiles
             {
                 var hexTile = Tiles[tileCoords];
                 hexTile.Diameter = hexWidth;
-                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords);
+                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords, hexTile.transform.position.y);
                 hexTile.GenerateMesh();
             }
         }
@@ -168,7 +165,7 @@ namespace HexTiles
         /// Add a tile to the map. Returns the newly added hex tile.
         /// If a tile already exists at that position then that is returned instead.
         /// </summary>
-        public HexTile CreateAndAddTile(HexCoords position, Material material)
+        public HexTile CreateAndAddTile(HexCoords position, float elevation, Material material)
         {
             // See if there's already a tile at the specified position.
             if (Tiles.Contains(position))
@@ -176,7 +173,7 @@ namespace HexTiles
                 var tile = Tiles[position];
 
                 // If a tlie at that position and that height already exists, return it.
-                if (tile.transform.localPosition.y == position.Elevation
+                if (tile.transform.localPosition.y == elevation
                     && tile.GetComponent<MeshRenderer>().sharedMaterial == material)
                 {
                     return tile;
@@ -186,7 +183,7 @@ namespace HexTiles
                 TryRemovingTile(position);
             }
 
-            var obj = SpawnTileObject(position);
+            var obj = SpawnTileObject(position, elevation);
 
             var hex = obj.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
@@ -254,11 +251,11 @@ namespace HexTiles
             return true;
         }
 
-        private GameObject SpawnTileObject(HexCoords position)
+        private GameObject SpawnTileObject(HexCoords position, float elevation)
         {
             var newObject = new GameObject("Tile [" + position.Q + ", " + position.R + "]");
             newObject.transform.parent = transform;
-            newObject.transform.position = HexCoordsToWorldPosition(position);
+            newObject.transform.position = HexCoordsToWorldPosition(position, elevation);
 
             return newObject;
         }

@@ -21,7 +21,6 @@ namespace HexTiles
 
         public int R = 0;
 
-        public float Elevation = 0f;
 
         public static HexCoords operator+(HexCoords a, HexCoords b)
         {
