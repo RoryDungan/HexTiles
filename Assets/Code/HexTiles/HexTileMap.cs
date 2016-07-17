@@ -176,7 +176,8 @@ namespace HexTiles
                 var tile = Tiles[position];
 
                 // If a tlie at that position and that height already exists, return it.
-                if (tile.transform.localPosition.y == position.Elevation)
+                if (tile.transform.localPosition.y == position.Elevation
+                    && tile.GetComponent<MeshRenderer>().sharedMaterial == material)
                 {
                     return tile;
                 }
@@ -208,7 +209,7 @@ namespace HexTiles
             hex.GenerateMesh();
 
             // Set up material
-            hex.GetComponent<Renderer>().material = material;
+            hex.GetComponent<Renderer>().sharedMaterial = material;
 
             return hex;
         }
