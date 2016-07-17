@@ -133,7 +133,7 @@ namespace HexTiles
             var x = hexWidth/2f * 3f/2f * hIn.Q;
             var z = hexWidth/2f * Mathf.Sqrt(3f) * (hIn.R + hIn.Q / 2f);
             var y = elevation;
-            return new Vector3(x, y, z);
+            return transform.TransformPoint(new Vector3(x, y, z));
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace HexTiles
             {
                 var hexTile = Tiles[tileCoords];
                 hexTile.Diameter = hexWidth;
-                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords, hexTile.transform.position.y);
+                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords, hexTile.Elevation);
                 hexTile.GenerateMesh();
             }
         }
@@ -173,7 +173,7 @@ namespace HexTiles
                 var tile = Tiles[position];
 
                 // If a tlie at that position and that height already exists, return it.
-                if (tile.transform.localPosition.y == elevation
+                if (tile.Elevation == elevation
                     && tile.GetComponent<MeshRenderer>().sharedMaterial == material)
                 {
                     return tile;
@@ -225,9 +225,9 @@ namespace HexTiles
                 if (Tiles.TryGetValue(position + side, out adjacentTile))
                 {
                     tile.TryRemovingSidePiece(side);
-                    if (adjacentTile.transform.localPosition.y < tile.transform.localPosition.y)
+                    if (adjacentTile.Elevation < tile.Elevation)
                     {
-                        tile.AddSidePiece(side, tile.transform.localPosition.y - adjacentTile.transform.localPosition.y);
+                        tile.AddSidePiece(side, tile.Elevation - adjacentTile.Elevation);
                     }
                 }
             }

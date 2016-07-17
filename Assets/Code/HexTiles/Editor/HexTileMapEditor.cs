@@ -87,7 +87,7 @@ namespace HexTiles.Editor
                             EditorGUILayout.BeginHorizontal();
                             GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
                             GUI.enabled = false;
-                            EditorGUILayout.FloatField(hexMap.Tiles[hexMap.SelectedTile].transform.position.y);
+                            EditorGUILayout.FloatField(hexMap.Tiles[hexMap.SelectedTile].Elevation);
                             GUI.enabled = true;
                             EditorGUILayout.EndHorizontal();
                         }

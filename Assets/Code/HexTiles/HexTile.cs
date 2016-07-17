@@ -30,6 +30,17 @@ namespace HexTiles
             }
         }
 
+        /// <summary>
+        /// Helper for easily getting the elevation of a tile.
+        /// </summary>
+        public float Elevation
+        {
+            get
+            {
+                return transform.localPosition.y;
+            }
+        }
+
         [SerializeField]
         private List<SidePiece> sidePieces = new List<SidePiece>();
 
