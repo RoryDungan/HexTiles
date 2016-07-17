@@ -186,7 +186,7 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Settings", "Configure options for the whole tile map.");
 
-                        var shouldDrawPositionHandles = EditorGUILayout.Toggle("Draw hex position handles", hexMap.DrawHexPositionHandles);
+                        var shouldDrawPositionHandles = EditorGUILayout.Toggle("Show tile positions", hexMap.DrawHexPositionHandles);
                         if (shouldDrawPositionHandles != hexMap.DrawHexPositionHandles)
                         {
                             hexMap.DrawHexPositionHandles = shouldDrawPositionHandles;
@@ -198,6 +198,12 @@ namespace HexTiles.Editor
                         if (state.HexSize != hexMap.hexWidth)
                         {
                             state.Dirty = true;
+                        }
+
+                        if (GUILayout.Button("Re-generate all tile geometry"))
+                        {
+                            hexMap.RegenerateAllTiles();
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
 
                         if (GUILayout.Button("Clear all tiles"))
