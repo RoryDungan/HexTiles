@@ -69,6 +69,7 @@ namespace HexTiles
 
         /// <summary>
         /// Tile that the mouse is currently hovering over.
+        /// </summary>
         public HexCoords HighlightedTile
         {
             get
@@ -82,14 +83,19 @@ namespace HexTiles
         }
         private HexCoords highlightedTile;
 
+        /// <summary>
+        /// Height to show the highlighted tile gizmo at.
+        /// </summary>
+        public float HighlightedTileHeight { get; set; }
+
         void OnDrawGizmos()
         {
             if (HighlightedTile != null)
             {
-                DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile, Tiles[HighlightedTile].transform.position.y), Color.grey);
+                DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile, HighlightedTileHeight), Color.grey);
             }
 
-            if (SelectedTile != null)
+            if (SelectedTile != null && Tiles[SelectedTile] != null)
             {
                 DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile, Tiles[SelectedTile].transform.position.y), Color.green);
             }

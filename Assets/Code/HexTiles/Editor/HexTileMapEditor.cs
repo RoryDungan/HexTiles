@@ -65,7 +65,7 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
-                        if (hexMap.SelectedTile != null)
+                        if (hexMap.SelectedTile != null && hexMap.Tiles[hexMap.SelectedTile] != null)
                         {
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
@@ -121,7 +121,9 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
 
-                        state.PaintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
+                        var paintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
+                        state.PaintHeight = paintHeight;
+                        hexMap.HighlightedTileHeight = paintHeight;
 
                         state.TileMaterial = (Material)EditorGUILayout.ObjectField("Material", state.TileMaterial, typeof(Material), false);
                     })
