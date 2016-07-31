@@ -76,22 +76,66 @@ namespace HexTiles
             mesh.name = "Procedural hex tile";
 
             var vertices = HexMetrics.GetHexVertices(Diameter).ToList();
-            var triangles = new List<int>
-            {
-                // Start with the preset triangles for the hex top.
-                0, 1, 2,
-                0, 2, 3,
-                0, 3, 5,
-                5, 3, 4
-            };
+            var triangles = new List<int>();
 
             // UV coordinates for tops of hex tiles.
             var uvBasePos = HexCoordsToUV(position);
-            var hexTopVertices = HexMetrics.GetHexVertices(hexWidthUV);
             var uv = new List<Vector2>();
-            for (var i = 0; i < hexTopVertices.Length; i++)
+
+            // Each third tile needs a UV seam through the middle of it for textures to loop properly.
+            var offsetCoords = position.ToOffset();
+            if (offsetCoords.x % 2 == 0 && offsetCoords.y % 3 == 0)
             {
-                uv.Add(new Vector2(uvBasePos.x + hexTopVertices[i].x, (uvBasePos.y + hexTopVertices[i].z) / HexMetrics.hexHeightToWidth));
+                vertices.Insert(4, vertices[0]);
+                vertices.Insert(5, vertices[3]);
+
+                triangles.AddRange(new int[]
+                {
+                    // Start with the preset triangles for the hex top.
+                    0, 1, 2,
+                    0, 2, 3,
+                    4, 5, 7,
+                    7, 5, 6
+                });
+
+                for (var i = 0; i < vertices.Count; i++)
+                {
+                    float uvY;
+                    if (i == 0 || i == 3)
+                    {
+                        uvY = 0.0f;
+                    }
+                    else if (i == 5 || i == 4)
+                    {
+                        uvY = -0.5f;
+                    }
+                    else
+                    {
+                        uvY = -Utils.Mod(((uvBasePos.y + vertices[i].z / Diameter * hexWidthUV) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                    }
+                    uv.Add(new Vector2(
+                        uvBasePos.x + vertices[i].x / Diameter * hexWidthUV,
+                        uvY));
+                }
+            }
+            else
+            {
+                triangles.AddRange(new int[]
+                {
+                    // Start with the preset triangles for the hex top.
+                    0, 1, 2,
+                    0, 2, 3,
+                    0, 3, 5,
+                    5, 3, 4
+                });
+
+                for (var i = 0; i < vertices.Count; i++)
+                {
+                    var UVY = -Utils.Mod(((uvBasePos.y + vertices[i].z / Diameter * hexWidthUV) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                    uv.Add(new Vector2(
+                        uvBasePos.x + vertices[i].x / Diameter * hexWidthUV, 
+                        UVY));
+                }
             }
 
             foreach (var sidePiece in sidePieces)
