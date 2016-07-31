@@ -79,10 +79,10 @@ namespace HexTiles
             var triangles = new List<int>
             {
                 // Start with the preset triangles for the hex top.
-                0, 1, 5,
-                1, 4, 5,
-                1, 2, 4,
-                2, 3, 4
+                0, 1, 2,
+                0, 2, 3,
+                0, 3, 5,
+                5, 3, 4
             };
 
             // UV coordinates for tops of hex tiles.
