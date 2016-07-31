@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace HexTiles
 {
@@ -9,7 +10,7 @@ namespace HexTiles
     /// Coordinates of the hex tile (longitude, latitude, elevation)
     /// </summary>
     [Serializable]
-    public class HexCoords : Object
+    public class HexCoords : System.Object
     {
         public HexCoords(int q, int r)
         {
@@ -30,6 +31,14 @@ namespace HexTiles
         public static HexCoords operator-(HexCoords a, HexCoords b)
         {
             return new HexCoords(a.Q - b.Q, a.R - b.R);
+        }
+
+        /// <summary>
+        /// Return the value of this position in odd-q offset coordinates.
+        /// </summary>
+        public Vector2 ToOffset()
+        {
+            return new Vector2(Q, R + (Q - (Q&1)) / 2f);
         }
 
         // override object.GetHashCode
