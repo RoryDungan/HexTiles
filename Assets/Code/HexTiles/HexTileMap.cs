@@ -163,7 +163,7 @@ namespace HexTiles
                 var hexTile = Tiles[tileCoords];
                 hexTile.Diameter = hexWidth;
                 hexTile.transform.position = HexCoordsToWorldPosition(tileCoords, hexTile.Elevation);
-                hexTile.GenerateMesh();
+                hexTile.GenerateMesh(tileCoords);
             }
         }
 
@@ -202,14 +202,15 @@ namespace HexTiles
             foreach (var side in HexMetrics.AdjacentHexes)
             {
                 HexTile adjacentTile;
-                if (Tiles.TryGetValue(position + side, out adjacentTile))
+                var adjacentTilePos = position + side;
+                if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
-                    SetUpSidePiecesForTile(position + side);
-                    adjacentTile.GenerateMesh();
+                    SetUpSidePiecesForTile(adjacentTilePos);
+                    adjacentTile.GenerateMesh(adjacentTilePos);
                 }
             }
             SetUpSidePiecesForTile(position);
-            hex.GenerateMesh();
+            hex.GenerateMesh(position);
 
             // Set up material
             hex.GetComponent<Renderer>().sharedMaterial = material;

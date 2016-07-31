@@ -70,8 +70,7 @@ namespace HexTiles
         /// <summary>
         /// Create the mesh used to render the hex.
         /// </summary>
-        [ContextMenu("Generate mesh")]
-        public void GenerateMesh()
+        public void GenerateMesh(HexCoords position)
         {
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
@@ -87,10 +86,12 @@ namespace HexTiles
             };
 
             // UV coordinates for tops of hex tiles.
+            var uvBasePos = HexCoordsToUV(position);
+            var hexTopVertices = HexMetrics.GetHexVertices(hexWidthUV);
             var uv = new List<Vector2>();
-            for (var i = 0; i < vertices.Count; i++)
+            for (var i = 0; i < hexTopVertices.Length; i++)
             {
-                uv.Add(HexCoordsToUV(HexMetrics.AdjacentHexes[i]) / 2);
+                uv.Add(new Vector2(uvBasePos.x + hexTopVertices[i].x, (uvBasePos.y + hexTopVertices[i].z) / HexMetrics.hexHeightToWidth));
             }
 
             foreach (var sidePiece in sidePieces)
