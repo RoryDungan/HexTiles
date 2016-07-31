@@ -52,6 +52,22 @@ namespace HexTiles
         private bool debugDrawGizmos = false;
 
         /// <summary>
+        /// Tileset textures are 3 hexes wide for the tops of the tiles.
+        /// </summary>
+        private static readonly float hexWidthUV = 1f / 3f;
+
+        /// <summary>
+        /// Get the UV coordinates of a given hex tile.
+        /// </summary>
+        private static Vector2 HexCoordsToUV(HexCoords hIn)
+        {
+            var x = hexWidthUV/2f * 3f/2f * hIn.Q;
+            var y = hexWidthUV/2f * Mathf.Sqrt(3f) * (hIn.R + hIn.Q / 2f);
+
+            return new Vector2(x, y);
+        }
+
+        /// <summary>
         /// Create the mesh used to render the hex.
         /// </summary>
         [ContextMenu("Generate mesh")]
@@ -70,6 +86,13 @@ namespace HexTiles
                 2, 3, 4
             };
 
+            // UV coordinates for tops of hex tiles.
+            var uv = new List<Vector2>();
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                uv.Add(HexCoordsToUV(HexMetrics.AdjacentHexes[i]) / 2);
+            }
+
             foreach (var sidePiece in sidePieces)
             {
                 var nextVertexIndex = vertices.Count;
@@ -80,9 +103,12 @@ namespace HexTiles
                     sidePiece.direction, nextVertexIndex, nextVertexIndex + 1,
                     sidePiece.direction, nextVertexIndex + 1, (sidePiece.direction + 1) % 6
                 });
+
+                // TODO: add proper side piece UV coords.
+                uv.Add(Vector2.zero);
+                uv.Add(Vector2.zero);
             }
 
-            var uv = new Vector2[vertices.Count];
             var tangents = new Vector4[vertices.Count];
 
             for (var i = 0; i < vertices.Count; i++)
@@ -91,10 +117,8 @@ namespace HexTiles
             }
 
             mesh.vertices = vertices.ToArray();
-
             mesh.triangles = triangles.ToArray();
-
-            // TODO: Generate meshes for side pieces.
+            mesh.uv = uv.ToArray();
 
             mesh.RecalculateNormals();
 
