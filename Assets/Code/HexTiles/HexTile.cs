@@ -106,11 +106,7 @@ namespace HexTiles
                 for (var i = 0; i < vertices.Count; i++)
                 {
                     float uvY;
-                    if (i == 0 || i == 3)
-                    {
-                        uvY = 0.0f;
-                    }
-                    else if (i == 5 || i == 4)
+                    if (i == 5 || i == 4)
                     {
                         uvY = -0.5f;
                     }
@@ -138,7 +134,18 @@ namespace HexTiles
                 for (var i = 0; i < vertices.Count; i++)
                 {
                     var relativeVertexPosInUVSpace = vertices[i].z / Diameter * hexWidthUV;
-                    var uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                    float uvY;
+                    // Sometimes due to rounding the UV coordinate can end up on the wrong side of the texture
+                    // for tiles at the edges of the texture. This will ensure that they appear on the correct
+                    // side.
+                    if ((offsetCoords.x % 2 != 0 && (offsetCoords.y + 1) % 3 == 0) && (i == 1 || i == 2))
+                    {
+                        uvY = -0.5f;
+                    }
+                    else
+                    {
+                        uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                    }
                     uv.Add(new Vector2(
                         uvBasePos.x + vertices[i].x / Diameter * hexWidthUV, 
                         uvY));
