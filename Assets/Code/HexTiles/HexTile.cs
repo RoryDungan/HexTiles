@@ -57,6 +57,11 @@ namespace HexTiles
         private static readonly float hexWidthUV = 1f / 3f;
 
         /// <summary>
+        /// Offset for the side piece textures, since they only use the lower half of the texture we apply to the mesh.
+        /// </summary>
+        private static readonly float sidePieceUVOffsetY = 0.5f;
+
+        /// <summary>
         /// Get the UV coordinates of a given hex tile.
         /// </summary>
         private static Vector2 HexCoordsToUV(HexCoords hIn)
@@ -140,20 +145,58 @@ namespace HexTiles
                 }
             }
 
+            var topVerts = HexMetrics.GetHexVertices(Diameter).ToList();
             foreach (var sidePiece in sidePieces)
             {
-                var nextVertexIndex = vertices.Count;
-                vertices.Add(new Vector3(vertices[sidePiece.direction].x, -sidePiece.elevationDelta, vertices[sidePiece.direction].z));
-                vertices.Add(new Vector3(vertices[(sidePiece.direction + 1) % 6].x, -sidePiece.elevationDelta, vertices[(sidePiece.direction + 1) % 6].z));
+                // Nedd to add a side piece for each time the texture loops.
+                var sideLoopCount = 0;
+                var maxSideHeight = (Diameter / 2f * 3f); // Maximum height of a single piece before they loop
+                var totalSideHeight = sidePiece.elevationDelta;
+                do
+                {
+                    // The Y position in UV space of the bottom vertices.
+                    // Dependent on the height of the side piece.
+                    var currentHeightLeft = (totalSideHeight - sideLoopCount * maxSideHeight);
+                    var currentPieceHeight = Mathf.Min(maxSideHeight, currentHeightLeft);
+                    var startingHeight = maxSideHeight * sideLoopCount;
 
-                triangles.AddRange(new int[]{
-                    sidePiece.direction, nextVertexIndex, nextVertexIndex + 1,
-                    sidePiece.direction, nextVertexIndex + 1, (sidePiece.direction + 1) % 6
-                });
+                    var sideIndex = sidePiece.direction;
+                    var nextSideIndex = (sidePiece.direction + 1) % 6;
 
-                // TODO: add proper side piece UV coords.
-                uv.Add(Vector2.zero);
-                uv.Add(Vector2.zero);
+                    var nextVertexIndex = vertices.Count;
+
+                    vertices.Add(new Vector3(topVerts[sideIndex].x, startingHeight, topVerts[sideIndex].z));
+                    vertices.Add(new Vector3(topVerts[nextSideIndex].x, startingHeight, topVerts[nextSideIndex].z));
+                    vertices.Add(new Vector3(topVerts[sideIndex].x, -(startingHeight + currentPieceHeight), topVerts[sideIndex].z));
+                    vertices.Add(new Vector3(topVerts[nextSideIndex].x, -(startingHeight + currentPieceHeight), topVerts[nextSideIndex].z));
+
+                    triangles.AddRange(new int[]{
+                        nextVertexIndex, nextVertexIndex + 2, nextVertexIndex + 1,
+                        nextVertexIndex + 1, nextVertexIndex + 2, nextVertexIndex + 3
+                    });
+
+                    const float maxUVHeight = 0.5f; // We're only using the top or bottom half of the bottomo half of the texture for this part of the side pieces.
+                    var bottomUvY = (currentPieceHeight / maxSideHeight) * maxUVHeight;
+                    // The first part of the side piece uses the top half of the texture,
+                    // whild the rest use looped copies of the second half of the texture.
+                    if (sideLoopCount == 0)
+                    {
+                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, 0f + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, 0f + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                    }
+                    else
+                    {
+                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, maxUVHeight / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, maxUVHeight / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                    }
+
+                    sideLoopCount++;
+                }
+                while (maxSideHeight * sideLoopCount < totalSideHeight);
             }
 
             var tangents = new Vector4[vertices.Count];
