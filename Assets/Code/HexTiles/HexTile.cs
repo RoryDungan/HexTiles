@@ -57,11 +57,6 @@ namespace HexTiles
         private static readonly float hexWidthUV = 1f / 3f;
 
         /// <summary>
-        /// Offset for the side piece textures, since they only use the lower half of the texture we apply to the mesh.
-        /// </summary>
-        private static readonly float sidePieceUVOffsetY = 0.5f;
-
-        /// <summary>
         /// Get the UV coordinates of a given hex tile.
         /// </summary>
         private static Vector2 HexCoordsToUV(HexCoords hIn)
@@ -188,17 +183,17 @@ namespace HexTiles
                     // whild the rest use looped copies of the second half of the texture.
                     if (sideLoopCount == 0)
                     {
-                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, 0f + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, 0f + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, 0f));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, 0f));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, bottomUvY));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, bottomUvY));
                     }
                     else
                     {
-                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, maxUVHeight / sidePieceUVOffsetY + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, maxUVHeight / sidePieceUVOffsetY + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * sideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
-                        uv.Add(new Vector2(hexWidthUV / 2f * nextSideIndex, bottomUvY / sidePieceUVOffsetY + sidePieceUVOffsetY));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, maxUVHeight));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, maxUVHeight));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, bottomUvY));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, bottomUvY));
                     }
 
                     sideLoopCount++;
