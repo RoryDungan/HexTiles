@@ -52,6 +52,24 @@ namespace HexTiles
         private IHexTileCollection tiles;
 
         /// <summary>
+        /// The current material used for painting tiles. Serialised here so that it will be saved for convenience
+        /// when we have to reload scripts.
+        /// </summary>
+        public Material CurrentMaterial
+        {
+            get
+            {
+                return currentMaterial;
+            }
+            set
+            {
+                currentMaterial = value;
+            }
+        }
+        [SerializeField]
+        private Material currentMaterial;
+
+        /// <summary>
         /// Highlighted tile for editing
         /// </summary>
         public HexCoords SelectedTile

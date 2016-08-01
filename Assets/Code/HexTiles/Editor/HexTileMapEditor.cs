@@ -125,7 +125,7 @@ namespace HexTiles.Editor
                         state.PaintHeight = paintHeight;
                         hexMap.HighlightedTileHeight = paintHeight;
 
-                        state.TileMaterial = (Material)EditorGUILayout.ObjectField("Material", state.TileMaterial, typeof(Material), false);
+                        hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
                     })
                     .Event("MouseMove", state =>
                     {
@@ -149,7 +149,7 @@ namespace HexTiles.Editor
                                 hexMap.CreateAndAddTile(
                                     hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
                                     state.PaintHeight,
-                                    state.TileMaterial);
+                                    hexMap.CurrentMaterial);
                                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }
@@ -422,11 +422,6 @@ namespace HexTiles.Editor
         private class PaintState : AbstractState
         {
             public float PaintHeight;
-
-            /// <summary>
-            /// Material to apply to new tiles.
-            /// </summary>
-            public Material TileMaterial;
         }
 
         /// <summary>
