@@ -197,6 +197,11 @@ namespace HexTiles.Editor
                             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
 
+                        GUI.enabled = hexMap.DrawHexPositionHandles;
+                        hexMap.HexPositionHandleFormat = (HexTileMap.HexCoordinateFormat)
+                            EditorGUILayout.EnumPopup("Tile coordinate format", hexMap.HexPositionHandleFormat);
+                        GUI.enabled = true;
+
                         state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
                         if (state.HexSize != hexMap.hexWidth)
                         {
@@ -321,7 +326,18 @@ namespace HexTiles.Editor
             foreach (var tile in hexMap.Tiles)
             {
                 var position = tile.transform.position;
-                Handles.Label(position, hexMap.QuantizeVector3ToHexCoords(position).ToString());
+                var hexCoords = hexMap.QuantizeVector3ToHexCoords(position);
+                var labelText = string.Empty;
+                switch (hexMap.HexPositionHandleFormat)
+                {
+                    case HexTileMap.HexCoordinateFormat.Axial:
+                        labelText = hexCoords.ToString();
+                        break;
+                    case HexTileMap.HexCoordinateFormat.OffsetOddQ:
+                        labelText = hexCoords.ToOffset().ToString();
+                        break;
+                }
+                Handles.Label(position, labelText);
             }
         }
 

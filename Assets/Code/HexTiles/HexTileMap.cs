@@ -28,6 +28,17 @@ namespace HexTiles
             }
         }
 
+        public enum HexCoordinateFormat
+        {
+            Axial,
+            OffsetOddQ
+        }
+
+        /// <summary>
+        /// The format to use when drawing hex position handles.
+        /// </summary>
+        public HexCoordinateFormat HexPositionHandleFormat { get; set; }
+
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
