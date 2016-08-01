@@ -285,17 +285,17 @@ namespace HexTiles
             var vertices = HexMetrics.GetHexVertices(size);
             var gizmoSize = size / 10f;
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(vertices[0], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[0]), gizmoSize);
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(vertices[1], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[1]), gizmoSize);
             Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(vertices[2], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[2]), gizmoSize);
             Gizmos.color = Color.cyan;
-            Gizmos.DrawSphere(vertices[3], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[3]), gizmoSize);
             Gizmos.color = Color.magenta;
-            Gizmos.DrawSphere(vertices[4], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[4]), gizmoSize);
             Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(vertices[5], gizmoSize);
+            Gizmos.DrawSphere(transform.localToWorldMatrix.MultiplyPoint(vertices[5]), gizmoSize);
         }
     }
 }
