@@ -111,7 +111,8 @@ namespace HexTiles
                     }
                     else
                     {
-                        uvY = -Utils.Mod(((uvBasePos.y + vertices[i].z / Diameter * hexWidthUV) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                        var relativeVertexPosInUVSpace = vertices[i].z / Diameter * hexWidthUV;
+                        uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
                     }
                     uv.Add(new Vector2(
                         uvBasePos.x + vertices[i].x / Diameter * hexWidthUV,
@@ -131,10 +132,11 @@ namespace HexTiles
 
                 for (var i = 0; i < vertices.Count; i++)
                 {
-                    var UVY = -Utils.Mod(((uvBasePos.y + vertices[i].z / Diameter * hexWidthUV) / HexMetrics.hexHeightToWidth / 2), 0.5f);
+                    var relativeVertexPosInUVSpace = vertices[i].z / Diameter * hexWidthUV;
+                    var uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
                     uv.Add(new Vector2(
                         uvBasePos.x + vertices[i].x / Diameter * hexWidthUV, 
-                        UVY));
+                        uvY));
                 }
             }
 
