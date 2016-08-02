@@ -160,7 +160,7 @@ namespace HexTiles
                     // Dependent on the height of the side piece.
                     var currentHeightLeft = (totalSideHeight - sideLoopCount * maxSideHeight);
                     var currentPieceHeight = Mathf.Min(maxSideHeight, currentHeightLeft);
-                    var startingHeight = maxSideHeight * sideLoopCount;
+                    var startingHeight = -maxSideHeight * sideLoopCount;
 
                     var sideIndex = sidePiece.direction;
                     var nextSideIndex = (sidePiece.direction + 1) % 6;
@@ -169,8 +169,8 @@ namespace HexTiles
 
                     vertices.Add(new Vector3(topVerts[sideIndex].x, startingHeight, topVerts[sideIndex].z));
                     vertices.Add(new Vector3(topVerts[nextSideIndex].x, startingHeight, topVerts[nextSideIndex].z));
-                    vertices.Add(new Vector3(topVerts[sideIndex].x, -(startingHeight + currentPieceHeight), topVerts[sideIndex].z));
-                    vertices.Add(new Vector3(topVerts[nextSideIndex].x, -(startingHeight + currentPieceHeight), topVerts[nextSideIndex].z));
+                    vertices.Add(new Vector3(topVerts[sideIndex].x, startingHeight - currentPieceHeight, topVerts[sideIndex].z));
+                    vertices.Add(new Vector3(topVerts[nextSideIndex].x, startingHeight - currentPieceHeight, topVerts[nextSideIndex].z));
 
                     triangles.AddRange(new int[]{
                         nextVertexIndex, nextVertexIndex + 2, nextVertexIndex + 1,
