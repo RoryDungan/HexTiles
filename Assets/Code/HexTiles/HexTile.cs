@@ -134,7 +134,11 @@ namespace HexTiles
                 for (var i = 0; i < vertices.Count; i++)
                 {
                     float uvY;
-                    if (i == 5 || i == 4)
+                    if (i == 0 || i == 3)
+                    {
+                        uvY = 0.0f;
+                    }
+                    else if (i == 5 || i == 4)
                     {
                         uvY = -0.5f;
                     }
