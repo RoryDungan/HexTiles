@@ -70,6 +70,8 @@ namespace HexTiles.Editor
 
                         if (hexMap.SelectedTile != null && hexMap.Tiles[hexMap.SelectedTile] != null)
                         {
+                            var currentTile = hexMap.Tiles[hexMap.SelectedTile];
+
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
@@ -90,21 +92,20 @@ namespace HexTiles.Editor
                             EditorGUILayout.BeginHorizontal();
                             GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
                             GUI.enabled = false;
-                            EditorGUILayout.FloatField(hexMap.Tiles[hexMap.SelectedTile].Elevation);
+                            EditorGUILayout.FloatField(currentTile.Elevation);
                             GUI.enabled = true;
                             EditorGUILayout.EndHorizontal();
+
+                            // Tile settings
+                            GUILayout.Label("Settings", EditorStyles.boldLabel);
+
+                            var currentMaterial = currentTile.Material;
+                            var newMaterial = (Material)EditorGUILayout.ObjectField("Material", currentMaterial, typeof(Material), false);
+                            if (currentMaterial != newMaterial)
+                            {
+                                currentTile.Material = newMaterial;
+                            }
                         }
-
-
-                        // Tile settings
-                        GUILayout.Label("Settings", EditorStyles.boldLabel);
-
-                        EditorGUILayout.ObjectField("Material", null, typeof(HexTileMaterial), false);
-
-                        GUILayout.BeginHorizontal();
-                        GUILayout.FlexibleSpace();
-                        GUILayout.Button("Manage materials", EditorStyles.miniButton);
-                        GUILayout.EndHorizontal();
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {

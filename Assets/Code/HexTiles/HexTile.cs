@@ -41,6 +41,21 @@ namespace HexTiles
             }
         }
 
+        /// <summary>
+        /// Accessor for tile material for convenience.
+        /// </summary>
+        public Material Material
+        {
+            get
+            {
+                return GetComponent<MeshRenderer>().sharedMaterial;
+            }
+            set
+            {
+                GetComponent<MeshRenderer>().sharedMaterial = value;
+            }
+        }
+
         [SerializeField]
         private List<SidePiece> sidePieces = new List<SidePiece>();
 
