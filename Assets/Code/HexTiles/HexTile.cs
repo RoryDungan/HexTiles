@@ -92,6 +92,9 @@ namespace HexTiles
         /// </summary>
         public void GenerateMesh(HexCoords position)
         {
+            // Initial setup for game object 
+            transform.localScale = Vector3.one;
+
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
