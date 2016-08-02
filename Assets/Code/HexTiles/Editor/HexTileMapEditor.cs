@@ -6,6 +6,7 @@ using RSG;
 using System.Linq;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using UnityEditor.AnimatedValues;
 
 namespace HexTiles.Editor
 {
@@ -55,6 +56,8 @@ namespace HexTiles.Editor
         /// The object we're editing.
         /// </summary>
         private HexTileMap hexMap;
+
+        private AnimBool showTileCoordinateFormat;
 
         public HexTileMapEditor()
         {
@@ -184,6 +187,8 @@ namespace HexTiles.Editor
                     {
                         selectedToolIndex = 3;
                         state.HexSize = hexMap.hexWidth;
+
+                        showTileCoordinateFormat.value = hexMap.DrawHexPositionHandles;
                     })
                     .Update((state, dt) =>
                     {
@@ -195,17 +200,21 @@ namespace HexTiles.Editor
                             hexMap.DrawHexPositionHandles = shouldDrawPositionHandles;
                             SceneView.RepaintAll();
                             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+
+                            showTileCoordinateFormat.target = shouldDrawPositionHandles;
                         }
 
-                        GUI.enabled = hexMap.DrawHexPositionHandles;
-                        var newHandleFormat = (HexTileMap.HexCoordinateFormat)
-                            EditorGUILayout.EnumPopup("Tile coordinate format", hexMap.HexPositionHandleFormat);
-                        if (newHandleFormat != hexMap.HexPositionHandleFormat)
+                        if (EditorGUILayout.BeginFadeGroup(showTileCoordinateFormat.faded))
                         {
-                            hexMap.HexPositionHandleFormat = newHandleFormat;
-                            SceneView.RepaintAll();
+                            var newHandleFormat = (HexTileMap.HexCoordinateFormat)
+                                EditorGUILayout.EnumPopup("Tile coordinate format", hexMap.HexPositionHandleFormat);
+                            if (newHandleFormat != hexMap.HexPositionHandleFormat)
+                            {
+                                hexMap.HexPositionHandleFormat = newHandleFormat;
+                                SceneView.RepaintAll();
+                            }
                         }
-                        GUI.enabled = true;
+                        EditorGUILayout.EndFadeGroup();
 
                         state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
                         if (state.HexSize != hexMap.hexWidth)
@@ -349,6 +358,9 @@ namespace HexTiles.Editor
         void OnEnable()
         {
             hexMap = (HexTileMap)target;
+
+            // Init anim bools
+            showTileCoordinateFormat = new AnimBool(Repaint);
         }
 
         public override void OnInspectorGUI()
