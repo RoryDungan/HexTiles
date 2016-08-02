@@ -198,8 +198,13 @@ namespace HexTiles.Editor
                         }
 
                         GUI.enabled = hexMap.DrawHexPositionHandles;
-                        hexMap.HexPositionHandleFormat = (HexTileMap.HexCoordinateFormat)
+                        var newHandleFormat = (HexTileMap.HexCoordinateFormat)
                             EditorGUILayout.EnumPopup("Tile coordinate format", hexMap.HexPositionHandleFormat);
+                        if (newHandleFormat != hexMap.HexPositionHandleFormat)
+                        {
+                            hexMap.HexPositionHandleFormat = newHandleFormat;
+                            SceneView.RepaintAll();
+                        }
                         GUI.enabled = true;
 
                         state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
