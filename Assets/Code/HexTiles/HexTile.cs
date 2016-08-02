@@ -80,12 +80,40 @@ namespace HexTiles
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
-            var vertices = HexMetrics.GetHexVertices(Diameter).ToList();
+            var vertices = new List<Vector3>();
             var triangles = new List<int>();
 
             // UV coordinates for tops of hex tiles.
-            var uvBasePos = HexCoordsToUV(position);
             var uv = new List<Vector2>();
+
+            GenerateTop(position, vertices, triangles, uv);
+
+            GenerateSidePieces(vertices, triangles, uv);
+
+            var tangents = new Vector4[vertices.Count];
+
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                tangents[i].Set(1f, 0f, 0f, -1f);
+            }
+
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangles.ToArray();
+            mesh.uv = uv.ToArray();
+
+            mesh.RecalculateNormals();
+
+            GetComponent<MeshCollider>().sharedMesh = mesh;
+        }
+
+        /// <summary>
+        /// Generate the top for the hex tile, assiging its vertices, triangles and UVs to the supplied lists.
+        /// </summary>
+        private void GenerateTop(HexCoords position, List<Vector3> vertices, List<int> triangles, List<Vector2> uv)
+        {
+            var uvBasePos = HexCoordsToUV(position);
+
+            vertices.AddRange(HexMetrics.GetHexVertices(Diameter));
 
             // Each third tile needs a UV seam through the middle of it for textures to loop properly.
             var offsetCoords = position.ToOffset();
@@ -147,11 +175,17 @@ namespace HexTiles
                         uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
                     }
                     uv.Add(new Vector2(
-                        uvBasePos.x + vertices[i].x / Diameter * hexWidthUV, 
+                        uvBasePos.x + vertices[i].x / Diameter * hexWidthUV,
                         uvY));
                 }
             }
+        }
 
+        /// <summary>
+        /// Generates all the necessary side pieces, assigning their vertices, triangles and UVs back to the supplied lists.
+        /// </summary>
+        private void GenerateSidePieces(List<Vector3> vertices, List<int> triangles, List<Vector2> uv)
+        {
             var topVerts = HexMetrics.GetHexVertices(Diameter).ToList();
             foreach (var sidePiece in sidePieces)
             {
@@ -183,7 +217,7 @@ namespace HexTiles
                     });
 
                     // We're only using the top or bottom half of the bottom half of the texture for this part of the side pieces.
-                    const float maxUVHeight = 0.25f; 
+                    const float maxUVHeight = 0.25f;
                     var bottomUvY = sidePieceStartingUVY + (currentPieceHeight / maxSideHeight) * -maxUVHeight;
                     // The first part of the side piece uses the top half of the texture,
                     // whild the rest use looped copies of the second half of the texture.
@@ -206,21 +240,6 @@ namespace HexTiles
                 }
                 while (maxSideHeight * sideLoopCount < totalSideHeight);
             }
-
-            var tangents = new Vector4[vertices.Count];
-
-            for (var i = 0; i < vertices.Count; i++)
-            {
-                tangents[i].Set(1f, 0f, 0f, -1f);
-            }
-
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.uv = uv.ToArray();
-
-            mesh.RecalculateNormals();
-
-            GetComponent<MeshCollider>().sharedMesh = mesh;
         }
 
         /// <summary>
