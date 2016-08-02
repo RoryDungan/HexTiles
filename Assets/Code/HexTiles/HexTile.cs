@@ -231,9 +231,9 @@ namespace HexTiles
                     else
                     {
                         uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, sidePieceStartingUVY - maxUVHeight));
-                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, sidePieceStartingUVY - maxUVHeight));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * (sideIndex + 1), sidePieceStartingUVY - maxUVHeight));
                         uv.Add(new Vector2((hexWidthUV / 2f) * sideIndex, bottomUvY - maxUVHeight));
-                        uv.Add(new Vector2((hexWidthUV / 2f) * nextSideIndex, bottomUvY - maxUVHeight));
+                        uv.Add(new Vector2((hexWidthUV / 2f) * (sideIndex + 1), bottomUvY - maxUVHeight));
                     }
 
                     sideLoopCount++;
