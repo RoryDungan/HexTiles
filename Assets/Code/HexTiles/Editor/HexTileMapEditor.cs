@@ -158,7 +158,10 @@ namespace HexTiles.Editor
                             if (position != null)
                             {
                                 // Select the tile that was clicked on.
-                                hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                                var coords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                                hexMap.SelectedTile = coords;
+                                hexMap.HighlightedTile.Coordinates = coords;
+                                hexMap.NextTilePosition.Coordinates = coords;
                                 // Create tile
                                 hexMap.CreateAndAddTile(
                                     new HexPosition(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
