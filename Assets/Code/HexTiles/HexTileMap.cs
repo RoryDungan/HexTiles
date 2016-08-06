@@ -121,12 +121,12 @@ namespace HexTiles
         {
             if (HighlightedTile != null)
             {
-                DrawHexGizmo(HexCoordsToWorldPosition(HighlightedTile, HighlightedTileHeight), Color.grey);
+                DrawHexGizmo(HexPositionToWorldPosition(new HexPosition(HighlightedTile, HighlightedTileHeight)), Color.grey);
             }
 
             if (SelectedTile != null && Tiles[SelectedTile] != null)
             {
-                DrawHexGizmo(HexCoordsToWorldPosition(SelectedTile, Tiles[SelectedTile].transform.position.y), Color.green);
+                DrawHexGizmo(HexPositionToWorldPosition(new HexPosition(SelectedTile, Tiles[SelectedTile].transform.position.y)), Color.green);
             }
         }
 
@@ -163,11 +163,11 @@ namespace HexTiles
         /// Get the world space position of the specified hex coords.
         /// This uses axial coordinates for the hexes.
         /// </summary>
-        public Vector3 HexCoordsToWorldPosition(HexCoords hIn, float elevation)
+        public Vector3 HexPositionToWorldPosition(HexPosition position)
         {
-            var x = hexWidth/2f * 3f/2f * hIn.Q;
-            var z = hexWidth/2f * Mathf.Sqrt(3f) * (hIn.R + hIn.Q / 2f);
-            var y = elevation;
+            var x = hexWidth/2f * 3f/2f * position.Coordinates.Q;
+            var z = hexWidth/2f * Mathf.Sqrt(3f) * (position.Coordinates.R + position.Coordinates.Q / 2f);
+            var y = position.Elevation;
             return transform.TransformPoint(new Vector3(x, y, z));
         }
 
@@ -177,7 +177,7 @@ namespace HexTiles
         /// </summary>
         public Vector3 QuantizePositionToHexGrid(Vector3 vIn)
         {
-            return HexCoordsToWorldPosition(QuantizeVector3ToHexCoords(vIn), vIn.y);
+            return HexPositionToWorldPosition(new HexPosition(QuantizeVector3ToHexCoords(vIn), vIn.y));
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace HexTiles
             {
                 var hexTile = Tiles[tileCoords];
                 hexTile.Diameter = hexWidth;
-                hexTile.transform.position = HexCoordsToWorldPosition(tileCoords, hexTile.Elevation);
+                hexTile.transform.position = HexPositionToWorldPosition(new HexPosition(tileCoords, hexTile.Elevation));
                 hexTile.GenerateMesh(tileCoords);
             }
         }
@@ -200,12 +200,15 @@ namespace HexTiles
         /// Add a tile to the map. Returns the newly added hex tile.
         /// If a tile already exists at that position then that is returned instead.
         /// </summary>
-        public HexTile CreateAndAddTile(HexCoords position, float elevation, Material material)
+        public HexTile CreateAndAddTile(HexPosition position, Material material)
         {
+            var coords = position.Coordinates;
+            var elevation = position.Elevation;
+
             // See if there's already a tile at the specified position.
-            if (Tiles.Contains(position))
+            if (Tiles.Contains(coords))
             {
-                var tile = Tiles[position];
+                var tile = Tiles[coords];
 
                 // If a tlie at that position and that height already exists, return it.
                 if (tile.Elevation == elevation
@@ -215,15 +218,15 @@ namespace HexTiles
                 }
 
                 // Remove the tile before adding a new one.
-                TryRemovingTile(position);
+                TryRemovingTile(coords);
             }
 
-            var obj = SpawnTileObject(position, elevation);
+            var obj = SpawnTileObject(position);
 
             var hex = obj.AddComponent<HexTile>();
             hex.Diameter = hexWidth;
 
-            Tiles.Add(position, hex);
+            Tiles.Add(coords, hex);
 
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
@@ -231,15 +234,15 @@ namespace HexTiles
             foreach (var side in HexMetrics.AdjacentHexes)
             {
                 HexTile adjacentTile;
-                var adjacentTilePos = position + side;
+                var adjacentTilePos = coords + side;
                 if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
                     SetUpSidePiecesForTile(adjacentTilePos);
                     adjacentTile.GenerateMesh(adjacentTilePos);
                 }
             }
-            SetUpSidePiecesForTile(position);
-            hex.GenerateMesh(position);
+            SetUpSidePiecesForTile(coords);
+            hex.GenerateMesh(coords);
 
             // Set up material
             hex.GetComponent<Renderer>().sharedMaterial = material;
@@ -287,11 +290,11 @@ namespace HexTiles
             return true;
         }
 
-        private GameObject SpawnTileObject(HexCoords position, float elevation)
+        private GameObject SpawnTileObject(HexPosition position)
         {
-            var newObject = new GameObject("Tile [" + position.Q + ", " + position.R + "]");
+            var newObject = new GameObject("Tile [" + position.Coordinates.Q + ", " + position.Coordinates.R + "]");
             newObject.transform.parent = transform;
-            newObject.transform.position = HexCoordsToWorldPosition(position, elevation);
+            newObject.transform.position = HexPositionToWorldPosition(position);
 
             return newObject;
         }

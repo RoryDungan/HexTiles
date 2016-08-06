@@ -151,8 +151,8 @@ namespace HexTiles.Editor
                                 hexMap.SelectedTile = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                                 // Create tile
                                 hexMap.CreateAndAddTile(
-                                    hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
-                                    state.PaintHeight,
+                                    new HexPosition(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
+                                        state.PaintHeight),
                                     hexMap.CurrentMaterial);
                                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
