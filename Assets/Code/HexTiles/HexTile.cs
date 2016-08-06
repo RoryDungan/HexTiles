@@ -94,6 +94,7 @@ namespace HexTiles
         {
             // Initial setup for game object 
             transform.localScale = Vector3.one;
+            gameObject.isStatic = true;
 
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
