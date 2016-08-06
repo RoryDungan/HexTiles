@@ -99,10 +99,14 @@ namespace HexTiles
         /// <summary>
         /// Tile that the mouse is currently hovering over.
         /// </summary>
-        public HexCoords HighlightedTile
+        public HexPosition HighlightedTile
         {
             get
             {
+                if (highlightedTile == null)
+                {
+                    highlightedTile = new HexPosition();
+                }
                 return highlightedTile;
             }
             set
@@ -110,18 +114,13 @@ namespace HexTiles
                 highlightedTile = value;
             }
         }
-        private HexCoords highlightedTile;
-
-        /// <summary>
-        /// Height to show the highlighted tile gizmo at.
-        /// </summary>
-        public float HighlightedTileHeight { get; set; }
+        private HexPosition highlightedTile;
 
         void OnDrawGizmos()
         {
             if (HighlightedTile != null)
             {
-                DrawHexGizmo(HexPositionToWorldPosition(new HexPosition(HighlightedTile, HighlightedTileHeight)), Color.grey);
+                DrawHexGizmo(HexPositionToWorldPosition(HighlightedTile), Color.grey);
             }
 
             if (SelectedTile != null && Tiles[SelectedTile] != null)

@@ -127,7 +127,7 @@ namespace HexTiles.Editor
 
                         var paintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
                         state.PaintHeight = paintHeight;
-                        hexMap.HighlightedTileHeight = paintHeight;
+                        hexMap.HighlightedTile.Elevation = paintHeight;
 
                         hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
                     })
@@ -136,7 +136,7 @@ namespace HexTiles.Editor
                         var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
                         if (highlightedPosition != null)
                         {
-                            hexMap.HighlightedTile = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                            hexMap.HighlightedTile.Coordinates = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
                         }
                         Event.current.Use();
                     })
