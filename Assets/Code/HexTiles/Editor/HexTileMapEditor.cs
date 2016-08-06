@@ -120,14 +120,22 @@ namespace HexTiles.Editor
                     })
                 .End()
                 .State<PaintState>("Paint")
-                    .Enter(evt => selectedToolIndex = 1)
+                    .Enter(state => 
+                    {
+                        selectedToolIndex = 1;
+                        hexMap.NextTilePosition = new HexPosition();
+                    })
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
 
-                        var paintHeight = EditorGUILayout.FloatField("Tile height", state.PaintHeight);
+                        var paintHeight = EditorGUILayout.FloatField("Paint height", state.PaintHeight);
                         state.PaintHeight = paintHeight;
                         hexMap.HighlightedTile.Elevation = paintHeight;
+
+                        var paintOffsetHeight = EditorGUILayout.FloatField("Height offset", state.PaintOffset);
+                        state.PaintOffset = paintOffsetHeight;
+                        hexMap.NextTilePosition.Elevation = paintHeight + paintOffsetHeight;
 
                         hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
                     })
@@ -136,7 +144,9 @@ namespace HexTiles.Editor
                         var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
                         if (highlightedPosition != null)
                         {
-                            hexMap.HighlightedTile.Coordinates = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                            var coords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                            hexMap.HighlightedTile.Coordinates = coords;
+                            hexMap.NextTilePosition.Coordinates = coords;
                         }
                         Event.current.Use();
                     })
@@ -152,11 +162,15 @@ namespace HexTiles.Editor
                                 // Create tile
                                 hexMap.CreateAndAddTile(
                                     new HexPosition(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
-                                        state.PaintHeight),
+                                        state.PaintHeight + state.PaintOffset),
                                     hexMap.CurrentMaterial);
                                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }
+                    })
+                    .Exit(state =>
+                    {
+                        hexMap.NextTilePosition = null;
                     })
                 .End()
                 .State("Erase")
@@ -381,6 +395,7 @@ namespace HexTiles.Editor
             if (newSelectedTool != selectedToolIndex)
             {
                 rootState.ChangeState(States[newSelectedTool]);
+                SceneView.RepaintAll();
             }
             
             GUILayout.FlexibleSpace();
@@ -456,6 +471,8 @@ namespace HexTiles.Editor
         private class PaintState : AbstractState
         {
             public float PaintHeight;
+
+            public float PaintOffset;
         }
 
         /// <summary>

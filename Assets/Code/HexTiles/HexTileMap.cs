@@ -116,11 +116,21 @@ namespace HexTiles
         }
         private HexPosition highlightedTile;
 
+        /// <summary>
+        /// The position where a new tile will appear when we paint
+        /// </summary>
+        public HexPosition NextTilePosition { get; set; }
+
         void OnDrawGizmos()
         {
             if (HighlightedTile != null)
             {
                 DrawHexGizmo(HexPositionToWorldPosition(HighlightedTile), Color.grey);
+            }
+
+            if (NextTilePosition != null)
+            {
+                DrawHexGizmo(HexPositionToWorldPosition(NextTilePosition), Color.cyan);
             }
 
             if (SelectedTile != null && Tiles[SelectedTile] != null)
