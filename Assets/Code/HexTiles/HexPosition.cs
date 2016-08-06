@@ -9,8 +9,14 @@ namespace HexTiles
     /// Necessary information for positioning a hex tile.
     /// </summary>
     [Serializable]
-    public struct HexPosition
+    public class HexPosition
     {
+        public HexPosition()
+        {
+            Coordinates = new HexCoords(0, 0);
+            Elevation = 0f;
+        }
+
         public HexPosition(HexCoords coordinates, float elevation)
         {
             Coordinates = coordinates;
