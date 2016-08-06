@@ -130,4 +130,30 @@ public static class Utils
     {
         return (a % b + b) % b;
     }
+
+    /// <summary>
+    /// "Smoother" smoothstep. Taken from https://chicounity3d.wordpress.com/2014/05/23/how-to-lerp-like-a-pro/
+    /// Assumes value between 0 and 1.
+    /// </summary>
+    public static float SmootherStep(float value)
+    {
+        return value*value*value * (value * (6f*value - 15f) + 10f);
+    }
+
+    /// <summary>
+    /// Ease out. Taken from https://chicounity3d.wordpress.com/2014/05/23/how-to-lerp-like-a-pro/
+    /// Assumes value between 0 and 1.
+    /// </summary>
+    public static float Sinerp(float value)
+    {
+        return Mathf.Sin(value * Mathf.PI * 0.5f);
+    }
+
+    /// <summary>
+    /// Super-smooth ease out.
+    /// </summary>
+    public static float SmoothSinerp(float value)
+    {
+        return Utils.Sinerp(Utils.SmootherStep(value));
+    }
 }
