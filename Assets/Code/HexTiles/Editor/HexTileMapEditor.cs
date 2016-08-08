@@ -358,6 +358,15 @@ namespace HexTiles.Editor
             foreach (var tile in hexMap.Tiles)
             {
                 var position = tile.transform.position;
+
+                // Only draw this handle if the tile is in front of the camera.
+                var cameraTransform = SceneView.currentDrawingSceneView.camera.transform;
+                var cameraToTile = cameraTransform.position - position;
+                if (Vector3.Dot(cameraToTile, cameraTransform.forward) > 0)
+                {
+                    continue;
+                }
+
                 var hexCoords = hexMap.QuantizeVector3ToHexCoords(position);
                 var labelText = string.Empty;
                 switch (hexMap.HexPositionHandleFormat)
