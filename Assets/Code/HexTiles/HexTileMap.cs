@@ -179,8 +179,10 @@ namespace HexTiles
         /// </summary>
         public HexCoords QuantizeVector3ToHexCoords(Vector3 vIn)
         {
-            var q = vIn.x * 2f/3f / (hexWidth/2f);
-            var r = (-vIn.x / 3f + Mathf.Sqrt(3f)/3f * vIn.z) / (hexWidth/2f);
+            var vector = transform.InverseTransformPoint(vIn);
+
+            var q = vector.x * 2f/3f / (hexWidth/2f);
+            var r = (-vector.x / 3f + Mathf.Sqrt(3f)/3f * vector.z) / (hexWidth/2f);
 
             return new HexCoords (Mathf.RoundToInt(q), Mathf.RoundToInt(r));
         }
