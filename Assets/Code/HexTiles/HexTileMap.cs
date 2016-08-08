@@ -53,7 +53,24 @@ namespace HexTiles
                     tiles = new HexTileCollection();
                     foreach (var tile in GetComponentsInChildren<HexTile>())
                     {
-                        tiles.Add(QuantizeVector3ToHexCoords(tile.transform.position), tile);
+                        var tilePosition = QuantizeVector3ToHexCoords(tile.transform.position);
+                        try
+                        {
+                            tiles.Add(tilePosition, tile);
+                        }
+                        catch (ArgumentException)
+                        {
+                            Debug.LogWarning("Duplicate tile at position " + tilePosition + " found. Deleting.", this);
+                            if (Application.isEditor)
+                            {
+                                DestroyImmediate(tile.gameObject);
+                            }
+                            else
+                            {
+                                Destroy(tile.gameObject);
+                            }
+                            continue;
+                        }
                         tile.Diameter = hexWidth;
                     }
                 }
