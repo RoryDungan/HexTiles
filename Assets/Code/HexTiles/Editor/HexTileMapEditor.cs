@@ -104,7 +104,7 @@ namespace HexTiles.Editor
                             if (currentMaterial != newMaterial)
                             {
                                 currentTile.Material = newMaterial;
-                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                                MarkSceneDirty();
                             }
                         }
                     })
@@ -168,7 +168,7 @@ namespace HexTiles.Editor
                                     new HexPosition(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
                                         state.PaintHeight + state.PaintOffset),
                                     hexMap.CurrentMaterial);
-                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                                MarkSceneDirty();
                             }
                         }
                     })
@@ -195,7 +195,7 @@ namespace HexTiles.Editor
                                 // Destroy tile
                                 if (hexMap.TryRemovingTile(tile))
                                 {
-                                    EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                                    MarkSceneDirty();
                                 }
                             }
                         }
@@ -218,7 +218,7 @@ namespace HexTiles.Editor
                         {
                             hexMap.DrawHexPositionHandles = shouldDrawPositionHandles;
                             SceneView.RepaintAll();
-                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                            MarkSceneDirty();
 
                             showTileCoordinateFormat.target = shouldDrawPositionHandles;
                         }
@@ -244,7 +244,7 @@ namespace HexTiles.Editor
                         if (GUILayout.Button("Re-generate all tile geometry"))
                         {
                             hexMap.RegenerateAllTiles();
-                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                            MarkSceneDirty();
                         }
 
                         if (GUILayout.Button("Clear all tiles"))
@@ -255,7 +255,7 @@ namespace HexTiles.Editor
                                 "Cancel"))
                             {
                                 hexMap.ClearAllTiles();
-                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                                MarkSceneDirty();
                             }
                         }
 
@@ -269,7 +269,7 @@ namespace HexTiles.Editor
                             Debug.Log("Saving settings");
                             hexMap.hexWidth = state.HexSize;
                             hexMap.RegenerateAllTiles();
-                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                            MarkSceneDirty();
 
                             state.Dirty = false;
                         }
@@ -300,6 +300,19 @@ namespace HexTiles.Editor
                     new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
                 };
             }
+        }
+
+        /// <summary>
+        /// Tell Unity that a change has been made and we have to save the scene.
+        /// </summary>
+        private void MarkSceneDirty()
+        {
+#if UNITY_5_3_OR_NEWER
+            // TODO: Undo.RecordObject also marks the scene dirty, so this will no longer be necessary once undo support is added.
+            EditorSceneManager.MarkSceneDirty(hexMap.gameObject.scene);
+#else
+            EditorUtility.SetDirty(hexMap.gameObject);
+#endif
         }
 
         void OnSceneGUI()
