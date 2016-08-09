@@ -104,6 +104,7 @@ namespace HexTiles.Editor
                             if (currentMaterial != newMaterial)
                             {
                                 currentTile.Material = newMaterial;
+                                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                             }
                         }
                     })
