@@ -116,7 +116,7 @@ namespace HexTiles.Editor
                             var tile = TryFindTileForMousePosition(eventArgs.Position);
                             if (tile != null)
                             {
-                                hexMap.SelectedTile = tile;
+                                hexMap.SelectedTile = tile.Coordinates;
                             }
                         }
                     })
@@ -197,6 +197,15 @@ namespace HexTiles.Editor
                             MarkSceneDirty();
                         }
                     })
+                    .Event("MouseMove", state =>
+                    {
+                        var tile = TryFindTileForMousePosition(Event.current.mousePosition);
+                        if (tile != null)
+                        {
+                            hexMap.HighlightedTile = tile;
+                        }
+                        Event.current.Use();
+                    })
                 .End()
                 .State("Erase")
                     .Enter(evt => selectedToolIndex = 3)
@@ -212,9 +221,9 @@ namespace HexTiles.Editor
                             if (tile != null)
                             {
                                 // Select the tile that was clicked on.
-                                hexMap.SelectedTile = tile;
+                                hexMap.SelectedTile = tile.Coordinates;
                                 // Destroy tile
-                                if (hexMap.TryRemovingTile(tile))
+                                if (hexMap.TryRemovingTile(tile.Coordinates))
                                 {
                                     MarkSceneDirty();
                                 }
@@ -516,13 +525,13 @@ namespace HexTiles.Editor
         /// Try to find a tile by raycasting from the specified mouse position. 
         /// Returns null if no tile was found.
         /// </summary>
-        private HexCoords TryFindTileForMousePosition(Vector2 mousePosition)
+        private HexPosition TryFindTileForMousePosition(Vector2 mousePosition)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             return Physics.RaycastAll(ray, 1000f)
                 .Where(hit => hit.collider.GetComponent<HexTile>() != null)
                 .OrderBy(hit => hit.distance)
-                .Select(hit => hexMap.QuantizeVector3ToHexCoords(hit.point))
+                .Select(hit => new HexPosition(hexMap.QuantizeVector3ToHexCoords(hit.point), hit.point.y))
                 .FirstOrDefault();
         }
 
