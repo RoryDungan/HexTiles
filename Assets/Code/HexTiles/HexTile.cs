@@ -193,6 +193,10 @@ namespace HexTiles
                     {
                         uvY = -0.5f;
                     }
+                    else if (offsetCoords.x % 2 != 0 && offsetCoords.y % 3 == 0 && (i == 4 || i == 5))
+                    {
+                        uvY = 0f;
+                    }
                     else
                     {
                         uvY = -Utils.Mod(((uvBasePos.y + relativeVertexPosInUVSpace) / HexMetrics.hexHeightToWidth / 2), 0.5f);
