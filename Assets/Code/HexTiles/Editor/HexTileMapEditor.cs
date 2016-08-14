@@ -186,6 +186,16 @@ namespace HexTiles.Editor
                     .Update((state, dt) =>
                     {
                         ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
+
+                        hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
+
+                        EditorGUILayout.Space();
+
+                        if (GUILayout.Button("Apply to all tiles"))
+                        {
+                            ApplyCurrentMaterialToAllTiles();
+                            MarkSceneDirty();
+                        }
                     })
                 .End()
                 .State("Erase")
@@ -312,6 +322,17 @@ namespace HexTiles.Editor
                     new ButtonIcon{ NormalIcon = LoadImage("eraser_44"), SelectedIcon = LoadImage("eraser_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
                 };
+            }
+        }
+
+        /// <summary>
+        /// Applies the material stored in hexMap.CurrentMaterial to all the tiles in hexMap
+        /// </summary>
+        private void ApplyCurrentMaterialToAllTiles()
+        {
+            foreach (var tile in hexMap.Tiles)
+            {
+                tile.Material = hexMap.CurrentMaterial;
             }
         }
 
