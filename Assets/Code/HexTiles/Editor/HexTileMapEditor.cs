@@ -206,6 +206,24 @@ namespace HexTiles.Editor
                         }
                         Event.current.Use();
                     })
+                    .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
+                    {
+                        if (eventArgs.Button == 0)
+                        {
+                            var tilePosition = TryFindTileForMousePosition(eventArgs.Position);
+                            HexTile tile;
+                            if (tilePosition != null && hexMap.Tiles.TryGetValue(tilePosition.Coordinates, out tile))
+                            {
+                                // Select that the tile that was clicked on.
+                                hexMap.SelectedTile = tilePosition.Coordinates;
+
+                                // Change the material on the tile
+                                tile.Material = hexMap.CurrentMaterial;
+                            }
+
+                            Event.current.Use();
+                        }
+                    })
                 .End()
                 .State("Erase")
                     .Enter(evt => selectedToolIndex = 3)
