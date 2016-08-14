@@ -35,7 +35,8 @@ namespace HexTiles.Editor
         private static readonly string[] States = 
         {
             "Select",
-            "Paint", 
+            "Paint tiles",
+            "Material paint", 
             "Erase",
             "Settings"
         };
@@ -120,7 +121,7 @@ namespace HexTiles.Editor
                         }
                     })
                 .End()
-                .State<PaintState>("Paint")
+                .State<PaintState>("Paint tiles")
                     .Enter(state => 
                     {
                         selectedToolIndex = 1;
@@ -128,7 +129,7 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Paint", "Click and drag to add hex tiles at the specified height.");
+                        ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
 
                         var paintHeight = EditorGUILayout.FloatField("Paint height", state.PaintHeight);
                         state.PaintHeight = paintHeight;
@@ -177,8 +178,18 @@ namespace HexTiles.Editor
                         hexMap.NextTilePosition = null;
                     })
                 .End()
+                .State("Material paint")
+                    .Enter(state =>
+                    {
+                        selectedToolIndex = 2;
+                    })
+                    .Update((state, dt) =>
+                    {
+                        ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
+                    })
+                .End()
                 .State("Erase")
-                    .Enter(evt => selectedToolIndex = 2)
+                    .Enter(evt => selectedToolIndex = 3)
                     .Update((state, dt) => 
                     {
                         ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
@@ -204,7 +215,7 @@ namespace HexTiles.Editor
                 .State<SettingsState>("Settings")
                     .Enter(state => 
                     {
-                        selectedToolIndex = 3;
+                        selectedToolIndex = 4;
                         state.HexSize = hexMap.hexWidth;
 
                         showTileCoordinateFormat.value = hexMap.DrawHexPositionHandles;
@@ -286,6 +297,7 @@ namespace HexTiles.Editor
             {
                 toolIcons = new ButtonIcon[] {
                     new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44_pro"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("add-hex_44_pro"), SelectedIcon = LoadImage("add-hex_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44_pro"), SelectedIcon = LoadImage("paint-brush_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("eraser_44_pro"), SelectedIcon = LoadImage("eraser_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("cog_44_pro"), SelectedIcon = LoadImage("cog_44_selected") },
@@ -295,6 +307,7 @@ namespace HexTiles.Editor
             {
                 toolIcons = new ButtonIcon[] {
                     new ButtonIcon{ NormalIcon = LoadImage("mouse-pointer_44"), SelectedIcon = LoadImage("mouse-pointer_44_selected") },
+                    new ButtonIcon{ NormalIcon = LoadImage("add-hex_44"), SelectedIcon = LoadImage("add-hex_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("paint-brush_44"), SelectedIcon = LoadImage("paint-brush_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("eraser_44"), SelectedIcon = LoadImage("eraser_44_selected") },
                     new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
@@ -409,9 +422,10 @@ namespace HexTiles.Editor
             var toolbarContent = new GUIContent[]
             {
                 new GUIContent(GetToolButtonIcon(0), "Select"),
-                new GUIContent(GetToolButtonIcon(1), "Paint"),
-                new GUIContent(GetToolButtonIcon(2), "Delete"),
-                new GUIContent(GetToolButtonIcon(3), "Settings")
+                new GUIContent(GetToolButtonIcon(1), "Paint tiles"),
+                new GUIContent(GetToolButtonIcon(2), "Material paint"),
+                new GUIContent(GetToolButtonIcon(3), "Delete"),
+                new GUIContent(GetToolButtonIcon(4), "Settings")
             };
 
             GUILayout.BeginHorizontal();
