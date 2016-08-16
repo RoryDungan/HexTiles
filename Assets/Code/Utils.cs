@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -119,6 +120,17 @@ public static class Utils
             throw new ApplicationException(string.Format("Tried to find a single instance of {0} in the scene but multiple were found.", typeof(ComponentT).Name));
         }
         return components[0];
+
+    }
+
+    /// <summary>
+    /// Coroutine that can perform an action after a timer has elapsed.
+    /// </summary>
+    public static IEnumerator DoAfterSeconds(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+
+        action();
     }
 
     /// <summary>
