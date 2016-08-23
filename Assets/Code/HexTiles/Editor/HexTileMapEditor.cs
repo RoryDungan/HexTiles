@@ -60,7 +60,7 @@ namespace HexTiles.Editor
 
         private AnimBool showTileCoordinateFormat;
 
-        public HexTileMapEditor()
+        private void Initialise()
         {
             rootState = new StateMachineBuilder()
                 .State("Select")
@@ -463,6 +463,8 @@ namespace HexTiles.Editor
 
             // Init anim bools
             showTileCoordinateFormat = new AnimBool(Repaint);
+
+            Initialise();
         }
 
         public override void OnInspectorGUI()
