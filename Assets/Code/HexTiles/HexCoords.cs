@@ -34,6 +34,34 @@ namespace HexTiles
         }
 
         /// <summary>
+        /// Get the distance between this and another hex.
+        /// </summary>
+        public int Distance(HexCoords other)
+        {
+            return (Math.Abs(this.Q - other.Q)
+                + Math.Abs(this.Q + this.R - other.Q - other.R)
+                + Math.Abs(this.R - other.R)) / 2;
+        }
+
+        /// <summary>
+        /// Get an array of hexes within a certain range of this one.
+        /// </summary>
+        public HexCoords[] CoordinateRange(int range)
+        {
+            if (range < 1)
+            {
+                throw new ArgumentOutOfRangeException("range", "Range must be at least 1");
+            }
+
+            // TODO: actually calculate the locations of hexes within the specified range
+            var list = HexMetrics.AdjacentHexes.Select(hex => hex + this).ToList();
+            list.Add(this);
+
+            return list.ToArray();
+            
+        }
+
+        /// <summary>
         /// Return the value of this position in odd-q offset coordinates.
         /// </summary>
         public Vector2 ToOffset()
