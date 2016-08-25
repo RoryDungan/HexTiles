@@ -152,8 +152,7 @@ namespace HexTiles.Editor
                         {
                             var coords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
 
-                            highlightedTiles = LinqExts.FromItems(new HexPosition(coords, state.PaintHeight));
-                            nextTilePositions = LinqExts.FromItems(new HexPosition(coords, state.PaintHeight + state.PaintOffset));
+                            UpdateHighlighedTiles(LinqExts.FromItems(coords), state.PaintHeight, state.PaintOffset);
                         }
                         Event.current.Use();
                     })
@@ -358,6 +357,12 @@ namespace HexTiles.Editor
                     new ButtonIcon{ NormalIcon = LoadImage("cog_44"), SelectedIcon = LoadImage("cog_44_selected") },
                 };
             }
+        }
+
+        private void UpdateHighlighedTiles(IEnumerable<HexCoords> coords, float paintHeight, float paintOffset)
+        {
+            highlightedTiles = coords.Select(tile => new HexPosition(tile, paintHeight));
+            nextTilePositions = coords.Select(tile => new HexPosition(tile, paintHeight + paintOffset));
         }
 
         /// <summary>
