@@ -7,6 +7,8 @@ using System.Linq;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEditor.AnimatedValues;
+using System.Collections.Generic;
+using RSG.Utils;
 
 namespace HexTiles.Editor
 {
@@ -57,6 +59,9 @@ namespace HexTiles.Editor
         /// The object we're editing.
         /// </summary>
         private HexTileMap hexMap;
+
+        private IEnumerable<HexPosition> highlightedTiles = Enumerable.Empty<HexPosition>();
+        private IEnumerable<HexPosition> nextTilePositions = Enumerable.Empty<HexPosition>();
 
         private AnimBool showTileCoordinateFormat;
 
@@ -125,7 +130,6 @@ namespace HexTiles.Editor
                     .Enter(state => 
                     {
                         selectedToolIndex = 1;
-                        hexMap.NextTilePosition = new HexPosition();
                     })
                     .Update((state, dt) =>
                     {
@@ -133,11 +137,11 @@ namespace HexTiles.Editor
 
                         var paintHeight = EditorGUILayout.FloatField("Paint height", state.PaintHeight);
                         state.PaintHeight = paintHeight;
-                        hexMap.HighlightedTile.Elevation = paintHeight;
+                        highlightedTiles.Each(tile => tile.Elevation = paintHeight);
 
                         var paintOffsetHeight = EditorGUILayout.FloatField("Height offset", state.PaintOffset);
                         state.PaintOffset = paintOffsetHeight;
-                        hexMap.NextTilePosition.Elevation = paintHeight + paintOffsetHeight;
+                        nextTilePositions.Each(tile => tile.Elevation = paintHeight + paintOffsetHeight);
 
                         hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
                     })
@@ -147,8 +151,9 @@ namespace HexTiles.Editor
                         if (highlightedPosition != null)
                         {
                             var coords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
-                            hexMap.HighlightedTile.Coordinates = coords;
-                            hexMap.NextTilePosition.Coordinates = coords;
+
+                            highlightedTiles = LinqExts.FromItems(new HexPosition(coords, state.PaintHeight));
+                            nextTilePositions = LinqExts.FromItems(new HexPosition(coords, state.PaintHeight + state.PaintOffset));
                         }
                         Event.current.Use();
                     })
@@ -161,21 +166,24 @@ namespace HexTiles.Editor
                             {
                                 // Select the tile that was clicked on.
                                 var coords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
-                                hexMap.SelectedTile = coords;
-                                hexMap.HighlightedTile.Coordinates = coords;
-                                hexMap.NextTilePosition.Coordinates = coords;
                                 // Create tile
                                 hexMap.CreateAndAddTile(
                                     new HexPosition(hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault()),
                                         state.PaintHeight + state.PaintOffset),
                                     hexMap.CurrentMaterial);
+
+                                hexMap.SelectedTile = coords;
+
                                 MarkSceneDirty();
                             }
                         }
                     })
                     .Exit(state =>
                     {
-                        hexMap.NextTilePosition = null;
+                        highlightedTiles = Enumerable.Empty<HexPosition>();
+                        nextTilePositions = Enumerable.Empty<HexPosition>();
+
+                        hexMap.NextTilePositions = null;
                     })
                 .End()
                 .State("Material paint")
@@ -202,7 +210,7 @@ namespace HexTiles.Editor
                         var tile = TryFindTileForMousePosition(Event.current.mousePosition);
                         if (tile != null)
                         {
-                            hexMap.HighlightedTile = tile;
+                            hexMap.HighlightedTiles = LinqExts.FromItems(tile);
                         }
                         Event.current.Use();
                     })
@@ -382,6 +390,10 @@ namespace HexTiles.Editor
             {
                 DrawHexPositionHandles();
             }
+
+            hexMap.HighlightedTiles = highlightedTiles;
+            hexMap.NextTilePositions = nextTilePositions;
+
 
             // Handle mouse input
             var controlId = GUIUtility.GetControlID(hexTileEditorHash, FocusType.Passive);

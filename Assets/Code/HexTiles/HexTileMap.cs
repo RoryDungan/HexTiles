@@ -116,38 +116,29 @@ namespace HexTiles
         /// <summary>
         /// Tile that the mouse is currently hovering over.
         /// </summary>
-        public HexPosition HighlightedTile
-        {
-            get
-            {
-                if (highlightedTile == null)
-                {
-                    highlightedTile = new HexPosition();
-                }
-                return highlightedTile;
-            }
-            set
-            {
-                highlightedTile = value;
-            }
-        }
-        private HexPosition highlightedTile;
+        public IEnumerable<HexPosition> HighlightedTiles { get; set; }
 
         /// <summary>
         /// The position where a new tile will appear when we paint
         /// </summary>
-        public HexPosition NextTilePosition { get; set; }
+        public IEnumerable<HexPosition> NextTilePositions { get; set; }
 
         void OnDrawGizmos()
         {
-            if (HighlightedTile != null)
+            if (HighlightedTiles != null)
             {
-                DrawHexGizmo(HexPositionToWorldPosition(HighlightedTile), Color.grey);
+                foreach (var tile in HighlightedTiles)
+                {
+                    DrawHexGizmo(HexPositionToWorldPosition(tile), Color.grey);
+                }
             }
 
-            if (NextTilePosition != null)
+            if (NextTilePositions != null)
             {
-                DrawHexGizmo(HexPositionToWorldPosition(NextTilePosition), Color.cyan);
+                foreach (var tile in NextTilePositions)
+                {
+                    DrawHexGizmo(HexPositionToWorldPosition(tile), Color.cyan);
+                }
             }
 
             if (SelectedTile != null && Tiles[SelectedTile] != null)
