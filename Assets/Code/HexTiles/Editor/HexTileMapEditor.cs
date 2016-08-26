@@ -65,6 +65,11 @@ namespace HexTiles.Editor
 
         private AnimBool showTileCoordinateFormat;
 
+        /// <summary>
+        /// Center of the current selection.
+        /// </summary>
+        private HexCoords centerSelectedTileCoords;
+
         private void Initialise()
         {
             rootState = new StateMachineBuilder()
@@ -135,26 +140,53 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
 
+                        bool sceneNeedsRepaint = false;
+
                         var paintHeight = EditorGUILayout.FloatField("Paint height", state.PaintHeight);
-                        state.PaintHeight = paintHeight;
-                        highlightedTiles.Each(tile => tile.Elevation = paintHeight);
+                        if (paintHeight != state.PaintHeight)
+                        {
+                            state.PaintHeight = paintHeight;
+                            highlightedTiles.Each(tile => tile.Elevation = paintHeight);
+
+                            sceneNeedsRepaint = true;
+                        }
 
                         var paintOffsetHeight = EditorGUILayout.FloatField("Height offset", state.PaintOffset);
-                        state.PaintOffset = paintOffsetHeight;
-                        nextTilePositions.Each(tile => tile.Elevation = paintHeight + paintOffsetHeight);
+                        if (paintOffsetHeight != state.PaintOffset)
+                        {
+                            state.PaintOffset = paintOffsetHeight;
+                            nextTilePositions.Each(tile => tile.Elevation = paintHeight + paintOffsetHeight);
 
-                        state.BrushSize = EditorGUILayout.IntSlider("Brush size", state.BrushSize, 1, 10);
+                            sceneNeedsRepaint = true;
+                        }
+
+                        var newBrushSize = EditorGUILayout.IntSlider("Brush size", state.BrushSize, 1, 10);
+                        if (newBrushSize != state.BrushSize)
+                        {
+                            state.BrushSize = newBrushSize;
+
+                            sceneNeedsRepaint = true;
+                        }
 
                         hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
+
+                        if (sceneNeedsRepaint)
+                        {
+                            if (centerSelectedTileCoords != null)
+                            {
+                                UpdateHighlighedTiles(centerSelectedTileCoords.CoordinateRange(state.BrushSize - 1), state.PaintHeight, state.PaintOffset);
+                            }
+                            SceneView.RepaintAll();
+                        }
                     })
                     .Event("MouseMove", state =>
                     {
                         var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
                         if (highlightedPosition != null)
                         {
-                            var centerCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
+                            centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
 
-                            UpdateHighlighedTiles(centerCoords.CoordinateRange(state.BrushSize - 1), state.PaintHeight, state.PaintOffset);
+                            UpdateHighlighedTiles(centerSelectedTileCoords.CoordinateRange(state.BrushSize - 1), state.PaintHeight, state.PaintOffset);
                         }
                         Event.current.Use();
                     })
@@ -166,8 +198,8 @@ namespace HexTiles.Editor
                             if (position != null)
                             {
                                 // Select the tile that was clicked on.
-                                var centerCoords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
-                                var coords = centerCoords.CoordinateRange(state.BrushSize - 1);
+                                centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
+                                var coords = centerSelectedTileCoords.CoordinateRange(state.BrushSize - 1);
 
                                 // Create tile
                                 foreach (var hex in coords)
@@ -177,7 +209,7 @@ namespace HexTiles.Editor
                                         hexMap.CurrentMaterial);
                                 }
 
-                                hexMap.SelectedTile = centerCoords;
+                                hexMap.SelectedTile = centerSelectedTileCoords;
 
                                 MarkSceneDirty();
                             }
