@@ -154,7 +154,7 @@ namespace HexTiles.Editor
                         {
                             var centerCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
 
-                            UpdateHighlighedTiles(centerCoords.CoordinateRange(state.BrushSize), state.PaintHeight, state.PaintOffset);
+                            UpdateHighlighedTiles(centerCoords.CoordinateRange(state.BrushSize - 1), state.PaintHeight, state.PaintOffset);
                         }
                         Event.current.Use();
                     })
@@ -167,7 +167,7 @@ namespace HexTiles.Editor
                             {
                                 // Select the tile that was clicked on.
                                 var centerCoords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
-                                var coords = centerCoords.CoordinateRange(state.BrushSize);
+                                var coords = centerCoords.CoordinateRange(state.BrushSize - 1);
 
                                 // Create tile
                                 foreach (var hex in coords)

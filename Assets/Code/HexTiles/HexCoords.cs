@@ -48,16 +48,28 @@ namespace HexTiles
         /// </summary>
         public HexCoords[] CoordinateRange(int range)
         {
-            if (range < 1)
+            if (range < 0)
             {
                 throw new ArgumentOutOfRangeException("range", "Range must be at least 1");
             }
 
-            // TODO: actually calculate the locations of hexes within the specified range
-            var list = HexMetrics.AdjacentHexes.Select(hex => hex + this).ToList();
-            list.Add(this);
+            if (range == 0)
+            {
+                return new HexCoords[] { this };
+            }
 
-            return list.ToArray();
+            // TODO: actually calculate the locations of hexes within the specified range
+            var results = new List<HexCoords>();
+            for (int dx = -range; dx <= range; dx++)
+            {
+                for (int dy = Math.Max(-range, -dx-range); dy <= Math.Min(range, -dx+range); dy++)
+                {
+                    var dz = -dx-dy;
+                    results.Add(this + new HexCoords(dx, dz));
+                }
+            }
+
+            return results.ToArray();
             
         }
 
@@ -99,14 +111,6 @@ namespace HexTiles
 
             var hexCoords = (HexCoords)obj;
             return hexCoords.Q == Q && hexCoords.R == R;
-        }
-
-        /// <summary>
-        /// Convert to cube coordinates.
-        /// </summary>
-        public HexCoordsCube ToCube()
-        {
-            return new HexCoordsCube() { X = Q, Y = -Q-R, Z = R };
         }
 
         public override string ToString()
