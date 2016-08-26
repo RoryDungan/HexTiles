@@ -83,7 +83,7 @@ namespace HexTiles
         }
 
         // override object.Equals
-        public override bool Equals (object obj)
+        public override bool Equals(object obj)
         {
             //
             // See the full list of guidelines at
@@ -99,6 +99,14 @@ namespace HexTiles
 
             var hexCoords = (HexCoords)obj;
             return hexCoords.Q == Q && hexCoords.R == R;
+        }
+
+        /// <summary>
+        /// Convert to cube coordinates.
+        /// </summary>
+        public HexCoordsCube ToCube()
+        {
+            return new HexCoordsCube() { X = Q, Y = -Q-R, Z = R };
         }
 
         public override string ToString()
