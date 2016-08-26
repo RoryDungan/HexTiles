@@ -123,7 +123,7 @@ namespace HexTiles
         /// </summary>
         public IEnumerable<HexPosition> NextTilePositions { get; set; }
 
-        void OnDrawGizmos()
+        void OnDrawGizmosSelected()
         {
             if (HighlightedTiles != null)
             {
