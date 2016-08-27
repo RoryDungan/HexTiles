@@ -209,9 +209,11 @@ namespace HexTiles.Editor
                                 // Create tile
                                 foreach (var hex in coords)
                                 {
-                                    hexMap.CreateAndAddTile(
+                                    var newTile = hexMap.CreateAndAddTile(
                                         new HexPosition(hex, state.PaintHeight + state.PaintOffset),
                                         hexMap.CurrentMaterial);
+
+                                    EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), true);
                                 }
 
                                 hexMap.SelectedTile = centerSelectedTileCoords;
@@ -523,6 +525,11 @@ namespace HexTiles.Editor
 
             // Init anim bools
             showTileCoordinateFormat = new AnimBool(Repaint);
+
+            foreach (var renderer in hexMap.GetComponentsInChildren<Renderer>())
+            {
+                EditorUtility.SetSelectedWireframeHidden(renderer, true);
+            }
 
             Initialise();
         }
