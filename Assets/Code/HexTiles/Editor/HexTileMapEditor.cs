@@ -271,7 +271,7 @@ namespace HexTiles.Editor
                         var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
                         if (centerTile != null)
                         {
-                            hexMap.HighlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
+                            highlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
                                 .Where(tile => hexMap.Tiles.Contains(tile))
                                 .Select(tile => new HexPosition(tile, hexMap.Tiles[tile].Elevation));
                         }
@@ -473,8 +473,11 @@ namespace HexTiles.Editor
                     rootState.TriggerEvent("MouseMove");
                     
                     break;
-                case EventType.MouseDown:
                 case EventType.MouseDrag:
+                case EventType.MouseDown:
+
+                    rootState.TriggerEvent("MouseMove");
+
                     // Don't do anything if the user alt-left clicks to rotate the camera.
                     if (Event.current.button == 0 && Event.current.alt)
                     {
