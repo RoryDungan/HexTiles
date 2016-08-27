@@ -268,13 +268,8 @@ namespace HexTiles.Editor
                     })
                     .Event("MouseMove", state =>
                     {
-                        var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
-                        if (centerTile != null)
-                        {
-                            highlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
-                                .Where(tile => hexMap.Tiles.Contains(tile))
-                                .Select(tile => new HexPosition(tile, hexMap.Tiles[tile].Elevation));
-                        }
+                        HighlightTilesUnderMousePosition();
+
                         Event.current.Use();
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
@@ -644,6 +639,23 @@ namespace HexTiles.Editor
                 .OrderBy(hit => hit.distance)
                 .Select(hit => new HexPosition(hexMap.QuantizeVector3ToHexCoords(hit.point), hit.point.y))
                 .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Highlights all the tiles under the current mouse position, 
+        private void HighlightTilesUnderMousePosition()
+        {
+            var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
+            if (centerTile != null)
+            {
+                highlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
+                    .Where(tile => hexMap.Tiles.Contains(tile))
+                    .Select(tile => new HexPosition(tile, hexMap.Tiles[tile].Elevation));
+            }
+            else 
+            {
+                highlightedTiles = Enumerable.Empty<HexPosition>();
+            }
         }
 
         /// <summary>
