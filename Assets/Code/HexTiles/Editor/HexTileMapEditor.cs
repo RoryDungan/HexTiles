@@ -289,7 +289,9 @@ namespace HexTiles.Editor
                                 hexMap.SelectedTile = tilePosition.Coordinates;
 
                                 // Change the material on the tile
-                                tile.Material = hexMap.CurrentMaterial;
+                                tilePosition.Coordinates.CoordinateRange(brushSize - 1)
+                                    .Where(coords => hexMap.Tiles.Contains(coords))
+                                    .Each(coords => hexMap.Tiles[coords].Material = hexMap.CurrentMaterial);
                             }
 
                             Event.current.Use();
