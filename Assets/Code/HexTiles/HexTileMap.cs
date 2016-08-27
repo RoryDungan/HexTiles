@@ -129,7 +129,7 @@ namespace HexTiles
             {
                 foreach (var tile in HighlightedTiles)
                 {
-                    DrawHexGizmo(HexPositionToWorldPosition(tile), Color.grey);
+                    DrawHexGizmo(HexPositionToWorldPosition(tile), Color.white);
                 }
             }
 
