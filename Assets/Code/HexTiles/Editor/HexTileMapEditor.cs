@@ -237,7 +237,17 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
+                        bool sceneNeedsRepaint = false;
+
                         ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
+
+                        var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
+                        if (newBrushSize != brushSize)
+                        {
+                            brushSize = newBrushSize;
+
+                            sceneNeedsRepaint = true;
+                        }
 
                         hexMap.CurrentMaterial = (Material)EditorGUILayout.ObjectField("Material", hexMap.CurrentMaterial, typeof(Material), false);
 
@@ -247,14 +257,23 @@ namespace HexTiles.Editor
                         {
                             ApplyCurrentMaterialToAllTiles();
                             MarkSceneDirty();
+
+                            sceneNeedsRepaint = true;
+                        }
+
+                        if (sceneNeedsRepaint)
+                        {
+                            SceneView.RepaintAll();
                         }
                     })
                     .Event("MouseMove", state =>
                     {
-                        var tile = TryFindTileForMousePosition(Event.current.mousePosition);
-                        if (tile != null)
+                        var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
+                        if (centerTile != null)
                         {
-                            hexMap.HighlightedTiles = LinqExts.FromItems(tile);
+                            hexMap.HighlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
+                                .Where(tile => hexMap.Tiles.Contains(tile))
+                                .Select(tile => new HexPosition(tile, hexMap.Tiles[tile].Elevation));
                         }
                         Event.current.Use();
                     })
