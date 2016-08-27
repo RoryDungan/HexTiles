@@ -298,21 +298,40 @@ namespace HexTiles.Editor
                     .Update((state, dt) => 
                     {
                         ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
+
+                        var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
+                        if (newBrushSize != brushSize)
+                        {
+                            brushSize = newBrushSize;
+
+                            SceneView.RepaintAll();
+                        }
+                    })
+                    .Event("MouseMove", state =>
+                    {
+                        HighlightTilesUnderMousePosition();
+
+                        Event.current.Use();
                     })
                     .Event<SceneClickedEventArgs>("SceneClicked", (state, eventArgs) =>
                     {
                         if (eventArgs.Button == 0)
                         {
-                            var tile = TryFindTileForMousePosition(eventArgs.Position);
-                            if (tile != null)
+                            bool removedTile = false;
+
+                            var centerTile = TryFindTileForMousePosition(eventArgs.Position);
+                            if (centerTile != null)
                             {
-                                // Select the tile that was clicked on.
-                                hexMap.SelectedTile = tile.Coordinates;
-                                // Destroy tile
-                                if (hexMap.TryRemovingTile(tile.Coordinates))
+                                foreach (var tile in centerTile.Coordinates.CoordinateRange(brushSize - 1))
                                 {
-                                    MarkSceneDirty();
+                                    // Destroy tile
+                                    removedTile |= hexMap.TryRemovingTile(tile);
                                 }
+                            }
+
+                            if (removedTile)
+                            {
+                                MarkSceneDirty();
                             }
                         }
                     })
