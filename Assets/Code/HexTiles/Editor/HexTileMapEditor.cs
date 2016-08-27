@@ -478,13 +478,13 @@ namespace HexTiles.Editor
                 case EventType.MouseDrag:
                 case EventType.MouseDown:
 
-                    rootState.TriggerEvent("MouseMove");
-
                     // Don't do anything if the user alt-left clicks to rotate the camera.
-                    if (Event.current.button == 0 && Event.current.alt)
+                    if ((Event.current.button == 0 && Event.current.alt) || Event.current.button != 0)
                     {
                         break;
                     }
+
+                    rootState.TriggerEvent("MouseMove");
 
                     var eventArgs = new SceneClickedEventArgs { 
                         Button = Event.current.button, 
