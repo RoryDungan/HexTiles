@@ -147,6 +147,14 @@ namespace HexTiles.Editor
 
                         bool sceneNeedsRepaint = false;
 
+                        var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
+                        if (newBrushSize != brushSize)
+                        {
+                            brushSize = newBrushSize;
+
+                            sceneNeedsRepaint = true;
+                        }
+
                         var paintHeight = EditorGUILayout.FloatField("Paint height", state.PaintHeight);
                         if (paintHeight != state.PaintHeight)
                         {
@@ -161,14 +169,6 @@ namespace HexTiles.Editor
                         {
                             state.PaintOffset = paintOffsetHeight;
                             nextTilePositions.Each(tile => tile.Elevation = paintHeight + paintOffsetHeight);
-
-                            sceneNeedsRepaint = true;
-                        }
-
-                        var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
-                        if (newBrushSize != brushSize)
-                        {
-                            brushSize = newBrushSize;
 
                             sceneNeedsRepaint = true;
                         }
