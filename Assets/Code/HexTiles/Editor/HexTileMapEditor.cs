@@ -179,7 +179,7 @@ namespace HexTiles.Editor
                         {
                             if (centerSelectedTileCoords != null)
                             {
-                                UpdateHighlighedTiles(centerSelectedTileCoords.CoordinateRange(brushSize - 1), state.PaintHeight, state.PaintOffset);
+                                UpdateHighlightedTiles(centerSelectedTileCoords.CoordinateRange(brushSize - 1), state.PaintHeight, state.PaintOffset);
                             }
                             SceneView.RepaintAll();
                         }
@@ -191,7 +191,7 @@ namespace HexTiles.Editor
                         {
                             centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
 
-                            UpdateHighlighedTiles(centerSelectedTileCoords.CoordinateRange(brushSize - 1), state.PaintHeight, state.PaintOffset);
+                            UpdateHighlightedTiles(centerSelectedTileCoords.CoordinateRange(brushSize - 1), state.PaintHeight, state.PaintOffset);
                         }
                         Event.current.Use();
                     })
@@ -439,7 +439,7 @@ namespace HexTiles.Editor
             }
         }
 
-        private void UpdateHighlighedTiles(IEnumerable<HexCoords> coords, float paintHeight, float paintOffset)
+        private void UpdateHighlightedTiles(IEnumerable<HexCoords> coords, float paintHeight, float paintOffset)
         {
             highlightedTiles = coords.Select(tile => new HexPosition(tile, paintHeight));
             nextTilePositions = coords.Select(tile => new HexPosition(tile, paintHeight + paintOffset));
