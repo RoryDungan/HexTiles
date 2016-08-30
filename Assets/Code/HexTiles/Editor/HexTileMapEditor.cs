@@ -213,7 +213,7 @@ namespace HexTiles.Editor
                                         new HexPosition(hex, state.PaintHeight + state.PaintOffset),
                                         hexMap.CurrentMaterial);
 
-                                    EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), true);
+                                    EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
                                 }
 
                                 hexMap.SelectedTile = centerSelectedTileCoords;
