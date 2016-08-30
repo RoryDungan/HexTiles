@@ -28,6 +28,24 @@ namespace HexTiles
             }
         }
 
+        [SerializeField]
+        private bool drawWireframeWhenSelected = true;
+
+        /// <summary>
+        /// Whether or not to highlight all hexes in wireframe when the tile map is selected.
+        /// </summary>
+        public bool DrawWireframeWhenSelected
+        {
+            get
+            {
+                return drawWireframeWhenSelected;
+            }
+            set
+            {
+                drawWireframeWhenSelected = value;
+            }
+        }
+
         public enum HexCoordinateFormat
         {
             Axial,

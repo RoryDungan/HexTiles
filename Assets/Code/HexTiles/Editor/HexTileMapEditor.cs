@@ -348,6 +348,16 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Settings", "Configure options for the whole tile map.");
 
+                        var shouldShowWireframe = EditorGUILayout.Toggle("Show wireframe outline", hexMap.DrawWireframeWhenSelected);
+                        if (shouldShowWireframe != hexMap.DrawWireframeWhenSelected)
+                        {
+                            SetWireframeVisible(shouldShowWireframe);
+                            hexMap.DrawWireframeWhenSelected = shouldShowWireframe;
+
+                            SceneView.RepaintAll();
+                            MarkSceneDirty();
+                        }
+
                         var shouldDrawPositionHandles = EditorGUILayout.Toggle("Show tile positions", hexMap.DrawHexPositionHandles);
                         if (shouldDrawPositionHandles != hexMap.DrawHexPositionHandles)
                         {
@@ -564,10 +574,7 @@ namespace HexTiles.Editor
             // Init anim bools
             showTileCoordinateFormat = new AnimBool(Repaint);
 
-            foreach (var renderer in hexMap.GetComponentsInChildren<Renderer>())
-            {
-                EditorUtility.SetSelectedWireframeHidden(renderer, true);
-            }
+            SetWireframeVisible(hexMap.DrawWireframeWhenSelected);
 
             Initialise();
         }
@@ -709,6 +716,17 @@ namespace HexTiles.Editor
             public int Button;
 
             public Vector2 Position;
+        }
+
+        /// <summary>
+        /// Show or hide wireframe outline of all tiles while the tile map is selected.
+        /// </summary>
+        private void SetWireframeVisible(bool visible)
+        {
+            foreach (var renderer in hexMap.GetComponentsInChildren<Renderer>())
+            {
+                EditorUtility.SetSelectedWireframeHidden(renderer, !visible);
+            }
         }
     }
 }
