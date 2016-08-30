@@ -58,7 +58,6 @@ namespace HexTiles
                 return new HexCoords[] { this };
             }
 
-            // TODO: actually calculate the locations of hexes within the specified range
             var results = new List<HexCoords>();
             for (int dx = -range; dx <= range; dx++)
             {
