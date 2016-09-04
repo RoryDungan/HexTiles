@@ -88,7 +88,7 @@ public static class Utils
     /// <summary>
     /// Find a component of specified type in the scene and throw an exception if it was not found or multiple were found.
     /// </summary>
-    public static ComponentT ExpectComponentInScene<ComponentT>() where ComponentT : Component
+    public static ComponentT ExpectComponentInGame<ComponentT>() where ComponentT : Component
     {
         var components = UnityEngine.Object.FindObjectsOfType<ComponentT>();
         if (components.Length < 1)
@@ -120,7 +120,6 @@ public static class Utils
             throw new ApplicationException(string.Format("Tried to find a single instance of {0} in the scene but multiple were found.", typeof(ComponentT).Name));
         }
         return components[0];
-
     }
 
     /// <summary>
