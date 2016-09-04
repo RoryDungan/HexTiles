@@ -105,7 +105,7 @@ public static class Utils
     /// <summary>
     /// Find a component of specified type in the scene and throw an exception if it was not found or multiple were found.
     /// </summary>
-    public static ComponentT ExpectComponentInScene<ComponentT>(string name) where ComponentT : Component
+    public static ComponentT ExpectComponentInGame<ComponentT>(string name) where ComponentT : Component
     {
         var components = UnityEngine.Object.FindObjectsOfType<ComponentT>()
             .Where(component => component.gameObject.name == name)
