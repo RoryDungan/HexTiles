@@ -202,13 +202,13 @@ public static class Utils
         int intValue;
         if (int.TryParse(value, out intValue))
         {
-            return intValue == 0;
+            return intValue != 0;
         }
 
         float floatValue;
         if (float.TryParse(value, out floatValue))
         {
-            return floatValue == 0f;
+            return floatValue != 0f;
         }
 
         var text = value.Trim().ToLower();
