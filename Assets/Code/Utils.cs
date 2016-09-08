@@ -177,4 +177,12 @@ public static class Utils
     {
         return Utils.Sinerp(Utils.SmootherStep(value));
     }
+
+    /// <summary>
+    /// Backport of .NET 4 String.IsNullOrWhiteSpace()
+    /// </summary>
+    public static bool StringIsNullOrWhiteSpace(string value)
+    {
+        return string.IsNullOrEmpty(value) || value.Trim().Length == 0;
+    }
 }
