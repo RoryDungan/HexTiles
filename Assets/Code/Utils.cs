@@ -185,4 +185,34 @@ public static class Utils
     {
         return string.IsNullOrEmpty(value) || value.Trim().Length == 0;
     }
+
+    /// <summary>
+    /// Turn a string into a true/false value.
+    /// Any value will be accepted as true except for "false", "off", "no", "0" and "0.0"
+    /// This allows us to also use things like "true", "on", "yes", and "1" to mean true.
+    /// Used by the console system.
+    /// </summary>
+    public static bool IsStringTruthy(string value)
+    {
+        if (StringIsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentException("Invalid argument: value must contain a non-whitespace string");
+        }
+
+        int intValue;
+        if (int.TryParse(value, out intValue))
+        {
+            return intValue == 0;
+        }
+
+        float floatValue;
+        if (float.TryParse(value, out floatValue))
+        {
+            return floatValue == 0f;
+        }
+
+        var text = value.Trim().ToLower();
+
+        return !(value == "off" || value == "false" || value == "no");
+    }
 }
