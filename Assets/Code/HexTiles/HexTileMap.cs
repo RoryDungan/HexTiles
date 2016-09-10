@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace HexTiles
 {
+    [SelectionBase]
     public class HexTileMap : MonoBehaviour
     {
         public float hexWidth = 1f;
