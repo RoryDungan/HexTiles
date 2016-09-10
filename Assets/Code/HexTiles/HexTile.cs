@@ -312,16 +312,6 @@ namespace HexTiles
             sidePieces.Clear();
         }
 
-        /// <summary>
-        /// Side piece for the hex tile.
-        /// </summary>
-        [Serializable]
-        private struct SidePiece
-        {
-            public int direction;
-            public float elevationDelta;
-        }
-
         void OnDrawGizmos()
         {
             if (!debugDrawGizmos)
