@@ -276,16 +276,15 @@ namespace HexTiles.Editor
                         if (eventArgs.Button == 0)
                         {
                             var tilePosition = TryFindTileForMousePosition(eventArgs.Position);
-                            HexTile tile;
-                            if (tilePosition != null && hexMap.Tiles.TryGetValue(tilePosition.Coordinates, out tile))
+                            if (tilePosition != null && hexMap.ContainsTile(tilePosition.Coordinates))
                             {
                                 // Select that the tile that was clicked on.
                                 hexMap.SelectedTile = tilePosition.Coordinates;
 
                                 // Change the material on the tile
                                 tilePosition.Coordinates.CoordinateRange(brushSize - 1)
-                                    .Where(coords => hexMap.Tiles.Contains(coords))
-                                    .Each(coords => hexMap.Tiles[coords].Material = hexMap.CurrentMaterial);
+                                    .Where(coords => hexMap.ContainsTile(coords))
+                                    .Each(coords => hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial));
                             }
 
                             Event.current.Use();
@@ -673,9 +672,16 @@ namespace HexTiles.Editor
             var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
             if (centerTile != null)
             {
-                highlightedTiles = centerTile.Coordinates.CoordinateRange(brushSize - 1)
-                    .Where(tile => hexMap.Tiles.Contains(tile))
-                    .Select(tile => new HexPosition(tile, hexMap.Tiles[tile].Elevation));
+                var newHighlightedTiles = new List<HexPosition>();
+                foreach (var tile in centerTile.Coordinates.CoordinateRange(brushSize - 1))
+                {
+                    HexTileData tileData;
+                    if (hexMap.TryGetTile(tile, out tileData))
+                    {
+                        newHighlightedTiles.Add(new HexPosition(tile, tileData.Position.Elevation));
+                    }
+                }
+                highlightedTiles = newHighlightedTiles;
             }
             else 
             {
