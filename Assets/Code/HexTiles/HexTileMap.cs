@@ -225,12 +225,20 @@ namespace HexTiles
         /// </summary>
         public void RegenerateAllTiles()
         {
+            var tileData = new List<HexTileData>();
+
             foreach (var tileCoords in Tiles.Keys)
             {
                 var hexTile = Tiles[tileCoords];
-                hexTile.Diameter = hexWidth;
-                hexTile.transform.position = HexPositionToWorldPosition(new HexPosition(tileCoords, hexTile.Elevation));
-                hexTile.GenerateMesh(tileCoords);
+                tileData.Add(new HexTileData(new HexPosition(tileCoords, hexTile.Elevation), hexWidth, hexTile.Material));
+                DestroyImmediate(hexTile.gameObject);
+            }
+
+            Tiles.Clear();
+
+            foreach (var tile in tileData)
+            {
+                CreateAndAddTile(tile.Position, tile.Material);
             }
         }
 
