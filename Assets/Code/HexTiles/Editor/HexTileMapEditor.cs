@@ -458,9 +458,9 @@ namespace HexTiles.Editor
         /// </summary>
         private void ApplyCurrentMaterialToAllTiles()
         {
-            foreach (var tile in hexMap.Tiles)
+            foreach (var tile in hexMap.GetAllTiles())
             {
-                tile.Material = hexMap.CurrentMaterial;
+                hexMap.ReplaceMaterialOnTile(tile.Position.Coordinates, hexMap.CurrentMaterial);
             }
         }
 
@@ -538,9 +538,9 @@ namespace HexTiles.Editor
         /// </summary>
         private void DrawHexPositionHandles()
         {
-            foreach (var tile in hexMap.Tiles)
+            foreach (var tile in hexMap.GetAllTiles())
             {
-                var position = tile.transform.position;
+                var position = hexMap.HexPositionToWorldPosition(tile.Position);
 
                 // Only draw this handle if the tile is in front of the camera.
                 var cameraTransform = SceneView.currentDrawingSceneView.camera.transform;

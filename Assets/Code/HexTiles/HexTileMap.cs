@@ -61,7 +61,7 @@ namespace HexTiles
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        public IHexTileCollection Tiles
+        private IHexTileCollection Tiles
         {
             get
             {
@@ -406,6 +406,18 @@ namespace HexTiles
             TryRemovingTile(tileCoords);
 
             CreateAndAddTile(tile.Position, material);
+        }
+
+        /// <summary>
+        /// Returns all the tiles in this map.
+        /// </summary>
+        public IEnumerable<HexTileData> GetAllTiles()
+        {
+            foreach (var coords in Tiles.Keys)
+            {
+                var tile = Tiles[coords];
+                yield return new HexTileData(new HexPosition(coords, tile.Elevation), hexWidth, tile.Material);
+            }
         }
     }
 }
