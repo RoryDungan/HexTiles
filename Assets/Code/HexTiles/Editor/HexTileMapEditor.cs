@@ -208,11 +208,12 @@ namespace HexTiles.Editor
                                 // Create tile
                                 foreach (var hex in coords)
                                 {
-                                    var newTile = hexMap.CreateAndAddTile(
+                                    // TODO: add feature for disabling wireframe again.
+                                    hexMap.CreateAndAddTile(
                                         new HexPosition(hex, state.PaintHeight + state.PaintOffset),
                                         hexMap.CurrentMaterial);
 
-                                    EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
+                                    //EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
                                 }
 
                                 hexMap.SelectedTile = centerSelectedTileCoords;
