@@ -362,5 +362,22 @@ namespace HexTiles
             }
             children.ForEach(child => DestroyImmediate(child));
         }
+
+        /// <summary>
+        /// Returns whether or not the specified tile exists.
+        /// </summary>
+        public bool ContainsTile(HexCoords tileCoords)
+        {
+            return Tiles[tileCoords] != null;
+        }
+
+        /// <summary>
+        /// Return data about the tile at the specified position.
+        /// </summary>
+        public HexTileData GetTile(HexCoords tileCoords)
+        {
+            var tile = Tiles[tileCoords];
+            return new HexTileData(new HexPosition(tileCoords, tile.Elevation), hexWidth, tile.Material);
+        }
     }
 }

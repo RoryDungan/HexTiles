@@ -84,9 +84,9 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
-                        if (hexMap.SelectedTile != null && hexMap.Tiles[hexMap.SelectedTile] != null)
+                        if (hexMap.SelectedTile != null && hexMap.ContainsTile(hexMap.SelectedTile))
                         {
-                            var currentTile = hexMap.Tiles[hexMap.SelectedTile];
+                            var currentTile = hexMap.GetTile(hexMap.SelectedTile);
 
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
@@ -108,7 +108,7 @@ namespace HexTiles.Editor
                             EditorGUILayout.BeginHorizontal();
                             GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
                             GUI.enabled = false;
-                            EditorGUILayout.FloatField(currentTile.Elevation);
+                            EditorGUILayout.FloatField(currentTile.Position.Elevation);
                             GUI.enabled = true;
                             EditorGUILayout.EndHorizontal();
 
@@ -119,7 +119,8 @@ namespace HexTiles.Editor
                             var newMaterial = (Material)EditorGUILayout.ObjectField("Material", currentMaterial, typeof(Material), false);
                             if (currentMaterial != newMaterial)
                             {
-                                currentTile.Material = newMaterial;
+                                hexMap.TryRemovingTile(currentTile.Position.Coordinates);
+                                hexMap.CreateAndAddTile(currentTile.Position, newMaterial);
                                 MarkSceneDirty();
                             }
                         }
