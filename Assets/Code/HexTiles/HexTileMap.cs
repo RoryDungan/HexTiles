@@ -385,5 +385,27 @@ namespace HexTiles
             data = new HexTileData(new HexPosition(tileCoords, tile.Elevation), hexWidth, tile.Material);
             return true;
         }
+
+        /// <summary>
+        /// Remove the tile at the specified coordinates and replace it with one with the specified material.
+        /// </summary>
+        public void ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
+        {
+            HexTileData tile;
+            if (!TryGetTile(tileCoords, out tile))
+            {
+                throw new ArgumentOutOfRangeException("Tried replacing material on tile but map contains no tile at position " + tileCoords);
+            }
+
+            // Early out if the material is the same.
+            if (tile.Material == material)
+            {
+                return;
+            }
+
+            TryRemovingTile(tileCoords);
+
+            CreateAndAddTile(tile.Position, material);
+        }
     }
 }

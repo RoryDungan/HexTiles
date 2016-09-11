@@ -118,8 +118,7 @@ namespace HexTiles.Editor
                             var newMaterial = (Material)EditorGUILayout.ObjectField("Material", currentMaterial, typeof(Material), false);
                             if (currentMaterial != newMaterial)
                             {
-                                hexMap.TryRemovingTile(currentTile.Position.Coordinates);
-                                hexMap.CreateAndAddTile(currentTile.Position, newMaterial);
+                                hexMap.ReplaceMaterialOnTile(currentTile.Position.Coordinates, newMaterial);
                                 MarkSceneDirty();
                             }
                         }
