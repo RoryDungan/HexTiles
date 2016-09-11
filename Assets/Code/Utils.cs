@@ -188,8 +188,6 @@ public static class Utils
 
     /// <summary>
     /// Turn a string into a true/false value.
-    /// Any value will be accepted as true except for "false", "off", "no", "0" and "0.0"
-    /// This allows us to also use things like "true", "on", "yes", and "1" to mean true.
     /// Used by the console system.
     /// </summary>
     public static bool IsStringTruthy(string value)
@@ -213,6 +211,17 @@ public static class Utils
 
         var text = value.Trim().ToLower();
 
-        return !(value == "off" || value == "false" || value == "no");
+        if (text == "true")
+        {
+            return true;
+        }
+        else if (text == "false")
+        {
+            return false;
+        }
+        else
+        {
+            throw new ApplicationException("Could not interpret '" + value + "' as a true or false value.");
+        }
     }
 }
