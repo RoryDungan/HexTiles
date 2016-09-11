@@ -44,6 +44,14 @@ namespace HexTiles
         }
 
         /// <summary>
+        /// Return whether or not this tile is within the squarish bounds of two other points.
+        /// </summary>
+        public bool IsWithinBounds(HexCoords a, HexCoords b)
+        {
+            return Q >= a.Q && Q <= b.Q && R >= a.R && R <= b.R;
+        }
+
+        /// <summary>
         /// Get an array of hexes within a certain range of this one.
         /// </summary>
         public HexCoords[] CoordinateRange(int range)
