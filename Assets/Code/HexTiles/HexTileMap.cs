@@ -14,6 +14,8 @@ namespace HexTiles
         [SerializeField]
         private bool drawHexPositionGizmos = false;
 
+        public int chunkSize = 5;
+
         /// <summary>
         /// Whether or not to draw the position of each tile on top of the tile in the editor.
         /// </summary>
@@ -61,7 +63,7 @@ namespace HexTiles
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        private IHexTileCollection Tiles
+        private IDictionary<HexCoords, HexTileData> Tiles
         {
             get
             {
@@ -69,13 +71,16 @@ namespace HexTiles
                 if (tiles == null)
                 {
                     // Add all the existing tiles in the scene that are part of this map
-                    tiles = new HexTileCollection();
+                    tiles = new Dictionary<HexCoords, HexTileData>();
+
+                    // Get tiles from legacy, non-batched tile objects in the scene.
                     foreach (var tile in GetComponentsInChildren<HexTile>())
                     {
                         var tilePosition = QuantizeVector3ToHexCoords(tile.transform.position);
                         try
                         {
-                            tiles.Add(tilePosition, tile);
+                            var newTile = new HexTileData(new HexPosition(tilePosition, tile.Elevation), hexWidth, tile.Material);
+                            tiles.Add(tilePosition, newTile);
                         }
                         catch (ArgumentException)
                         {
@@ -92,11 +97,22 @@ namespace HexTiles
                         }
                         tile.Diameter = hexWidth;
                     }
+
+                    // Get tiles from batched objects
+                    foreach (var tileChunk in GetComponentsInChildren<HexChunk>())
+                    {
+                        foreach (var tilePosition in tileChunk.Tiles)
+                        {
+                            tiles.Add(tilePosition.Coordinates, new HexTileData(tilePosition, tileChunk.Diameter, tileChunk.Material));
+                        }
+                    }
                 }
                 return tiles;
             }
         }
-        private IHexTileCollection tiles;
+        private IDictionary<HexCoords, HexTileData> tiles;
+
+        private IList<HexChunk> chunks = new List<HexChunk>();
 
         /// <summary>
         /// The current material used for painting tiles. Serialised here so that it will be saved for convenience
@@ -162,7 +178,7 @@ namespace HexTiles
 
             if (SelectedTile != null && Tiles[SelectedTile] != null)
             {
-                DrawHexGizmo(HexPositionToWorldPosition(new HexPosition(SelectedTile, Tiles[SelectedTile].transform.position.y)), Color.green);
+                DrawHexGizmo(HexPositionToWorldPosition(Tiles[SelectedTile].Position), Color.green);
             }
         }
 
@@ -230,8 +246,8 @@ namespace HexTiles
             foreach (var tileCoords in Tiles.Keys)
             {
                 var hexTile = Tiles[tileCoords];
-                tileData.Add(new HexTileData(new HexPosition(tileCoords, hexTile.Elevation), hexWidth, hexTile.Material));
-                DestroyImmediate(hexTile.gameObject);
+                tileData.Add(hexTile);
+                TryRemovingTile(tileCoords);
             }
 
             Tiles.Clear();
@@ -246,40 +262,47 @@ namespace HexTiles
         /// Add a tile to the map. Returns the newly added hex tile.
         /// If a tile already exists at that position then that is returned instead.
         /// </summary>
-        public HexTile CreateAndAddTile(HexPosition position, Material material)
+        public void CreateAndAddTile(HexPosition position, Material material)
         {
             var coords = position.Coordinates;
             var elevation = position.Elevation;
 
             // See if there's already a tile at the specified position.
-            if (Tiles.Contains(coords))
+            HexTileData tile;
+            if (Tiles.TryGetValue(coords, out tile))
             {
-                var tile = Tiles[coords];
-
                 // If a tlie at that position and that height already exists, return it.
-                if (tile.Elevation == elevation
-                    && tile.GetComponent<MeshRenderer>().sharedMaterial == material)
+                if (tile.Position.Elevation == elevation
+                    && tile.Material == material)
                 {
-                    return tile;
+                    return;
                 }
 
                 // Remove the tile before adding a new one.
                 TryRemovingTile(coords);
             }
 
-            var obj = SpawnTileObject(position);
+            // Try to find existing chunk.
+            var chunk = chunks.Where(c => position.Coordinates.IsWithinBounds(c.upperBounds, c.lowerBounds))
+                .Where(c => c.Material == material)
+                .FirstOrDefault();
 
-            var hex = obj.AddComponent<HexTile>();
-            hex.Diameter = hexWidth;
+            // Create new chunk if necessary
+            if (chunk == null)
+            {
+                chunk = CreateChunkForCoordinates(position.Coordinates, material);
+            }
 
-            Tiles.Add(coords, hex);
+            chunk.AddTile(position);
+
+            Tiles.Add(coords, new HexTileData(position, hexWidth, material));
 
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
             // Obscured by this one are removed.
-            foreach (var side in HexMetrics.AdjacentHexes)
+            /*foreach (var side in HexMetrics.AdjacentHexes)
             {
-                HexTile adjacentTile;
+                HexTileData adjacentTile;
                 var adjacentTilePos = coords + side;
                 if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
@@ -288,35 +311,62 @@ namespace HexTiles
                 }
             }
             SetUpSidePiecesForTile(coords);
-            hex.GenerateMesh(coords);
-
-            // Set up material
-            hex.GetComponent<Renderer>().sharedMaterial = material;
-
-            return hex;
+            hex.GenerateMesh(coords);*/
         }
 
-        private void SetUpSidePiecesForTile(HexCoords position)
+        private HexChunk CreateChunkForCoordinates(HexCoords coordinates, Material material)
         {
-            HexTile tile;
-            if (!Tiles.TryGetValue(position, out tile))
-            {
-                throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
-            }
+            var lowerBounds = new HexCoords(RoundDownToInterval(coordinates.Q, chunkSize), RoundDownToInterval(coordinates.R, chunkSize));
+            var upperBounds = new HexCoords(lowerBounds.Q + chunkSize, lowerBounds.R + chunkSize);
 
-            foreach (var side in HexMetrics.AdjacentHexes)
-            {
-                HexTile adjacentTile;
-                if (Tiles.TryGetValue(position + side, out adjacentTile))
-                {
-                    tile.TryRemovingSidePiece(side);
-                    if (adjacentTile.Elevation < tile.Elevation)
-                    {
-                        tile.AddSidePiece(side, tile.Elevation - adjacentTile.Elevation);
-                    }
-                }
-            }
+            return CreateNewChunk(lowerBounds, upperBounds, material);
         }
+
+        private HexChunk CreateNewChunk(HexCoords lowerBounds, HexCoords upperBounds, Material material)
+        {
+            var newGameObject = new GameObject(string.Format("Chunk {0} - {1}", lowerBounds, upperBounds));
+            newGameObject.transform.parent = transform;
+
+            var hexChunk = newGameObject.AddComponent<HexChunk>();
+            hexChunk.lowerBounds = lowerBounds;
+            hexChunk.upperBounds = upperBounds;
+
+            hexChunk.Material = material;
+            hexChunk.Diameter = hexWidth;
+
+            chunks.Add(hexChunk);
+
+            return hexChunk;
+        }
+
+        private static int RoundDownToInterval(int input, int interval)
+        {
+            return ((int)Math.Floor(input / (float)interval)) * interval;
+        }
+
+
+        // TODO: Get side pieces working again.
+        //private void SetUpSidePiecesForTile(HexCoords position)
+        //{
+        //    HexTileData tile;
+        //    if (!Tiles.TryGetValue(position, out tile))
+        //    {
+        //        throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
+        //    }
+
+        //    foreach (var side in HexMetrics.AdjacentHexes)
+        //    {
+        //        HexTileData adjacentTile;
+        //        if (Tiles.TryGetValue(position + side, out adjacentTile))
+        //        {
+        //            tile.TryRemovingSidePiece(side);
+        //            if (adjacentTile.Position.Elevation < tile.Position.Elevation)
+        //            {
+        //                tile.AddSidePiece(side, tile.Position.Elevation - adjacentTile.Position.Elevation);
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Attempt to remove the tile at the specified position.
@@ -324,14 +374,23 @@ namespace HexTiles
         /// </summary>
         public bool TryRemovingTile(HexCoords position)
         {
-            if (!Tiles.Contains(position))
+            if (!Tiles.ContainsKey(position))
             {
                 return false;
             }
 
             var tile = Tiles[position];
-            DestroyImmediate(tile.gameObject);
+            var chunksWithTile = chunks.Where(c => c.Tiles.Select(pos => pos.Coordinates).Contains(position));
+            if (chunksWithTile == null || chunksWithTile.Count() < 1)
+            {
+                Debug.LogError("Tile found in internal tile collection but not in scene. Removing", this);
+            }
             Tiles.Remove(position);
+
+            foreach (var chunk in chunksWithTile)
+            {
+                chunk.RemoveTile(position);
+            }
 
             return true;
         }
@@ -382,7 +441,7 @@ namespace HexTiles
                 data = null;
                 return false;
             }
-            data = new HexTileData(new HexPosition(tileCoords, tile.Elevation), hexWidth, tile.Material);
+            data = tile;
             return true;
         }
 
@@ -413,11 +472,7 @@ namespace HexTiles
         /// </summary>
         public IEnumerable<HexTileData> GetAllTiles()
         {
-            foreach (var coords in Tiles.Keys)
-            {
-                var tile = Tiles[coords];
-                yield return new HexTileData(new HexPosition(coords, tile.Elevation), hexWidth, tile.Material);
-            }
+            return Tiles.Values;
         }
     }
 }
