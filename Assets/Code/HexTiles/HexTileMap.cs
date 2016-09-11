@@ -374,10 +374,16 @@ namespace HexTiles
         /// <summary>
         /// Return data about the tile at the specified position.
         /// </summary>
-        public HexTileData GetTile(HexCoords tileCoords)
+        public bool TryGetTile(HexCoords tileCoords, out HexTileData data)
         {
             var tile = Tiles[tileCoords];
-            return new HexTileData(new HexPosition(tileCoords, tile.Elevation), hexWidth, tile.Material);
+            if (tile == null)
+            {
+                data = null;
+                return false;
+            }
+            data = new HexTileData(new HexPosition(tileCoords, tile.Elevation), hexWidth, tile.Material);
+            return true;
         }
     }
 }

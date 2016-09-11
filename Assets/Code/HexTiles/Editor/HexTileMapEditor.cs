@@ -84,10 +84,9 @@ namespace HexTiles.Editor
                     {
                         ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
-                        if (hexMap.SelectedTile != null && hexMap.ContainsTile(hexMap.SelectedTile))
+                        HexTileData currentTile;
+                        if (hexMap.SelectedTile != null && hexMap.TryGetTile(hexMap.SelectedTile, out currentTile))
                         {
-                            var currentTile = hexMap.GetTile(hexMap.SelectedTile);
-
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
