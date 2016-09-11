@@ -112,7 +112,25 @@ namespace HexTiles
         }
         private IDictionary<HexCoords, HexTileData> tiles;
 
-        private IList<HexChunk> chunks = new List<HexChunk>();
+        private IList<HexChunk> chunks;
+
+        private IList<HexChunk> Chunks
+        {
+            get
+            {
+                if (chunks == null)
+                {
+                    chunks = new List<HexChunk>();
+
+                    foreach (var chunk in GetComponentsInChildren<HexChunk>())
+                    {
+                        chunks.Add(chunk);
+                    }
+                }
+
+                return chunks;
+            }
+        }
 
         /// <summary>
         /// The current material used for painting tiles. Serialised here so that it will be saved for convenience
@@ -283,7 +301,7 @@ namespace HexTiles
             }
 
             // Try to find existing chunk.
-            var chunk = chunks.Where(c => position.Coordinates.IsWithinBounds(c.upperBounds, c.lowerBounds))
+            var chunk = Chunks.Where(c => position.Coordinates.IsWithinBounds(c.upperBounds, c.lowerBounds))
                 .Where(c => c.Material == material)
                 .FirstOrDefault();
 
@@ -334,7 +352,7 @@ namespace HexTiles
             hexChunk.Material = material;
             hexChunk.Diameter = hexWidth;
 
-            chunks.Add(hexChunk);
+            Chunks.Add(hexChunk);
 
             return hexChunk;
         }
@@ -380,7 +398,7 @@ namespace HexTiles
             }
 
             var tile = Tiles[position];
-            var chunksWithTile = chunks.Where(c => c.Tiles.Select(pos => pos.Coordinates).Contains(position));
+            var chunksWithTile = Chunks.Where(c => c.Tiles.Select(pos => pos.Coordinates).Contains(position));
             if (chunksWithTile == null || chunksWithTile.Count() < 1)
             {
                 Debug.LogError("Tile found in internal tile collection but not in scene. Removing", this);
