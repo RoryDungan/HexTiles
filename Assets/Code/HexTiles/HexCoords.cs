@@ -112,6 +112,26 @@ namespace HexTiles
             return hexCoords.Q == Q && hexCoords.R == R;
         }
 
+        public static bool operator ==(HexCoords a, HexCoords b)
+        {
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Q == b.Q && a.R == b.R;
+        }
+
+        public static bool operator !=(HexCoords a, HexCoords b)
+        {
+            return !(a == b);
+        }
+
         public override string ToString()
         {
             return string.Format("({0}, {1})", Q, R);
