@@ -14,7 +14,24 @@ namespace HexTiles
         [SerializeField]
         private bool drawHexPositionGizmos = false;
 
-        public int chunkSize = 5;
+        [SerializeField]
+        private int chunkSize = 10;
+
+        public int ChunkSize
+        {
+            get
+            {
+                return chunkSize;
+            }
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException("value", "ChunkSize must be at least 1");
+                }
+                chunkSize = value;
+            }
+        }
 
         /// <summary>
         /// Whether or not to draw the position of each tile on top of the tile in the editor.

@@ -341,6 +341,7 @@ namespace HexTiles.Editor
                     {
                         selectedToolIndex = 4;
                         state.HexSize = hexMap.hexWidth;
+                        state.ChunkSize = hexMap.ChunkSize;
 
                         showTileCoordinateFormat.value = hexMap.DrawHexPositionHandles;
                     })
@@ -389,6 +390,13 @@ namespace HexTiles.Editor
                             state.Dirty = true;
                         }
 
+                        var newChunkSize = EditorGUILayout.IntField("Chunk size", state.ChunkSize);
+                        if (state.ChunkSize != newChunkSize)
+                        {
+                            state.ChunkSize = newChunkSize;
+                            state.Dirty = true;
+                        }
+
                         if (GUILayout.Button("Re-generate all tile geometry"))
                         {
                             hexMap.RegenerateAllTiles();
@@ -416,6 +424,7 @@ namespace HexTiles.Editor
                         {
                             Debug.Log("Saving settings");
                             hexMap.hexWidth = state.HexSize;
+                            hexMap.ChunkSize = state.ChunkSize;
                             hexMap.RegenerateAllTiles();
                             MarkSceneDirty();
 
@@ -715,6 +724,8 @@ namespace HexTiles.Editor
             /// Whether or not a value has been changed and needs to be saved.
             /// </summary>
             public bool Dirty = false;
+
+            public int ChunkSize;
 
             public float HexSize;
         }
