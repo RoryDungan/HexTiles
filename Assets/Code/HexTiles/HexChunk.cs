@@ -99,7 +99,7 @@ namespace HexTiles
 
             foreach (var tile in tiles)
             {
-                var startingTriIndex = triangles.Count;
+                var startingTriIndex = vertices.Count;
 
                 var data = HexMeshGenerator.GenerateHexMesh(
                     tile.Coordinates, 
