@@ -356,18 +356,16 @@ namespace HexTiles
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
             // Obscured by this one are removed.
-            /*foreach (var side in HexMetrics.AdjacentHexes)
+            foreach (var side in HexMetrics.AdjacentHexes)
             {
                 HexTileData adjacentTile;
                 var adjacentTilePos = coords + side;
                 if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
                     SetUpSidePiecesForTile(adjacentTilePos);
-                    adjacentTile.GenerateMesh(adjacentTilePos);
                 }
             }
             SetUpSidePiecesForTile(coords);
-            hex.GenerateMesh(coords);*/
         }
 
         private HexChunk CreateChunkForCoordinates(HexCoords coordinates, Material material)
@@ -401,28 +399,36 @@ namespace HexTiles
         }
 
 
-        // TODO: Get side pieces working again.
-        //private void SetUpSidePiecesForTile(HexCoords position)
-        //{
-        //    HexTileData tile;
-        //    if (!Tiles.TryGetValue(position, out tile))
-        //    {
-        //        throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
-        //    }
+        private void SetUpSidePiecesForTile(HexCoords position)
+        {
+            HexTileData tile;
+            if (!Tiles.TryGetValue(position, out tile))
+            {
+                throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
+            }
 
-        //    foreach (var side in HexMetrics.AdjacentHexes)
-        //    {
-        //        HexTileData adjacentTile;
-        //        if (Tiles.TryGetValue(position + side, out adjacentTile))
-        //        {
-        //            tile.TryRemovingSidePiece(side);
-        //            if (adjacentTile.Position.Elevation < tile.Position.Elevation)
-        //            {
-        //                tile.AddSidePiece(side, tile.Position.Elevation - adjacentTile.Position.Elevation);
-        //            }
-        //        }
-        //    }
-        //}
+            foreach (var side in HexMetrics.AdjacentHexes)
+            {
+                var sidePosition = position + side;
+
+                HexTileData adjacentTile;
+                if (Tiles.TryGetValue(sidePosition, out adjacentTile))
+                {
+                    var chunkWithTile = Chunks
+                        .Where(chunk => sidePosition.IsWithinBounds(chunk.lowerBounds, chunk.upperBounds))
+                        .SingleOrDefault();
+                    if (chunkWithTile != null)
+                    {
+                        chunkWithTile.TryRemovingSidePiece(position, side);
+
+                        if (adjacentTile.Position.Elevation < tile.Position.Elevation)
+                        {
+                            chunkWithTile.AddSidePiece(position, side, tile.Position.Elevation - adjacentTile.Position.Elevation);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Attempt to remove the tile at the specified position.
