@@ -366,6 +366,9 @@ namespace HexTiles
             SetUpSidePiecesForTile(coords, chunk);
         }
 
+        /// <summary>
+        /// Add a new chunk with the specified material and bounds around the specified coordinates.
+        /// </summary>
         private HexChunk CreateChunkForCoordinates(HexCoords coordinates, Material material)
         {
             var lowerBounds = new HexCoords(RoundDownToInterval(coordinates.Q, chunkSize), RoundDownToInterval(coordinates.R, chunkSize));
@@ -391,6 +394,9 @@ namespace HexTiles
             return matchingChunks.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Create a new chunk with the specified bounds and material.
+        /// </summary>
         private HexChunk CreateNewChunk(HexCoords lowerBounds, HexCoords upperBounds, Material material)
         {
             var newGameObject = new GameObject(string.Format("Chunk {0} - {1}", lowerBounds, upperBounds));
@@ -408,6 +414,10 @@ namespace HexTiles
             return hexChunk;
         }
 
+        /// <summary>
+        /// Round the input integer down to the nearest multiple of the supplied interval.
+        /// Used to calculate which chunk a tile falls inside the bounds of.
+        /// </summary>
         private static int RoundDownToInterval(int input, int interval)
         {
             return ((int)Math.Floor(input / (float)interval)) * interval;

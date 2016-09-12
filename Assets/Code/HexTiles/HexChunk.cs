@@ -20,8 +20,6 @@ namespace HexTiles
         /// </summary>
         private float size = 1f;
 
-        private Material material;
-
         /// <summary>
         /// Total diameter of the hex.
         /// </summary>
@@ -60,6 +58,9 @@ namespace HexTiles
 
         internal IList<HexPosition> Tiles { get { return tiles; } }
 
+        /// <summary>
+        /// Add a tile to this chunk.
+        /// </summary>
         internal void AddTile(HexPosition position)
         {
             tiles.Add(position);
@@ -67,6 +68,9 @@ namespace HexTiles
             Dirty = true;
         }
 
+        /// <summary>
+        /// Remove a tile from this chunk.
+        /// </summary>
         internal void RemoveTile(HexCoords coords)
         {
             tiles.RemoveAll(tile => tile.Coordinates.Equals(coords));

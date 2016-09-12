@@ -196,7 +196,7 @@ namespace HexTiles
         }
 
         /// <summary>
-        /// Data structure containing the vertex, tangent, triangle and UV data for a hex tile.
+        /// Data structure containing the vertex, triangle and UV data for a hex tile.
         /// </summary>
         public struct HexMeshData
         {
