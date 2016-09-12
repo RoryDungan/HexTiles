@@ -491,14 +491,10 @@ namespace HexTiles
         /// </summary>
         public bool TryGetTile(HexCoords tileCoords, out HexTileData data)
         {
-            var tile = Tiles[tileCoords];
-            if (tile == null)
-            {
-                data = null;
-                return false;
-            }
+            HexTileData tile;
+            var foundTile = Tiles.TryGetValue(tileCoords, out tile);
             data = tile;
-            return true;
+            return foundTile;
         }
 
         /// <summary>
