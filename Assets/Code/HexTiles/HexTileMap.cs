@@ -237,10 +237,7 @@ namespace HexTiles
         /// </summary>
         public Vector3 HexPositionToWorldPosition(HexPosition position)
         {
-            var x = hexWidth/2f * 3f/2f * position.Coordinates.Q;
-            var z = hexWidth/2f * Mathf.Sqrt(3f) * (position.Coordinates.R + position.Coordinates.Q / 2f);
-            var y = position.Elevation;
-            return transform.TransformPoint(new Vector3(x, y, z));
+            return transform.TransformPoint(position.GetPositionVector(hexWidth));
         }
 
         /// <summary>
