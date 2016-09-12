@@ -339,7 +339,7 @@ namespace HexTiles
             }
 
             // Try to find existing chunk.
-            var chunk = Chunks.Where(c => position.Coordinates.IsWithinBounds(c.upperBounds, c.lowerBounds))
+            var chunk = Chunks.Where(c => position.Coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
                 .Where(c => c.Material == material)
                 .FirstOrDefault();
 
