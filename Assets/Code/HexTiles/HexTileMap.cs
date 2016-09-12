@@ -194,7 +194,7 @@ namespace HexTiles
                 }
             }
 
-            if (SelectedTile != null && Tiles[SelectedTile] != null)
+            if (SelectedTile != null && Tiles.ContainsKey(SelectedTile))
             {
                 DrawHexGizmo(HexPositionToWorldPosition(Tiles[SelectedTile].Position), Color.green);
             }
