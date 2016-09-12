@@ -56,7 +56,7 @@ namespace HexTiles
             }
         }
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private List<SidePiece> sidePieces = new List<SidePiece>();
 
         /// <summary>

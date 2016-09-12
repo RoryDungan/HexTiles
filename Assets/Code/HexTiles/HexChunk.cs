@@ -12,7 +12,10 @@ namespace HexTiles
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     internal class HexChunk : MonoBehaviour
     {
+        [HideInInspector]
         public HexCoords upperBounds;
+
+        [HideInInspector]
         public HexCoords lowerBounds;
 
         /// <summary>
@@ -50,10 +53,10 @@ namespace HexTiles
             }
         }
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private List<SidePieceInfo> sidePieces = new List<SidePieceInfo>();
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private List<HexPosition> tiles = new List<HexPosition>();
 
         internal IList<HexPosition> Tiles { get { return tiles; } }
