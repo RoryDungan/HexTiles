@@ -63,12 +63,21 @@ namespace HexTiles
         internal void AddTile(HexPosition position)
         {
             tiles.Add(position);
+
+            Dirty = true;
         }
 
         internal void RemoveTile(HexCoords coords)
         {
             tiles.RemoveAll(tile => tile.Coordinates.Equals(coords));
+
+            Dirty = true;
         }
+
+        /// <summary>
+        /// Whether or not we need to re-generate the mesh for this tile.
+        /// </summary>
+        public bool Dirty { get; private set; }
 
         /// <summary>
         /// Create the mesh used to render the hex.
@@ -116,6 +125,8 @@ namespace HexTiles
             mesh.RecalculateNormals();
 
             GetComponent<MeshCollider>().sharedMesh = mesh;
+
+            Dirty = false;
         }
 
         /// <summary>
@@ -134,6 +145,8 @@ namespace HexTiles
                 side = new SidePiece { direction = sideIndex, elevationDelta = height },
                 hex = tile
             });
+
+            Dirty = true;
         }
 
         /// <summary>
@@ -156,6 +169,8 @@ namespace HexTiles
             {
                 sidePieces.Remove(sidePiece);
             }
+
+            Dirty = true;
         }
 
         /// <summary>

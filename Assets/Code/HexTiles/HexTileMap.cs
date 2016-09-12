@@ -299,6 +299,22 @@ namespace HexTiles
             {
                 CreateAndAddTile(tile.Position, tile.Material);
             }
+
+            UpdateTileChunks();
+        }
+
+        /// <summary>
+        /// Refresh the meshes of any chunks that have been modified.
+        /// </summary>
+        private void UpdateTileChunks()
+        {
+            foreach (var chunk in chunks)
+            {
+                if (chunk.Dirty)
+                {
+                    chunk.GenerateMesh();
+                }
+            }
         }
 
         /// <summary>
