@@ -48,7 +48,7 @@ namespace HexTiles
         /// </summary>
         public bool IsWithinBounds(HexCoords a, HexCoords b)
         {
-            return Q >= a.Q && Q <= b.Q && R >= a.R && R <= b.R;
+            return Q >= a.Q && Q < b.Q && R >= a.R && R < b.R;
         }
 
         /// <summary>
