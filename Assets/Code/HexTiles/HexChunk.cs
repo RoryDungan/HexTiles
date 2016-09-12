@@ -99,23 +99,19 @@ namespace HexTiles
 
             foreach (var tile in tiles)
             {
-                // TODO do this properly
-                HexMeshGenerator.GenerateHexMesh(
+                var data = HexMeshGenerator.GenerateHexMesh(
                     tile.Coordinates, 
                     Diameter, 
                     sidePieces
                         .Where(sideInfo => sideInfo.hex == tile.Coordinates)
-                        .Select(sideInfo => sideInfo.side), 
-                    vertices, 
-                    uv, 
-                    triangles);
-            }
+                        .Select(sideInfo => sideInfo.side)
+                );
 
-            var tangents = new Vector4[vertices.Count];
+                // TODO do this properly
+                vertices.AddRange(data.verts); // Transform to correct position
+                triangles.AddRange(data.tris); // Add to get correct indices
+                uv.AddRange(data.uvs);
 
-            for (var i = 0; i < vertices.Count; i++)
-            {
-                tangents[i].Set(1f, 0f, 0f, -1f);
             }
 
             mesh.vertices = vertices.ToArray();

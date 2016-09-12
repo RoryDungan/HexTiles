@@ -36,16 +36,19 @@ namespace HexTiles
         /// Generate the mesh for the specified position with the specified side pieces.
         /// Adds the necessary vertices, UVs and tris to the supplied lists.
         /// </summary>
-        internal static void GenerateHexMesh(HexCoords position, 
+        internal static HexMeshData GenerateHexMesh(HexCoords position, 
             float diameter,
-            IEnumerable<SidePiece> sidePieces, 
-            List<Vector3> vertices, 
-            List<Vector2> uvs,
-            List<int> tris)
+            IEnumerable<SidePiece> sidePieces)
         {
+            var vertices = new List<Vector3>();
+            var tris = new List<int>();
+            var uvs = new List<Vector2>();
+
             GenerateTop(position, vertices, tris, uvs, diameter);
 
             GenerateSidePieces(vertices, tris, uvs, sidePieces, diameter);
+
+            return new HexMeshData() { verts = vertices, tris = tris, uvs = uvs };
         }
 
         /// <summary>
@@ -190,6 +193,16 @@ namespace HexTiles
                 }
                 while (maxSideHeight * sideLoopCount < totalSideHeight);
             }
+        }
+
+        /// <summary>
+        /// Data structure containing the vertex, tangent, triangle and UV data for a hex tile.
+        /// </summary>
+        public struct HexMeshData
+        {
+            public IEnumerable<Vector3> verts;
+            public IEnumerable<int> tris;
+            public IEnumerable<Vector2> uvs;
         }
     }
 }

@@ -78,24 +78,11 @@ namespace HexTiles
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
             mesh.name = "Procedural hex tile";
 
-            var vertices = new List<Vector3>();
-            var triangles = new List<int>();
+            var data = HexMeshGenerator.GenerateHexMesh(position, Diameter, sidePieces);
 
-            // UV coordinates for tops of hex tiles.
-            var uv = new List<Vector2>();
-
-            HexMeshGenerator.GenerateHexMesh(position, Diameter, sidePieces, vertices, uv, triangles);
-
-            var tangents = new Vector4[vertices.Count];
-
-            for (var i = 0; i < vertices.Count; i++)
-            {
-                tangents[i].Set(1f, 0f, 0f, -1f);
-            }
-
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.uv = uv.ToArray();
+            mesh.vertices = data.verts.ToArray();
+            mesh.triangles = data.tris.ToArray();
+            mesh.uv = data.uvs.ToArray();
 
             mesh.RecalculateNormals();
 
