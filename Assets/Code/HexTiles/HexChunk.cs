@@ -10,7 +10,7 @@ namespace HexTiles
     /// Chunk of several hex tiles.
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
-    internal class HexChunk : MonoBehaviour
+    public class HexChunk : MonoBehaviour
     {
         [HideInInspector]
         public HexCoords upperBounds;
