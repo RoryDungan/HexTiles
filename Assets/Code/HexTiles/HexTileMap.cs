@@ -265,10 +265,35 @@ namespace HexTiles
             {
                 var hexTile = Tiles[tileCoords];
                 tileData.Add(hexTile);
-                TryRemovingTile(tileCoords);
             }
 
             Tiles.Clear();
+            Chunks.Clear();
+
+            var childTiles = GetComponentsInChildren<HexTile>();
+            var childChunks = GetComponentsInChildren<HexChunk>();
+            foreach (var tile in childTiles)
+            {
+                if (Application.isEditor)
+                {
+                    DestroyImmediate(tile.gameObject);
+                }
+                else
+                {
+                    Destroy(tile.gameObject);
+                }
+            }
+            foreach (var chunk in childChunks)
+            {
+                if (Application.isEditor)
+                {
+                    DestroyImmediate(chunk.gameObject);
+                }
+                else
+                {
+                    Destroy(chunk.gameObject);
+                }
+            }
 
             foreach (var tile in tileData)
             {
