@@ -218,6 +218,8 @@ namespace HexTiles.Editor
 
                                 hexMap.SelectedTile = centerSelectedTileCoords;
 
+                                hexMap.UpdateTileChunks();
+
                                 MarkSceneDirty();
                             }
                         }

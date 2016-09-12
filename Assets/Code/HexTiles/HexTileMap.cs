@@ -303,7 +303,7 @@ namespace HexTiles
         /// <summary>
         /// Refresh the meshes of any chunks that have been modified.
         /// </summary>
-        private void UpdateTileChunks()
+        public void UpdateTileChunks()
         {
             foreach (var chunk in chunks)
             {
