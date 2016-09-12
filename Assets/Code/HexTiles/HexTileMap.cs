@@ -305,11 +305,11 @@ namespace HexTiles
         /// </summary>
         public void UpdateTileChunks()
         {
-            foreach (var chunk in chunks)
+            for (int i = 0; i < Chunks.Count; i++)
             {
-                if (chunk.Dirty)
+                if (Chunks[i].Dirty)
                 {
-                    chunk.GenerateMesh();
+                    Chunks[i].GenerateMesh();
                 }
             }
         }
