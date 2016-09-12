@@ -338,10 +338,7 @@ namespace HexTiles
                 TryRemovingTile(coords);
             }
 
-            // Try to find existing chunk.
-            var chunk = Chunks.Where(c => position.Coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
-                .Where(c => c.Material == material)
-                .FirstOrDefault();
+            var chunk = FindChunkForCoordinates(coords, material);
 
             // Create new chunk if necessary
             if (chunk == null)
@@ -362,10 +359,11 @@ namespace HexTiles
                 var adjacentTilePos = coords + side;
                 if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
-                    SetUpSidePiecesForTile(adjacentTilePos);
+                    var adjacentTileChunk = FindChunkForCoordinates(adjacentTilePos, adjacentTile.Material);
+                    SetUpSidePiecesForTile(adjacentTilePos, adjacentTileChunk);
                 }
             }
-            SetUpSidePiecesForTile(coords);
+            SetUpSidePiecesForTile(coords, chunk);
         }
 
         private HexChunk CreateChunkForCoordinates(HexCoords coordinates, Material material)
@@ -374,6 +372,23 @@ namespace HexTiles
             var upperBounds = new HexCoords(lowerBounds.Q + chunkSize, lowerBounds.R + chunkSize);
 
             return CreateNewChunk(lowerBounds, upperBounds, material);
+        }
+
+        /// <summary>
+        /// Find a chunk with bounds that match the specified coordinates, and the specified material.
+        /// Returns null if none was found.
+        /// </summary>
+        private HexChunk FindChunkForCoordinates(HexCoords coordinates, Material material)
+        {
+            // Try to find existing chunk.
+            var matchingChunks = Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
+                .Where(c => c.Material == material);
+
+            if (matchingChunks.Count() > 1)
+            {
+                Debug.LogWarning("Overlapping chunks detected for coordinates " + coordinates + ". Taking first.");
+            }
+            return matchingChunks.FirstOrDefault();
         }
 
         private HexChunk CreateNewChunk(HexCoords lowerBounds, HexCoords upperBounds, Material material)
@@ -399,7 +414,7 @@ namespace HexTiles
         }
 
 
-        private void SetUpSidePiecesForTile(HexCoords position)
+        private void SetUpSidePiecesForTile(HexCoords position, HexChunk tileChunk)
         {
             HexTileData tile;
             if (!Tiles.TryGetValue(position, out tile))
@@ -414,16 +429,15 @@ namespace HexTiles
                 HexTileData adjacentTile;
                 if (Tiles.TryGetValue(sidePosition, out adjacentTile))
                 {
-                    var chunkWithTile = Chunks
-                        .Where(chunk => sidePosition.IsWithinBounds(chunk.lowerBounds, chunk.upperBounds))
-                        .SingleOrDefault();
+                    var chunkWithTile = FindChunkForCoordinates(sidePosition, adjacentTile.Material);
+
                     if (chunkWithTile != null)
                     {
                         chunkWithTile.TryRemovingSidePiece(position, side);
 
                         if (adjacentTile.Position.Elevation < tile.Position.Elevation)
                         {
-                            chunkWithTile.AddSidePiece(position, side, tile.Position.Elevation - adjacentTile.Position.Elevation);
+                            tileChunk.AddSidePiece(position, side, tile.Position.Elevation - adjacentTile.Position.Elevation);
                         }
                     }
                 }
