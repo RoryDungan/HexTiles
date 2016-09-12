@@ -99,6 +99,8 @@ namespace HexTiles
 
             foreach (var tile in tiles)
             {
+                var startingTriIndex = triangles.Count;
+
                 var data = HexMeshGenerator.GenerateHexMesh(
                     tile.Coordinates, 
                     Diameter, 
@@ -107,9 +109,12 @@ namespace HexTiles
                         .Select(sideInfo => sideInfo.side)
                 );
 
-                // TODO do this properly
-                vertices.AddRange(data.verts); // Transform to correct position
-                triangles.AddRange(data.tris); // Add to get correct indices
+                // Transform to correct position
+                vertices.AddRange(data.verts.Select(vert => vert + tile.GetPositionVector(Diameter))); 
+
+                // Add to get correct indices
+                triangles.AddRange(data.tris.Select(index => index + startingTriIndex)); 
+
                 uv.AddRange(data.uvs);
 
             }
