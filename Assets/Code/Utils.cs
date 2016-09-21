@@ -143,6 +143,16 @@ public static class Utils
     }
 
     /// <summary>
+    /// Perform an action on the fixed update.
+    /// </summary>
+    public static IEnumerator DoOnFixedUpdate(Action action)
+    {
+        yield return new WaitForFixedUpdate();
+
+        action();
+    }
+
+    /// <summary>
     /// Returns the modulo of two floats. Needed because C#'s '%' operator
     /// actually returns the remainder of integer division as opposed to a modulo.
     /// See http://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain 
