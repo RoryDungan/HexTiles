@@ -12,29 +12,35 @@ namespace HexTiles
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class HexChunk : MonoBehaviour
     {
+        /// <summary>
+        /// Upper bounds of the range of tiles contained in this chunk.
+        /// </summary>
         [HideInInspector]
         public HexCoords upperBounds;
 
+        /// <summary>
+        /// Lower bounds of the range of tiles contained in this chunk.
+        /// </summary>
         [HideInInspector]
         public HexCoords lowerBounds;
 
         /// <summary>
-        /// Total diameter of the hex.
+        /// Width of each individual hex tile.
         /// </summary>
-        private float size = 1f;
+        private float tileDiameter = 1f;
 
         /// <summary>
-        /// Total diameter of the hex.
+        /// Width of each individual hex tile.
         /// </summary>
-        public float Diameter
+        public float TileDiameter
         {
             get
             {
-                return size;
+                return tileDiameter;
             }
             set
             {
-                size = value;
+                tileDiameter = value;
             }
         }
 
@@ -110,14 +116,14 @@ namespace HexTiles
 
                 var data = HexMeshGenerator.GenerateHexMesh(
                     tile.Coordinates, 
-                    Diameter, 
+                    TileDiameter, 
                     sidePieces
                         .Where(sideInfo => sideInfo.hex == tile.Coordinates)
                         .Select(sideInfo => sideInfo.side)
                 );
 
                 // Transform to correct position
-                vertices.AddRange(data.verts.Select(vert => vert + tile.GetPositionVector(Diameter))); 
+                vertices.AddRange(data.verts.Select(vert => vert + tile.GetPositionVector(TileDiameter))); 
 
                 // Add to get correct indices
                 triangles.AddRange(data.tris.Select(index => index + startingTriIndex)); 

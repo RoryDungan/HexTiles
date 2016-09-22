@@ -340,7 +340,7 @@ namespace HexTiles.Editor
                     .Enter(state => 
                     {
                         selectedToolIndex = 4;
-                        state.HexSize = hexMap.hexWidth;
+                        state.HexSize = hexMap.tileDiameter;
                         state.ChunkSize = hexMap.ChunkSize;
 
                         showTileCoordinateFormat.value = hexMap.DrawHexPositionHandles;
@@ -385,7 +385,7 @@ namespace HexTiles.Editor
                         EditorGUILayout.EndFadeGroup();
 
                         state.HexSize = EditorGUILayout.FloatField("Tile size", state.HexSize);
-                        if (state.HexSize != hexMap.hexWidth)
+                        if (state.HexSize != hexMap.tileDiameter)
                         {
                             state.Dirty = true;
                         }
@@ -423,7 +423,7 @@ namespace HexTiles.Editor
                         if (GUILayout.Button("Apply", GUILayout.Width(160)))
                         {
                             Debug.Log("Saving settings");
-                            hexMap.hexWidth = state.HexSize;
+                            hexMap.tileDiameter = state.HexSize;
                             hexMap.ChunkSize = state.ChunkSize;
                             hexMap.RegenerateAllTiles();
                             MarkSceneDirty();

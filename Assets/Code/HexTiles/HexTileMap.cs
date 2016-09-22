@@ -3,13 +3,15 @@ using System.Collections;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace HexTiles
 {
     [SelectionBase]
     public class HexTileMap : MonoBehaviour
     {
-        public float hexWidth = 1f;
+        [FormerlySerializedAs("hexWidth")]
+        public float tileDiameter = 1f;
 
         [SerializeField]
         private bool drawHexPositionGizmos = false;
@@ -96,7 +98,7 @@ namespace HexTiles
                         var tilePosition = QuantizeVector3ToHexCoords(tile.transform.position);
                         try
                         {
-                            var newTile = new HexTileData(new HexPosition(tilePosition, tile.Elevation), hexWidth, tile.Material);
+                            var newTile = new HexTileData(new HexPosition(tilePosition, tile.Elevation), tileDiameter, tile.Material);
                             tiles.Add(tilePosition, newTile);
                         }
                         catch (ArgumentException)
@@ -112,7 +114,7 @@ namespace HexTiles
                             }
                             continue;
                         }
-                        tile.Diameter = hexWidth;
+                        tile.Diameter = tileDiameter;
                     }
 
                     // Get tiles from batched objects
@@ -120,7 +122,7 @@ namespace HexTiles
                     {
                         foreach (var tilePosition in tileChunk.Tiles)
                         {
-                            tiles.Add(tilePosition.Coordinates, new HexTileData(tilePosition, tileChunk.Diameter, tileChunk.Material));
+                            tiles.Add(tilePosition.Coordinates, new HexTileData(tilePosition, tileChunk.TileDiameter, tileChunk.Material));
                         }
                     }
                 }
@@ -225,7 +227,7 @@ namespace HexTiles
         {
             Gizmos.color = color;
 
-            var verts = HexMetrics.GetHexVertices(hexWidth)
+            var verts = HexMetrics.GetHexVertices(tileDiameter)
                 .Select(v => v + position)
                 .ToArray();
 
@@ -242,8 +244,8 @@ namespace HexTiles
         {
             var vector = transform.InverseTransformPoint(vIn);
 
-            var q = vector.x * 2f/3f / (hexWidth/2f);
-            var r = (-vector.x / 3f + Mathf.Sqrt(3f)/3f * vector.z) / (hexWidth/2f);
+            var q = vector.x * 2f/3f / (tileDiameter/2f);
+            var r = (-vector.x / 3f + Mathf.Sqrt(3f)/3f * vector.z) / (tileDiameter/2f);
 
             return new HexCoords (Mathf.RoundToInt(q), Mathf.RoundToInt(r));
         }
@@ -254,7 +256,7 @@ namespace HexTiles
         /// </summary>
         public Vector3 HexPositionToWorldPosition(HexPosition position)
         {
-            return transform.TransformPoint(position.GetPositionVector(hexWidth));
+            return transform.TransformPoint(position.GetPositionVector(tileDiameter));
         }
 
         /// <summary>
@@ -365,7 +367,7 @@ namespace HexTiles
 
             chunk.AddTile(position);
 
-            Tiles.Add(coords, new HexTileData(position, hexWidth, material));
+            Tiles.Add(coords, new HexTileData(position, tileDiameter, material));
 
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
@@ -424,7 +426,7 @@ namespace HexTiles
             hexChunk.upperBounds = upperBounds;
 
             hexChunk.Material = material;
-            hexChunk.Diameter = hexWidth;
+            hexChunk.TileDiameter = tileDiameter;
 
             Chunks.Add(hexChunk);
 
