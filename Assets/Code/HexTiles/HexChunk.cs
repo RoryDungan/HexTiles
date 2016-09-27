@@ -27,6 +27,7 @@ namespace HexTiles
         /// <summary>
         /// Width of each individual hex tile.
         /// </summary>
+        [SerializeField, HideInInspector]
         private float tileDiameter = 1f;
 
         /// <summary>
