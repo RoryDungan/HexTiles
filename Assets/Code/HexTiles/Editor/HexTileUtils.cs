@@ -16,5 +16,16 @@ namespace HexTiles.Editor
 
             EditorUtility.DisplayDialog("Hex tile count", message, "Ok");
         }
+
+        [MenuItem("Tools/Regenerate all hex tiles in all HexTileMaps")]
+        static void RegenerateAllHexTiles()
+        {
+            foreach (var map in GameObject.FindObjectsOfType<HexTileMap>())
+            {
+                map.RegenerateAllTiles();
+            }
+
+            EditorUtility.DisplayDialog("Finished regenerating tiles.", "Finished regenerating meshes for all hex tiles in all HexTileMaps.", "Ok");
+        }
     }
 }
