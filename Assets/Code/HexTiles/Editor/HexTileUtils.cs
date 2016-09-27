@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace HexTiles.Editor
 {
-    public class HexTileCounter : ScriptableObject
+    public class HexTileUtils : ScriptableObject
     {
         [MenuItem("Tools/Count hex tiles")]
         static void CountTilesClicked()
