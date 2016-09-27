@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace HexTiles.Editor
 {
@@ -23,9 +24,23 @@ namespace HexTiles.Editor
             foreach (var map in GameObject.FindObjectsOfType<HexTileMap>())
             {
                 map.RegenerateAllTiles();
+                MarkSceneDirty(map.gameObject); 
             }
 
             EditorUtility.DisplayDialog("Finished regenerating tiles.", "Finished regenerating meshes for all hex tiles in all HexTileMaps.", "Ok");
+
         }
+
+        /// <summary>
+        /// Mark the scene for a specified object dirty
+        /// </summary>
+        private static void MarkSceneDirty(GameObject obj)
+        {
+#if UNITY_5_3_OR_NEWER
+            EditorSceneManager.MarkSceneDirty(obj.scene);
+#else
+            EditorUtility.SetDirty(obj);
+#endif
+       }
     }
 }
