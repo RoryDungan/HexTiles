@@ -100,6 +100,9 @@ namespace HexTiles
         {
             // Initial setup for game object 
             transform.localScale = Vector3.one;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+
             gameObject.isStatic = true;
 
             var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
