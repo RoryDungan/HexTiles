@@ -515,6 +515,7 @@ namespace HexTiles
         public void ClearAllTiles()
         {
             Tiles.Clear();
+            Chunks.Clear();
 
             // Note that we must add all children to a list first because if we
             // destroy children as we loop through them, the array we're looping 
