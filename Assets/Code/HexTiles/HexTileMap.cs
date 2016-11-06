@@ -484,7 +484,6 @@ namespace HexTiles
                 return false;
             }
 
-            var tile = Tiles[position];
             var chunksWithTile = Chunks.Where(c => c.Tiles.Select(pos => pos.Coordinates).Contains(position));
             if (chunksWithTile == null || chunksWithTile.Count() < 1)
             {
