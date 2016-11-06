@@ -8,7 +8,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEditor.AnimatedValues;
 using System.Collections.Generic;
-using RSG.Utils;
 
 namespace HexTiles.Editor
 {
@@ -158,7 +157,10 @@ namespace HexTiles.Editor
                         if (paintHeight != state.PaintHeight)
                         {
                             state.PaintHeight = paintHeight;
-                            highlightedTiles.Each(tile => tile.Elevation = paintHeight);
+                            foreach (var tile in highlightedTiles)
+                            {
+                                tile.Elevation = paintHeight;
+                            }
 
                             sceneNeedsRepaint = true;
                         }
@@ -167,7 +169,10 @@ namespace HexTiles.Editor
                         if (paintOffsetHeight != state.PaintOffset)
                         {
                             state.PaintOffset = paintOffsetHeight;
-                            nextTilePositions.Each(tile => tile.Elevation = paintHeight + paintOffsetHeight);
+                            foreach (var tile in nextTilePositions)
+                            {
+                                tile.Elevation = paintHeight + paintOffsetHeight;
+                            }
 
                             sceneNeedsRepaint = true;
                         }
@@ -284,9 +289,12 @@ namespace HexTiles.Editor
                                 hexMap.SelectedTile = tilePosition.Coordinates;
 
                                 // Change the material on the tile
-                                tilePosition.Coordinates.CoordinateRange(brushSize - 1)
-                                    .Where(coords => hexMap.ContainsTile(coords))
-                                    .Each(coords => hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial));
+                                var tilesUnderBrush = tilePosition.Coordinates.CoordinateRange(brushSize - 1)
+                                    .Where(coords => hexMap.ContainsTile(coords));
+                                foreach (var coords in tilesUnderBrush)
+                                {
+                                    hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
+                                }
                             }
 
                             Event.current.Use();
