@@ -10,7 +10,7 @@ To test the hex tile system without importing into your own project, just open t
 
 If you're interested in getting involved feel free to check out the [roadmap on Trello](https://trello.com/b/WkukdhHq/hex-tile-editor), or submit a pull request.  
 
-
+# Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- END doctoc -->
