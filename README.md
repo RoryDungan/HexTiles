@@ -4,6 +4,8 @@ A hex-based tile editor for Unity. Built for [Bees Won't Exist](http://honeyvale
 
 Check out my [YouTube playlist](https://www.youtube.com/playlist?list=PLvydZeK3xG9hFWaunAdrvl7W_ExOquTcA) for some examples of it in action.
 
+To test the hex tile system without importing into your own project, just open this Unity project and load up `Example Content/Example scene.unity`.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- END doctoc -->
