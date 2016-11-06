@@ -2,6 +2,8 @@
 
 A hex-based tile editor for Unity. Built for [Bees Won't Exist](http://honeyvalegames.com/bees-wont-exist/)
 
+![Imgur](http://i.imgur.com/gEB4P5D.png)
+
 Check out my [YouTube playlist](https://www.youtube.com/playlist?list=PLvydZeK3xG9hFWaunAdrvl7W_ExOquTcA) for some examples of it in action.
 
 To test the hex tile system without importing into your own project, just open this Unity project and load up `Example Content/Example scene.unity`.
