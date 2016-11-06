@@ -4,6 +4,24 @@ A hex-based tile editor for Unity. Built for [Bees Won't Exist](http://honeyvale
 
 Check out my [YouTube playlist](https://www.youtube.com/playlist?list=PLvydZeK3xG9hFWaunAdrvl7W_ExOquTcA) for some examples of it in action.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- END doctoc -->
+
+- [Getting started](#getting-started)
+  - [Importing into your own project](#importing-into-your-own-project)
+- [Basic use](#basic-use)
+  - [Creating a tile map](#creating-a-tile-map)
+  - [Tile painting](#tile-painting)
+  - [Selecting and inspecting existing tiles](#selecting-and-inspecting-existing-tiles)
+  - [Painting materials on existing tiles](#painting-materials-on-existing-tiles)
+  - [Erasing tiles](#erasing-tiles)
+  - [Settings and other options](#settings-and-other-options)
+- [Setting up materials for use with hex tile maps.](#setting-up-materials-for-use-with-hex-tile-maps)
+- [Tips and best practices](#tips-and-best-practices)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Getting started
 ## Importing into your own project
 To get started, simply copy the whole `Assets/Code/HexTiles` folder as well as `Assets/Plugins/Fluent-State-Machine.dll` into your Unity project. This has been tested on Unity 5.4 but should work on earlier versions of 5.x as well. Note that Fluent-State-Machine is only required by the editor so if you want you can set it to be editor-only and not be included in your builds.
