@@ -691,6 +691,7 @@ namespace HexTiles.Editor
 
         /// <summary>
         /// Highlights all the tiles under the current mouse position.
+        /// </summary>
         private void HighlightTilesUnderMousePosition()
         {
             var centerTile = TryFindTileForMousePosition(Event.current.mousePosition);
