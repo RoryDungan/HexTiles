@@ -334,13 +334,20 @@ namespace HexTiles
         }
 
         /// <summary>
-        /// Add a tile to the map. Returns the newly added hex tile.
-        /// If a tile already exists at that position then that is returned instead.
+        /// Add a tile to the map. Returns the chunk object containing the new tile.
         /// </summary>
-        public void CreateAndAddTile(HexPosition position, Material material)
+        public HexChunk CreateAndAddTile(HexPosition position, Material material)
         {
             var coords = position.Coordinates;
             var elevation = position.Elevation;
+
+            var chunk = FindChunkForCoordinates(coords, material);
+
+            // Create new chunk if necessary
+            if (chunk == null)
+            {
+                chunk = CreateChunkForCoordinates(position.Coordinates, material);
+            }
 
             // See if there's already a tile at the specified position.
             HexTileData tile;
@@ -350,19 +357,11 @@ namespace HexTiles
                 if (tile.Position.Elevation == elevation
                     && tile.Material == material)
                 {
-                    return;
+                    return chunk;
                 }
 
                 // Remove the tile before adding a new one.
                 TryRemovingTile(coords);
-            }
-
-            var chunk = FindChunkForCoordinates(coords, material);
-
-            // Create new chunk if necessary
-            if (chunk == null)
-            {
-                chunk = CreateChunkForCoordinates(position.Coordinates, material);
             }
 
             chunk.AddTile(position);
@@ -383,6 +382,8 @@ namespace HexTiles
                 }
             }
             SetUpSidePiecesForTile(coords, chunk);
+
+            return chunk;
         }
 
         /// <summary>
