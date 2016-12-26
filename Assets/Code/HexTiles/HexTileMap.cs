@@ -553,8 +553,9 @@ namespace HexTiles
 
         /// <summary>
         /// Remove the tile at the specified coordinates and replace it with one with the specified material.
+        /// Returns the chunk with the tile that was modified.
         /// </summary>
-        public void ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
+        public HexChunk ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
         {
             HexTileData tile;
             if (!TryGetTile(tileCoords, out tile))
@@ -565,12 +566,12 @@ namespace HexTiles
             // Early out if the material is the same.
             if (tile.Material == material)
             {
-                return;
+                return FindChunkForCoordinates(tileCoords, material);
             }
 
             TryRemovingTile(tileCoords);
 
-            CreateAndAddTile(tile.Position, material);
+            return CreateAndAddTile(tile.Position, material);
         }
 
         /// <summary>
