@@ -272,8 +272,10 @@ namespace HexTiles
         /// Re-position and re-generate geometry for all tiles.
         /// Needed after changing global settings that affect all the tiles
         /// such as the tile size.
+        /// 
+        /// Returns the chunks that were changed as a result of this operation.
         /// </summary>
-        public void RegenerateAllTiles()
+        public IEnumerable<HexChunk> RegenerateAllTiles()
         {
             var tileData = new List<HexTileData>();
 
@@ -311,12 +313,14 @@ namespace HexTiles
                 }
             }
 
-            foreach (var tile in tileData)
-            {
-                CreateAndAddTile(tile.Position, tile.Material);
-            }
+            var modifiedChunks = tileData
+                .Select(tile => CreateAndAddTile(tile.Position, tile.Material))
+                .Distinct()
+                .ToArray(); // Need to force this to evaluate now so that CreateAndAddTile actually gets called.
 
             UpdateTileChunks();
+
+            return modifiedChunks;
         }
 
         /// <summary>
