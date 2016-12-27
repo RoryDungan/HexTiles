@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace HexTiles
 {
@@ -17,6 +20,19 @@ namespace HexTiles
         public static float Mod(float a, float b)
         {
             return (a % b + b) % b;
+        }
+
+        /// <summary>
+        /// Destroy an object, recording an undo action if we're in the editor.
+        /// </summary>
+        /// <param name="objectToDestroy"></param>
+        public static void Destroy(UnityEngine.Object objectToDestroy)
+        {
+#if UNITY_EDITOR
+            Undo.DestroyObjectImmediate(objectToDestroy);
+#else
+            UnityEngine.Object.Destroy(objectToDestroy);
+#endif
         }
     }
 }
