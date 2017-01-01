@@ -275,7 +275,7 @@ namespace HexTiles
         /// 
         /// Returns the chunks that were changed as a result of this operation.
         /// </summary>
-        public IEnumerable<HexChunk> RegenerateAllTiles()
+        public IEnumerable<ModifiedTileInfo> RegenerateAllTiles()
         {
             var tileData = new List<HexTileData>();
 
@@ -340,17 +340,19 @@ namespace HexTiles
         /// <summary>
         /// Add a tile to the map. Returns the chunk object containing the new tile.
         /// </summary>
-        public HexChunk CreateAndAddTile(HexPosition position, Material material)
+        public ModifiedTileInfo CreateAndAddTile(HexPosition position, Material material)
         {
             var coords = position.Coordinates;
             var elevation = position.Elevation;
 
             var chunk = FindChunkForCoordinates(coords, material);
+            var chunkOperation = ModifiedTileInfo.ChunkOperation.Modified;
 
             // Create new chunk if necessary
             if (chunk == null)
             {
                 chunk = CreateChunkForCoordinates(position.Coordinates, material);
+                chunkOperation = ModifiedTileInfo.ChunkOperation.Added;
             }
 
             // See if there's already a tile at the specified position.
@@ -361,7 +363,7 @@ namespace HexTiles
                 if (tile.Position.Elevation == elevation
                     && tile.Material == material)
                 {
-                    return chunk;
+                    return new ModifiedTileInfo(chunk, chunkOperation);
                 }
 
                 // Remove the tile before adding a new one.
@@ -387,7 +389,7 @@ namespace HexTiles
             }
             SetUpSidePiecesForTile(coords, chunk);
 
-            return chunk;
+            return new ModifiedTileInfo(chunk, chunkOperation);
         }
 
         /// <summary>
@@ -555,7 +557,7 @@ namespace HexTiles
         /// Remove the tile at the specified coordinates and replace it with one with the specified material.
         /// Returns the chunk with the tile that was modified.
         /// </summary>
-        public HexChunk ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
+        public ModifiedTileInfo ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
         {
             HexTileData tile;
             if (!TryGetTile(tileCoords, out tile))
@@ -566,7 +568,8 @@ namespace HexTiles
             // Early out if the material is the same.
             if (tile.Material == material)
             {
-                return FindChunkForCoordinates(tileCoords, material);
+                var chunk = FindChunkForCoordinates(tileCoords, material);
+                return new ModifiedTileInfo(chunk, ModifiedTileInfo.ChunkOperation.Modified);
             }
 
             TryRemovingTile(tileCoords);
@@ -580,6 +583,37 @@ namespace HexTiles
         public IEnumerable<HexTileData> GetAllTiles()
         {
             return Tiles.Values;
+        }
+    }
+
+    /// <summary>
+    /// Information about a tile that has been modified, used for 
+    /// recording undo actions.
+    /// </summary>
+    public struct ModifiedTileInfo
+    {
+        /// <summary>
+        /// The chunk containing the tile that was added.
+        /// </summary>
+        public HexChunk Chunk { get; private set; }
+
+        /// <summary>
+        /// Whether the chunk was just created, already existed and was modified,
+        /// or was deleted. Needed for recording what kind of Undo operation to use.
+        /// </summary>
+        public ChunkOperation Operation { get; private set; }
+
+        public enum ChunkOperation 
+        {
+            Added,
+            Modified,
+            Removed
+        }
+
+        public ModifiedTileInfo(HexChunk chunk, ChunkOperation operation) 
+        {
+            Chunk = chunk;
+            Operation = operation;
         }
     }
 }
