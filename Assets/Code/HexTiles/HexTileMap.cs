@@ -337,6 +337,8 @@ namespace HexTiles
             }
         }
 
+        //public HexChunk FindChunkForCoordinates
+
         /// <summary>
         /// Add a tile to the map. Returns the chunk object containing the new tile.
         /// </summary>
@@ -345,7 +347,7 @@ namespace HexTiles
             var coords = position.Coordinates;
             var elevation = position.Elevation;
 
-            var chunk = FindChunkForCoordinates(coords, material);
+            var chunk = FindChunkForCoordinatesAndMaterial(coords, material);
             var chunkOperation = ModifiedTileInfo.ChunkOperation.Modified;
 
             // Create new chunk if necessary
@@ -383,7 +385,7 @@ namespace HexTiles
                 var adjacentTilePos = coords + side;
                 if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
                 {
-                    var adjacentTileChunk = FindChunkForCoordinates(adjacentTilePos, adjacentTile.Material);
+                    var adjacentTileChunk = FindChunkForCoordinatesAndMaterial(adjacentTilePos, adjacentTile.Material);
                     SetUpSidePiecesForTile(adjacentTilePos, adjacentTileChunk);
                 }
             }
@@ -404,10 +406,20 @@ namespace HexTiles
         }
 
         /// <summary>
+        /// Returns the chunk for the tile at the specified coordinates, or 
+        /// null if none exists.
+        /// </summary>
+        public HexChunk FindChunkForCoordinates(HexCoords coordinates)
+        {
+            return Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
+                .FirstOrDefault();
+        }
+
+        /// <summary>
         /// Find a chunk with bounds that match the specified coordinates, and the specified material.
         /// Returns null if none was found.
         /// </summary>
-        private HexChunk FindChunkForCoordinates(HexCoords coordinates, Material material)
+        private HexChunk FindChunkForCoordinatesAndMaterial(HexCoords coordinates, Material material)
         {
             // Try to find existing chunk.
             var matchingChunks = Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
@@ -465,7 +477,7 @@ namespace HexTiles
                 HexTileData adjacentTile;
                 if (Tiles.TryGetValue(sidePosition, out adjacentTile))
                 {
-                    var chunkWithTile = FindChunkForCoordinates(sidePosition, adjacentTile.Material);
+                    var chunkWithTile = FindChunkForCoordinatesAndMaterial(sidePosition, adjacentTile.Material);
 
                     if (chunkWithTile != null)
                     {
@@ -568,7 +580,7 @@ namespace HexTiles
             // Early out if the material is the same.
             if (tile.Material == material)
             {
-                var chunk = FindChunkForCoordinates(tileCoords, material);
+                var chunk = FindChunkForCoordinatesAndMaterial(tileCoords, material);
                 return new ModifiedTileInfo(chunk, ModifiedTileInfo.ChunkOperation.Modified);
             }
 

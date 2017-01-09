@@ -60,6 +60,23 @@ namespace HexTiles
             }
         }
 
+        /// <summary>
+        /// The mesh of this chunk.
+        /// </summary>
+        public MeshFilter MeshFilter 
+        {
+            get 
+            {
+                if (meshFilter == null)
+                {
+                    meshFilter = GetComponent<MeshFilter>();
+                }
+                return meshFilter;
+            }
+        }
+
+        private MeshFilter meshFilter;
+
         [SerializeField, HideInInspector]
         private List<SidePieceInfo> sidePieces = new List<SidePieceInfo>();
 
@@ -105,7 +122,7 @@ namespace HexTiles
 
             gameObject.isStatic = true;
 
-            var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
+            var mesh = MeshFilter.mesh = new Mesh();
             mesh.name = "Chunk";
 
             var vertices = new List<Vector3>();
