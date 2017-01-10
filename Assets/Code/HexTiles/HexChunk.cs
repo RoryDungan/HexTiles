@@ -74,8 +74,24 @@ namespace HexTiles
                 return meshFilter;
             }
         }
+        
+        /// <summary>
+        /// The mesh of this chunk.
+        /// </summary>
+        public MeshCollider MeshCollider 
+        {
+            get 
+            {
+                if (meshCollider == null)
+                {
+                    meshCollider = GetComponent<MeshCollider>();
+                }
+                return meshCollider;
+            }
+        }
 
         private MeshFilter meshFilter;
+        private MeshCollider meshCollider;
 
         [SerializeField, HideInInspector]
         private List<SidePieceInfo> sidePieces = new List<SidePieceInfo>();
@@ -159,7 +175,7 @@ namespace HexTiles
 
             mesh.RecalculateNormals();
 
-            GetComponent<MeshCollider>().sharedMesh = mesh;
+            MeshCollider.sharedMesh = mesh;
 
             Dirty = false;
         }

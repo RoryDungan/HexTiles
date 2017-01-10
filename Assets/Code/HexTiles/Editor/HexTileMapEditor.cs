@@ -525,6 +525,7 @@ namespace HexTiles.Editor
             Debug.Log("Registering undo object: " + chunk.gameObject.name);
             Undo.RecordObject(chunk, message);
             Undo.RecordObject(chunk.MeshFilter, message);
+            Undo.RecordObject(chunk.MeshCollider, message);
         }
 
         void OnSceneGUI()
