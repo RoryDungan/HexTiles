@@ -82,25 +82,15 @@ namespace HexTiles
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        private IList<HexTileData> Tiles
+        private IEnumerable<HexTileData> Tiles
         {
             get
             {
-                // Lazy init hexes hashtable
-                if (tiles == null)
-                {
-                    tiles = new List<HexTileData>();
-
-                    // Get tiles from batched objects
-                    foreach (var tileChunk in Chunks)
-                    {
-                        foreach (var tilePosition in tileChunk.Tiles)
-                        {
-                            tiles.Add(new HexTileData(tilePosition, tileChunk.TileDiameter, tileChunk.Material));
-                        }
-                    }
-                }
-                return tiles;
+                return Chunks
+                    .SelectMany(chunk => chunk
+                        .Tiles
+                        .Select(tile => new HexTileData(tile, chunk.TileDiameter, chunk.Material))
+                    );
             }
         }
         private IList<HexTileData> tiles;
@@ -274,7 +264,6 @@ namespace HexTiles
                 tileData.Add(hexTile);
             }
 
-            Tiles.Clear();
             Chunks.Clear();
 
             var childTiles = GetComponentsInChildren<HexTile>();
@@ -362,8 +351,6 @@ namespace HexTiles
             }
 
             chunk.AddTile(position);
-
-            Tiles.Add(new HexTileData(position, tileDiameter, material));
 
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
@@ -498,7 +485,6 @@ namespace HexTiles
             {
                 Debug.LogError("Tile found in internal tile collection but not in scene. Removing", this);
             }
-            Tiles.Remove(tile);
 
             foreach (var chunk in chunksWithTile)
             {
@@ -522,7 +508,6 @@ namespace HexTiles
         /// </summary>
         public void ClearAllTiles()
         {
-            Tiles.Clear();
             Chunks.Clear();
 
             // Note that we must add all children to a list first because if we
