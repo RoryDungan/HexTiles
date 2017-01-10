@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using System.Linq;
 
 namespace HexTiles.Editor
 {
@@ -10,8 +11,9 @@ namespace HexTiles.Editor
         [MenuItem("Tools/Count hex tiles")]
         static void CountTilesClicked()
         {
-            var regularTileCount = GameObject.FindObjectsOfType<HexTile>().Length;
-            var chunkCount = GameObject.FindObjectsOfType<HexChunk>().Length;
+            var chunks = GameObject.FindObjectsOfType<HexChunk>();
+            var chunkCount = chunks.Length;
+            var regularTileCount = chunks.SelectMany(chunk => chunk.Tiles).Count();
 
             var message = string.Format("Individual tiles: {0}\nChunks: {1}", regularTileCount, chunkCount);
 

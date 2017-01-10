@@ -720,7 +720,7 @@ namespace HexTiles.Editor
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             return Physics.RaycastAll(ray, 1000f)
-                .Where(hit => hit.collider.GetComponent<HexTile>() != null || hit.collider.GetComponent<HexChunk>() != null)
+                .Where(hit => hit.collider.GetComponent<HexChunk>() != null)
                 .OrderBy(hit => hit.distance)
                 .Select(hit => new HexPosition(hexMap.QuantizeVector3ToHexCoords(hit.point), hit.point.y))
                 .FirstOrDefault();

@@ -83,7 +83,7 @@ namespace HexTiles
         [SerializeField, HideInInspector]
         private List<HexPosition> tiles = new List<HexPosition>();
 
-        internal IList<HexPosition> Tiles { get { return tiles; } }
+        public IList<HexPosition> Tiles { get { return tiles; } }
 
         /// <summary>
         /// Add a tile to this chunk.
