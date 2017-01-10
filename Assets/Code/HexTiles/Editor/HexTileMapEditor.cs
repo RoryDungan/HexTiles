@@ -523,8 +523,8 @@ namespace HexTiles.Editor
         {
             var message = "Edited hex tiles";
             Debug.Log("Registering undo object: " + chunk.gameObject.name);
-            Undo.RegisterCompleteObjectUndo(chunk, message);
-            Undo.RegisterCompleteObjectUndo(chunk.MeshFilter, message);
+            Undo.RecordObject(chunk, message);
+            Undo.RecordObject(chunk.MeshFilter, message);
         }
 
         void OnSceneGUI()
