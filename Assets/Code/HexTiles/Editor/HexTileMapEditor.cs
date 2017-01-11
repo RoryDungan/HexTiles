@@ -74,6 +74,8 @@ namespace HexTiles.Editor
         /// </summary>
         int brushSize = 1;
 
+        private static readonly string undoMessage = "Edited hex tiles";
+
         private void Initialise()
         {
             rootState = new StateMachineBuilder()
@@ -81,7 +83,7 @@ namespace HexTiles.Editor
                     .Enter(evt => selectedToolIndex = 0)
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
+                        EditorUtilities.ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
                         HexTileData currentTile;
                         if (hexMap.SelectedTile != null && hexMap.TryGetTile(hexMap.SelectedTile, out currentTile))
@@ -89,26 +91,9 @@ namespace HexTiles.Editor
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Column", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.IntField(hexMap.SelectedTile.Q);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
-
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Row", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.IntField(hexMap.SelectedTile.R);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
-
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.FloatField(currentTile.Position.Elevation);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
+                            EditorUtilities.ShowReadonlyIntField("Column", hexMap.SelectedTile.Q);
+                            EditorUtilities.ShowReadonlyIntField("Row", hexMap.SelectedTile.R);
+                            EditorUtilities.ShowReadonlyFloatField("Elevation", currentTile.Position.Elevation);
 
                             // Tile settings
                             GUILayout.Label("Settings", EditorStyles.boldLabel);
@@ -141,7 +126,7 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
+                        EditorUtilities.ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
 
                         bool sceneNeedsRepaint = false;
 
@@ -190,7 +175,7 @@ namespace HexTiles.Editor
                     })
                     .Event("MouseMove", state =>
                     {
-                        var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
+                        var highlightedPosition = EditorUtilities.GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
                         if (highlightedPosition != null)
                         {
                             centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
@@ -203,7 +188,7 @@ namespace HexTiles.Editor
                     {
                         if (eventArgs.Button == 0)
                         {
-                            var position = GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
+                            var position = EditorUtilities.GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
                             if (position != null)
                             {
                                 // Select the tile that was clicked on.
@@ -217,16 +202,21 @@ namespace HexTiles.Editor
                                     var chunk = hexMap.FindChunkForCoordinates(hex);
                                     if (chunk != null && !state.ModifiedChunks.Contains(chunk))
                                     {
-                                        RecordChunkUndo(chunk);
+                                        RecordChunkModifiedUndo(chunk);
                                         state.ModifiedChunks.Add(chunk);
                                     }
 
                                     // TODO: add feature for disabling wireframe again.
                                     var paintHeight = state.PaintHeight + state.PaintOffset;
                                     
-                                    hexMap.CreateAndAddTile(
+                                    var action = hexMap.CreateAndAddTile(
                                         new HexPosition(hex, paintHeight),
                                         hexMap.CurrentMaterial);
+                                    
+                                    if (action.Operation == ModifiedTileInfo.ChunkOperation.Added)
+                                    {
+                                        RecordChunkAddedUndo(action.Chunk);
+                                    }
 
                                     // TODO: find a way of making this work for chunks
                                     //EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
@@ -261,7 +251,7 @@ namespace HexTiles.Editor
                     {
                         bool sceneNeedsRepaint = false;
 
-                        ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
+                        EditorUtilities.ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
 
                         var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
                         if (newBrushSize != brushSize)
@@ -321,7 +311,7 @@ namespace HexTiles.Editor
                     .Enter(evt => selectedToolIndex = 3)
                     .Update((state, dt) => 
                     {
-                        ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
+                        EditorUtilities.ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
 
                         var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
                         if (newBrushSize != brushSize)
@@ -371,7 +361,7 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Settings", "Configure options for the whole tile map.");
+                        EditorUtilities.ShowHelpBox("Settings", "Configure options for the whole tile map.");
 
                         // TODO: This has been commented out because it doesn't currently work with the new 
                         // hex chunks system. I'm not sure if any artists/designers even used it anyway, so 
@@ -518,12 +508,19 @@ namespace HexTiles.Editor
         /// <summary>
         /// Record an undo action for a chunk.
         /// </summary>
-        private void RecordChunkUndo(HexChunk chunk)
+        private void RecordChunkModifiedUndo(HexChunk chunk)
         {
-            var message = "Edited hex tiles";
-            Undo.RecordObject(chunk, message);
-            Undo.RecordObject(chunk.MeshFilter, message);
-            Undo.RecordObject(chunk.MeshCollider, message);
+            Undo.RecordObject(chunk, undoMessage);
+            Undo.RecordObject(chunk.MeshFilter, undoMessage);
+            Undo.RecordObject(chunk.MeshCollider, undoMessage);
+        }
+
+        /// <summary>
+        /// Record that a chunk was added.
+        /// </summary>
+        private void RecordChunkAddedUndo(HexChunk chunk)
+        {
+            Undo.RegisterCreatedObjectUndo(chunk.gameObject, undoMessage);
         }
 
         void OnSceneGUI()
@@ -633,6 +630,13 @@ namespace HexTiles.Editor
             SetWireframeVisible(hexMap.DrawWireframeWhenSelected);
 
             Initialise();
+
+            Undo.undoRedoPerformed += OnUndoPerformed;
+        }
+
+        void OnDisable()
+        {
+            Undo.undoRedoPerformed -= OnUndoPerformed;
         }
 
         public override void OnInspectorGUI()
@@ -665,6 +669,17 @@ namespace HexTiles.Editor
         }
 
         /// <summary>
+        /// Callback triggered when an undo is performed.
+        private void OnUndoPerformed()
+        {
+            // This must be done in case the undo operation deleted a chunk
+            // or added a new one. This would be more efficient if we could 
+            // actually know whether the undo operation affected this object
+            // rather than doing it after every undo.
+            hexMap.ClearChunkCache();
+        }
+
+        /// <summary>
         /// Helper function to get the correct icon for a tool button.
         /// </summary>
         private Texture2D GetToolButtonIcon(int index)
@@ -681,34 +696,6 @@ namespace HexTiles.Editor
             }
 
             return image;
-        }
-
-        /// <summary>
-        /// Show a UI with some information about the selected tool.
-        /// </summary>
-        private void ShowHelpBox(string toolName, string description)
-        {
-            GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label(toolName);
-            GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
-            GUILayout.EndVertical();
-        }
-
-        /// <summary>
-        /// Return the point we would hit at the specified height for the specified mouse position.
-        /// </summary>
-        private Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition, float placementHeight)
-        {
-            var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
-            var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
-
-            var distance = 0f;
-            if (plane.Raycast(ray, out distance))
-            {
-                return ray.GetPoint(distance);
-            }
-
-            return null;
         }
 
         /// <summary>
