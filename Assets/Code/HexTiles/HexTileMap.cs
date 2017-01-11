@@ -93,7 +93,6 @@ namespace HexTiles
                     );
             }
         }
-        private IList<HexTileData> tiles;
 
         private IList<HexChunk> chunks;
 
@@ -179,7 +178,7 @@ namespace HexTiles
 
             if (SelectedTile != null)
             {
-                var tile = GetTileForCoords(SelectedTile);
+                var tile = FindTileForCoords(SelectedTile);
                 
                 if (tile != null)
                 {
@@ -192,7 +191,7 @@ namespace HexTiles
         /// Returns the tile at the specified coordinates, or null
         /// if none exists.
         /// </summary>
-        private HexTileData GetTileForCoords(HexCoords coords)
+        private HexTileData FindTileForCoords(HexCoords coords)
         {
             return Tiles
                 .Where(t => t.Position.Coordinates == coords)
@@ -324,7 +323,7 @@ namespace HexTiles
             }
 
             // See if there's already a tile at the specified position.
-            var tile = GetTileForCoords(coords);
+            var tile = FindTileForCoords(coords);
             if (tile != null)
             {
                 // If a tlie at that position and that height already exists, return it.
@@ -346,7 +345,7 @@ namespace HexTiles
             foreach (var side in HexMetrics.AdjacentHexes)
             {
                 var adjacentTilePos = coords + side;
-                var adjacentTile = GetTileForCoords(adjacentTilePos);
+                var adjacentTile = FindTileForCoords(adjacentTilePos);
                 if (adjacentTile != null)
                 {
                     var adjacentTileChunk = FindChunkForCoordinatesAndMaterial(adjacentTilePos, adjacentTile.Material);
@@ -428,7 +427,7 @@ namespace HexTiles
 
         private void SetUpSidePiecesForTile(HexCoords position, HexChunk tileChunk)
         {
-            var tile = GetTileForCoords(position);
+            var tile = FindTileForCoords(position);
             if (tile == null)
             {
                 throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
@@ -438,7 +437,7 @@ namespace HexTiles
             {
                 var sidePosition = position + side;
 
-                var adjacentTile = GetTileForCoords(sidePosition);
+                var adjacentTile = FindTileForCoords(sidePosition);
                 if (adjacentTile != null)
                 {
                     var chunkWithTile = FindChunkForCoordinatesAndMaterial(sidePosition, adjacentTile.Material);
@@ -462,7 +461,7 @@ namespace HexTiles
         /// </summary>
         public bool TryRemovingTile(HexCoords position)
         {
-            var tile = GetTileForCoords(position);
+            var tile = FindTileForCoords(position);
             if (tile == null)
             {
                 return false;
@@ -514,7 +513,7 @@ namespace HexTiles
         /// </summary>
         public bool ContainsTile(HexCoords tileCoords)
         {
-            return GetTileForCoords(tileCoords) != null;
+            return FindTileForCoords(tileCoords) != null;
         }
 
         /// <summary>
@@ -522,7 +521,7 @@ namespace HexTiles
         /// </summary>
         public bool TryGetTile(HexCoords tileCoords, out HexTileData data)
         {
-            data = GetTileForCoords(tileCoords);
+            data = FindTileForCoords(tileCoords);
             return data != null;
         }
 

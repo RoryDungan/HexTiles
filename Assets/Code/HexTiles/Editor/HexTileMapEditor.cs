@@ -210,11 +210,10 @@ namespace HexTiles.Editor
                                 centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                                 var coords = centerSelectedTileCoords.CoordinateRange(brushSize - 1);
                                 
-                                // Keep track of which chunks we've modified so that 
-                                // we only record undo actions for each once.
-
                                 foreach (var hex in coords)
                                 {
+                                    // Keep track of which chunks we've modified so that 
+                                    // we only record undo actions for each once.
                                     var chunk = hexMap.FindChunkForCoordinates(hex);
                                     if (chunk != null && !state.ModifiedChunks.Contains(chunk))
                                     {
@@ -522,7 +521,6 @@ namespace HexTiles.Editor
         private void RecordChunkUndo(HexChunk chunk)
         {
             var message = "Edited hex tiles";
-            Debug.Log("Registering undo object: " + chunk.gameObject.name);
             Undo.RecordObject(chunk, message);
             Undo.RecordObject(chunk.MeshFilter, message);
             Undo.RecordObject(chunk.MeshCollider, message);
