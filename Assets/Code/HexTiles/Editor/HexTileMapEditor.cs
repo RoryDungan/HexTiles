@@ -173,7 +173,7 @@ namespace HexTiles.Editor
                     })
                     .Event("MouseMove", state =>
                     {
-                        var highlightedPosition = GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
+                        var highlightedPosition = EditorUtilities.GetWorldPositionForMouse(Event.current.mousePosition, state.PaintHeight);
                         if (highlightedPosition != null)
                         {
                             centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(highlightedPosition.GetValueOrDefault());
@@ -186,7 +186,7 @@ namespace HexTiles.Editor
                     {
                         if (eventArgs.Button == 0)
                         {
-                            var position = GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
+                            var position = EditorUtilities.GetWorldPositionForMouse(eventArgs.Position, state.PaintHeight);
                             if (position != null)
                             {
                                 // Select the tile that was clicked on.
@@ -664,23 +664,6 @@ namespace HexTiles.Editor
             }
 
             return image;
-        }
-
-        /// <summary>
-        /// Return the point we would hit at the specified height for the specified mouse position.
-        /// </summary>
-        private Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition, float placementHeight)
-        {
-            var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
-            var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
-
-            var distance = 0f;
-            if (plane.Raycast(ray, out distance))
-            {
-                return ray.GetPoint(distance);
-            }
-
-            return null;
         }
 
         /// <summary>

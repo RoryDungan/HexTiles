@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System;
 
 namespace HexTiles.Editor
 {
@@ -46,6 +47,23 @@ namespace HexTiles.Editor
             EditorGUILayout.FloatField(value);
             GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// Return the point we would hit at the specified height for the specified mouse position.
+        /// </summary>
+        internal static Nullable<Vector3> GetWorldPositionForMouse(Vector2 mousePosition, float placementHeight)
+        {
+            var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+            var plane = new Plane(Vector3.up, new Vector3(0, placementHeight, 0));
+
+            var distance = 0f;
+            if (plane.Raycast(ray, out distance))
+            {
+                return ray.GetPoint(distance);
+            }
+
+            return null;
         }
     }
 }
