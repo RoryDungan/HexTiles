@@ -60,13 +60,46 @@ namespace HexTiles
             }
         }
 
+        /// <summary>
+        /// The mesh of this chunk.
+        /// </summary>
+        public MeshFilter MeshFilter 
+        {
+            get 
+            {
+                if (meshFilter == null)
+                {
+                    meshFilter = GetComponent<MeshFilter>();
+                }
+                return meshFilter;
+            }
+        }
+        
+        /// <summary>
+        /// The mesh of this chunk.
+        /// </summary>
+        public MeshCollider MeshCollider 
+        {
+            get 
+            {
+                if (meshCollider == null)
+                {
+                    meshCollider = GetComponent<MeshCollider>();
+                }
+                return meshCollider;
+            }
+        }
+
+        private MeshFilter meshFilter;
+        private MeshCollider meshCollider;
+
         [SerializeField, HideInInspector]
         private List<SidePieceInfo> sidePieces = new List<SidePieceInfo>();
 
         [SerializeField, HideInInspector]
         private List<HexPosition> tiles = new List<HexPosition>();
 
-        internal IList<HexPosition> Tiles { get { return tiles; } }
+        public IList<HexPosition> Tiles { get { return tiles; } }
 
         /// <summary>
         /// Add a tile to this chunk.
@@ -105,7 +138,7 @@ namespace HexTiles
 
             gameObject.isStatic = true;
 
-            var mesh = GetComponent<MeshFilter>().mesh = new Mesh();
+            var mesh = MeshFilter.mesh = new Mesh();
             mesh.name = "Chunk";
 
             var vertices = new List<Vector3>();
@@ -142,7 +175,7 @@ namespace HexTiles
 
             mesh.RecalculateNormals();
 
-            GetComponent<MeshCollider>().sharedMesh = mesh;
+            MeshCollider.sharedMesh = mesh;
 
             Dirty = false;
         }

@@ -209,13 +209,23 @@ namespace HexTiles.Editor
                                 // Select the tile that was clicked on.
                                 centerSelectedTileCoords = hexMap.QuantizeVector3ToHexCoords(position.GetValueOrDefault());
                                 var coords = centerSelectedTileCoords.CoordinateRange(brushSize - 1);
-
-                                // Create tile
+                                
                                 foreach (var hex in coords)
                                 {
+                                    // Keep track of which chunks we've modified so that 
+                                    // we only record undo actions for each once.
+                                    var chunk = hexMap.FindChunkForCoordinates(hex);
+                                    if (chunk != null && !state.ModifiedChunks.Contains(chunk))
+                                    {
+                                        RecordChunkUndo(chunk);
+                                        state.ModifiedChunks.Add(chunk);
+                                    }
+
                                     // TODO: add feature for disabling wireframe again.
+                                    var paintHeight = state.PaintHeight + state.PaintOffset;
+                                    
                                     hexMap.CreateAndAddTile(
-                                        new HexPosition(hex, state.PaintHeight + state.PaintOffset),
+                                        new HexPosition(hex, paintHeight),
                                         hexMap.CurrentMaterial);
 
                                     // TODO: find a way of making this work for chunks
@@ -227,6 +237,12 @@ namespace HexTiles.Editor
                                 MarkSceneDirty();
                             }
                         }
+                    })
+                    .Event("MouseUp", state => 
+                    {
+                        // Flush list of modified chunksso that they are not included in 
+                        // the next undo action.
+                        state.ModifiedChunks.Clear();
                     })
                     .Exit(state =>
                     {
@@ -499,6 +515,17 @@ namespace HexTiles.Editor
 #endif
         }
 
+        /// <summary>
+        /// Record an undo action for a chunk.
+        /// </summary>
+        private void RecordChunkUndo(HexChunk chunk)
+        {
+            var message = "Edited hex tiles";
+            Undo.RecordObject(chunk, message);
+            Undo.RecordObject(chunk.MeshFilter, message);
+            Undo.RecordObject(chunk.MeshCollider, message);
+        }
+
         void OnSceneGUI()
         {
             if (hexMap.DrawHexPositionHandles)
@@ -543,6 +570,15 @@ namespace HexTiles.Editor
                         Repaint();
                         Event.current.Use();
                     }
+                    break;
+                case EventType.MouseUp:
+                    // Don't do anything if the user alt-left clicks to rotate the camera.
+                    if ((Event.current.button == 0 && Event.current.alt) || Event.current.button != 0)
+                    {
+                        break;
+                    }
+
+                    rootState.TriggerEvent("MouseUp");
                     break;
                 case EventType.layout:
                     HandleUtility.AddDefaultControl(controlId);
@@ -683,7 +719,7 @@ namespace HexTiles.Editor
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
             return Physics.RaycastAll(ray, 1000f)
-                .Where(hit => hit.collider.GetComponent<HexTile>() != null || hit.collider.GetComponent<HexChunk>() != null)
+                .Where(hit => hit.collider.GetComponent<HexChunk>() != null)
                 .OrderBy(hit => hit.distance)
                 .Select(hit => new HexPosition(hexMap.QuantizeVector3ToHexCoords(hit.point), hit.point.y))
                 .FirstOrDefault();
@@ -722,6 +758,8 @@ namespace HexTiles.Editor
             public float PaintHeight;
 
             public float PaintOffset;
+
+            public HashSet<HexChunk> ModifiedChunks = new HashSet<HexChunk>();
         }
 
         /// <summary>

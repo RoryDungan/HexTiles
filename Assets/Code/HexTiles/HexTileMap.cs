@@ -82,54 +82,17 @@ namespace HexTiles
         /// <summary>
         /// Collection of all hex tiles that are part of this map.
         /// </summary>
-        private IDictionary<HexCoords, HexTileData> Tiles
+        private IEnumerable<HexTileData> Tiles
         {
             get
             {
-                // Lazy init hexes hashtable
-                if (tiles == null)
-                {
-                    // Add all the existing tiles in the scene that are part of this map
-                    tiles = new Dictionary<HexCoords, HexTileData>();
-
-                    // Get tiles from legacy, non-batched tile objects in the scene.
-                    foreach (var tile in GetComponentsInChildren<HexTile>())
-                    {
-                        var tilePosition = QuantizeVector3ToHexCoords(tile.transform.position);
-                        try
-                        {
-                            var newTile = new HexTileData(new HexPosition(tilePosition, tile.Elevation), tileDiameter, tile.Material);
-                            tiles.Add(tilePosition, newTile);
-                        }
-                        catch (ArgumentException)
-                        {
-                            Debug.LogWarning("Duplicate tile at position " + tilePosition + " found. Deleting.", this);
-                            if (Application.isEditor)
-                            {
-                                DestroyImmediate(tile.gameObject);
-                            }
-                            else
-                            {
-                                Destroy(tile.gameObject);
-                            }
-                            continue;
-                        }
-                        tile.Diameter = tileDiameter;
-                    }
-
-                    // Get tiles from batched objects
-                    foreach (var tileChunk in GetComponentsInChildren<HexChunk>())
-                    {
-                        foreach (var tilePosition in tileChunk.Tiles)
-                        {
-                            tiles.Add(tilePosition.Coordinates, new HexTileData(tilePosition, tileChunk.TileDiameter, tileChunk.Material));
-                        }
-                    }
-                }
-                return tiles;
+                return Chunks
+                    .SelectMany(chunk => chunk
+                        .Tiles
+                        .Select(tile => new HexTileData(tile, chunk.TileDiameter, chunk.Material))
+                    );
             }
         }
-        private IDictionary<HexCoords, HexTileData> tiles;
 
         private IList<HexChunk> chunks;
 
@@ -213,10 +176,26 @@ namespace HexTiles
                 }
             }
 
-            if (SelectedTile != null && Tiles.ContainsKey(SelectedTile))
+            if (SelectedTile != null)
             {
-                DrawHexGizmo(HexPositionToWorldPosition(Tiles[SelectedTile].Position), Color.green);
+                var tile = FindTileForCoords(SelectedTile);
+                
+                if (tile != null)
+                {
+                    DrawHexGizmo(HexPositionToWorldPosition(tile.Position), Color.green);
+                }
             }
+        }
+
+        /// <summary>
+        /// Returns the tile at the specified coordinates, or null
+        /// if none exists.
+        /// </summary>
+        private HexTileData FindTileForCoords(HexCoords coords)
+        {
+            return Tiles
+                .Where(t => t.Position.Coordinates == coords)
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -272,33 +251,21 @@ namespace HexTiles
         /// Re-position and re-generate geometry for all tiles.
         /// Needed after changing global settings that affect all the tiles
         /// such as the tile size.
+        /// 
+        /// Returns the chunks that were changed as a result of this operation.
         /// </summary>
-        public void RegenerateAllTiles()
+        public IEnumerable<ModifiedTileInfo> RegenerateAllTiles()
         {
             var tileData = new List<HexTileData>();
 
-            foreach (var tileCoords in Tiles.Keys)
+            foreach (var hexTile in Tiles)
             {
-                var hexTile = Tiles[tileCoords];
                 tileData.Add(hexTile);
             }
 
-            Tiles.Clear();
             Chunks.Clear();
 
-            var childTiles = GetComponentsInChildren<HexTile>();
             var childChunks = GetComponentsInChildren<HexChunk>();
-            foreach (var tile in childTiles)
-            {
-                if (Application.isEditor)
-                {
-                    DestroyImmediate(tile.gameObject);
-                }
-                else
-                {
-                    Destroy(tile.gameObject);
-                }
-            }
             foreach (var chunk in childChunks)
             {
                 if (Application.isEditor)
@@ -311,12 +278,14 @@ namespace HexTiles
                 }
             }
 
-            foreach (var tile in tileData)
-            {
-                CreateAndAddTile(tile.Position, tile.Material);
-            }
+            var modifiedChunks = tileData
+                .Select(tile => CreateAndAddTile(tile.Position, tile.Material))
+                .Distinct()
+                .ToArray(); // Need to force this to evaluate now so that CreateAndAddTile actually gets called.
 
             UpdateTileChunks();
+
+            return modifiedChunks;
         }
 
         /// <summary>
@@ -333,56 +302,59 @@ namespace HexTiles
             }
         }
 
+        //public HexChunk FindChunkForCoordinates
+
         /// <summary>
-        /// Add a tile to the map. Returns the newly added hex tile.
-        /// If a tile already exists at that position then that is returned instead.
+        /// Add a tile to the map. Returns the chunk object containing the new tile.
         /// </summary>
-        public void CreateAndAddTile(HexPosition position, Material material)
+        public ModifiedTileInfo CreateAndAddTile(HexPosition position, Material material)
         {
             var coords = position.Coordinates;
             var elevation = position.Elevation;
 
+            var chunk = FindChunkForCoordinatesAndMaterial(coords, material);
+            var chunkOperation = ModifiedTileInfo.ChunkOperation.Modified;
+
+            // Create new chunk if necessary
+            if (chunk == null)
+            {
+                chunk = CreateChunkForCoordinates(position.Coordinates, material);
+                chunkOperation = ModifiedTileInfo.ChunkOperation.Added;
+            }
+
             // See if there's already a tile at the specified position.
-            HexTileData tile;
-            if (Tiles.TryGetValue(coords, out tile))
+            var tile = FindTileForCoords(coords);
+            if (tile != null)
             {
                 // If a tlie at that position and that height already exists, return it.
                 if (tile.Position.Elevation == elevation
                     && tile.Material == material)
                 {
-                    return;
+                    return new ModifiedTileInfo(chunk, chunkOperation);
                 }
 
                 // Remove the tile before adding a new one.
                 TryRemovingTile(coords);
             }
 
-            var chunk = FindChunkForCoordinates(coords, material);
-
-            // Create new chunk if necessary
-            if (chunk == null)
-            {
-                chunk = CreateChunkForCoordinates(position.Coordinates, material);
-            }
-
             chunk.AddTile(position);
-
-            Tiles.Add(coords, new HexTileData(position, tileDiameter, material));
 
             // Generate side pieces
             // Note that we also need to update all the tiles adjacent to this one so that any side pieces that could be 
             // Obscured by this one are removed.
             foreach (var side in HexMetrics.AdjacentHexes)
             {
-                HexTileData adjacentTile;
                 var adjacentTilePos = coords + side;
-                if (Tiles.TryGetValue(adjacentTilePos, out adjacentTile))
+                var adjacentTile = FindTileForCoords(adjacentTilePos);
+                if (adjacentTile != null)
                 {
-                    var adjacentTileChunk = FindChunkForCoordinates(adjacentTilePos, adjacentTile.Material);
+                    var adjacentTileChunk = FindChunkForCoordinatesAndMaterial(adjacentTilePos, adjacentTile.Material);
                     SetUpSidePiecesForTile(adjacentTilePos, adjacentTileChunk);
                 }
             }
             SetUpSidePiecesForTile(coords, chunk);
+
+            return new ModifiedTileInfo(chunk, chunkOperation);
         }
 
         /// <summary>
@@ -397,10 +369,20 @@ namespace HexTiles
         }
 
         /// <summary>
+        /// Returns the chunk for the tile at the specified coordinates, or 
+        /// null if none exists.
+        /// </summary>
+        public HexChunk FindChunkForCoordinates(HexCoords coordinates)
+        {
+            return Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
+                .FirstOrDefault();
+        }
+
+        /// <summary>
         /// Find a chunk with bounds that match the specified coordinates, and the specified material.
         /// Returns null if none was found.
         /// </summary>
-        private HexChunk FindChunkForCoordinates(HexCoords coordinates, Material material)
+        private HexChunk FindChunkForCoordinatesAndMaterial(HexCoords coordinates, Material material)
         {
             // Try to find existing chunk.
             var matchingChunks = Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
@@ -445,8 +427,8 @@ namespace HexTiles
 
         private void SetUpSidePiecesForTile(HexCoords position, HexChunk tileChunk)
         {
-            HexTileData tile;
-            if (!Tiles.TryGetValue(position, out tile))
+            var tile = FindTileForCoords(position);
+            if (tile == null)
             {
                 throw new ApplicationException("Tried to set up side pieces for non-existent tile.");
             }
@@ -455,10 +437,10 @@ namespace HexTiles
             {
                 var sidePosition = position + side;
 
-                HexTileData adjacentTile;
-                if (Tiles.TryGetValue(sidePosition, out adjacentTile))
+                var adjacentTile = FindTileForCoords(sidePosition);
+                if (adjacentTile != null)
                 {
-                    var chunkWithTile = FindChunkForCoordinates(sidePosition, adjacentTile.Material);
+                    var chunkWithTile = FindChunkForCoordinatesAndMaterial(sidePosition, adjacentTile.Material);
 
                     if (chunkWithTile != null)
                     {
@@ -479,7 +461,8 @@ namespace HexTiles
         /// </summary>
         public bool TryRemovingTile(HexCoords position)
         {
-            if (!Tiles.ContainsKey(position))
+            var tile = FindTileForCoords(position);
+            if (tile == null)
             {
                 return false;
             }
@@ -489,7 +472,6 @@ namespace HexTiles
             {
                 Debug.LogError("Tile found in internal tile collection but not in scene. Removing", this);
             }
-            Tiles.Remove(position);
 
             foreach (var chunk in chunksWithTile)
             {
@@ -513,7 +495,6 @@ namespace HexTiles
         /// </summary>
         public void ClearAllTiles()
         {
-            Tiles.Clear();
             Chunks.Clear();
 
             // Note that we must add all children to a list first because if we
@@ -532,7 +513,7 @@ namespace HexTiles
         /// </summary>
         public bool ContainsTile(HexCoords tileCoords)
         {
-            return Tiles[tileCoords] != null;
+            return FindTileForCoords(tileCoords) != null;
         }
 
         /// <summary>
@@ -540,16 +521,15 @@ namespace HexTiles
         /// </summary>
         public bool TryGetTile(HexCoords tileCoords, out HexTileData data)
         {
-            HexTileData tile;
-            var foundTile = Tiles.TryGetValue(tileCoords, out tile);
-            data = tile;
-            return foundTile;
+            data = FindTileForCoords(tileCoords);
+            return data != null;
         }
 
         /// <summary>
         /// Remove the tile at the specified coordinates and replace it with one with the specified material.
+        /// Returns the chunk with the tile that was modified.
         /// </summary>
-        public void ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
+        public ModifiedTileInfo ReplaceMaterialOnTile(HexCoords tileCoords, Material material)
         {
             HexTileData tile;
             if (!TryGetTile(tileCoords, out tile))
@@ -560,12 +540,13 @@ namespace HexTiles
             // Early out if the material is the same.
             if (tile.Material == material)
             {
-                return;
+                var chunk = FindChunkForCoordinatesAndMaterial(tileCoords, material);
+                return new ModifiedTileInfo(chunk, ModifiedTileInfo.ChunkOperation.Modified);
             }
 
             TryRemovingTile(tileCoords);
 
-            CreateAndAddTile(tile.Position, material);
+            return CreateAndAddTile(tile.Position, material);
         }
 
         /// <summary>
@@ -573,7 +554,38 @@ namespace HexTiles
         /// </summary>
         public IEnumerable<HexTileData> GetAllTiles()
         {
-            return Tiles.Values;
+            return Tiles;
+        }
+    }
+
+    /// <summary>
+    /// Information about a tile that has been modified, used for 
+    /// recording undo actions.
+    /// </summary>
+    public struct ModifiedTileInfo
+    {
+        /// <summary>
+        /// The chunk containing the tile that was added.
+        /// </summary>
+        public HexChunk Chunk { get; private set; }
+
+        /// <summary>
+        /// Whether the chunk was just created, already existed and was modified,
+        /// or was deleted. Needed for recording what kind of Undo operation to use.
+        /// </summary>
+        public ChunkOperation Operation { get; private set; }
+
+        public enum ChunkOperation 
+        {
+            Added,
+            Modified,
+            Removed
+        }
+
+        public ModifiedTileInfo(HexChunk chunk, ChunkOperation operation) 
+        {
+            Chunk = chunk;
+            Operation = operation;
         }
     }
 }
