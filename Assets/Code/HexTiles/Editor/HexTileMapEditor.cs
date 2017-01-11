@@ -81,7 +81,7 @@ namespace HexTiles.Editor
                     .Enter(evt => selectedToolIndex = 0)
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
+                        EditorUtilities.ShowHelpBox("Select", "Pick a hex tile to manually edit its properties.");
 
                         HexTileData currentTile;
                         if (hexMap.SelectedTile != null && hexMap.TryGetTile(hexMap.SelectedTile, out currentTile))
@@ -141,7 +141,7 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
+                        EditorUtilities.ShowHelpBox("Paint tiles", "Click and drag to add hex tiles at the specified height.");
 
                         bool sceneNeedsRepaint = false;
 
@@ -261,7 +261,7 @@ namespace HexTiles.Editor
                     {
                         bool sceneNeedsRepaint = false;
 
-                        ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
+                        EditorUtilities.ShowHelpBox("Material paint", "Paint over existing tiles to change their material.");
 
                         var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
                         if (newBrushSize != brushSize)
@@ -321,7 +321,7 @@ namespace HexTiles.Editor
                     .Enter(evt => selectedToolIndex = 3)
                     .Update((state, dt) => 
                     {
-                        ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
+                        EditorUtilities.ShowHelpBox("Erase", "Click and drag on existing hex tiles to remove them.");
 
                         var newBrushSize = EditorGUILayout.IntSlider("Brush size", brushSize, 1, 10);
                         if (newBrushSize != brushSize)
@@ -371,7 +371,7 @@ namespace HexTiles.Editor
                     })
                     .Update((state, dt) =>
                     {
-                        ShowHelpBox("Settings", "Configure options for the whole tile map.");
+                        EditorUtilities.ShowHelpBox("Settings", "Configure options for the whole tile map.");
 
                         // TODO: This has been commented out because it doesn't currently work with the new 
                         // hex chunks system. I'm not sure if any artists/designers even used it anyway, so 
@@ -681,17 +681,6 @@ namespace HexTiles.Editor
             }
 
             return image;
-        }
-
-        /// <summary>
-        /// Show a UI with some information about the selected tool.
-        /// </summary>
-        private void ShowHelpBox(string toolName, string description)
-        {
-            GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label(toolName);
-            GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
-            GUILayout.EndVertical();
         }
 
         /// <summary>
