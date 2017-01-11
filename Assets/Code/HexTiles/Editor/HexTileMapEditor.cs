@@ -89,26 +89,9 @@ namespace HexTiles.Editor
                             // Tile info
                             GUILayout.Label("Tile position", EditorStyles.boldLabel);
 
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Column", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.IntField(hexMap.SelectedTile.Q);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
-
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Row", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.IntField(hexMap.SelectedTile.R);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
-
-                            EditorGUILayout.BeginHorizontal();
-                            GUILayout.Label("Elevation", GUILayout.Width(EditorGUIUtility.labelWidth));
-                            GUI.enabled = false;
-                            EditorGUILayout.FloatField(currentTile.Position.Elevation);
-                            GUI.enabled = true;
-                            EditorGUILayout.EndHorizontal();
+                            EditorUtilities.ShowReadonlyIntField("Column", hexMap.SelectedTile.Q);
+                            EditorUtilities.ShowReadonlyIntField("Row", hexMap.SelectedTile.R);
+                            EditorUtilities.ShowReadonlyFloatField("Elevation", currentTile.Position.Elevation);
 
                             // Tile settings
                             GUILayout.Label("Settings", EditorStyles.boldLabel);
