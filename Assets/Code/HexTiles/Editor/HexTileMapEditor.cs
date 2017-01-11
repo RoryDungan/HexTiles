@@ -74,6 +74,8 @@ namespace HexTiles.Editor
         /// </summary>
         int brushSize = 1;
 
+        private static readonly string undoMessage = "Edited hex tiles";
+
         private void Initialise()
         {
             rootState = new StateMachineBuilder()
@@ -200,16 +202,21 @@ namespace HexTiles.Editor
                                     var chunk = hexMap.FindChunkForCoordinates(hex);
                                     if (chunk != null && !state.ModifiedChunks.Contains(chunk))
                                     {
-                                        RecordChunkUndo(chunk);
+                                        RecordChunkModifiedUndo(chunk);
                                         state.ModifiedChunks.Add(chunk);
                                     }
 
                                     // TODO: add feature for disabling wireframe again.
                                     var paintHeight = state.PaintHeight + state.PaintOffset;
                                     
-                                    hexMap.CreateAndAddTile(
+                                    var action = hexMap.CreateAndAddTile(
                                         new HexPosition(hex, paintHeight),
                                         hexMap.CurrentMaterial);
+                                    
+                                    if (action.Operation == ModifiedTileInfo.ChunkOperation.Added)
+                                    {
+                                        RecordChunkAddedUndo(action.Chunk);
+                                    }
 
                                     // TODO: find a way of making this work for chunks
                                     //EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
@@ -501,12 +508,19 @@ namespace HexTiles.Editor
         /// <summary>
         /// Record an undo action for a chunk.
         /// </summary>
-        private void RecordChunkUndo(HexChunk chunk)
+        private void RecordChunkModifiedUndo(HexChunk chunk)
         {
-            var message = "Edited hex tiles";
-            Undo.RecordObject(chunk, message);
-            Undo.RecordObject(chunk.MeshFilter, message);
-            Undo.RecordObject(chunk.MeshCollider, message);
+            Undo.RecordObject(chunk, undoMessage);
+            Undo.RecordObject(chunk.MeshFilter, undoMessage);
+            Undo.RecordObject(chunk.MeshCollider, undoMessage);
+        }
+
+        /// <summary>
+        /// Record that a chunk was added.
+        /// </summary>
+        private void RecordChunkAddedUndo(HexChunk chunk)
+        {
+            Undo.RegisterCreatedObjectUndo(chunk.gameObject, undoMessage);
         }
 
         void OnSceneGUI()
@@ -616,6 +630,13 @@ namespace HexTiles.Editor
             SetWireframeVisible(hexMap.DrawWireframeWhenSelected);
 
             Initialise();
+
+            Undo.undoRedoPerformed += OnUndoPerformed;
+        }
+
+        void OnDisable()
+        {
+            Undo.undoRedoPerformed -= OnUndoPerformed;
         }
 
         public override void OnInspectorGUI()
@@ -645,6 +666,17 @@ namespace HexTiles.Editor
             rootState.Update(Time.deltaTime);
 
             hexMap.UpdateTileChunks();
+        }
+
+        /// <summary>
+        /// Callback triggered when an undo is performed.
+        private void OnUndoPerformed()
+        {
+            // This must be done in case the undo operation deleted a chunk
+            // or added a new one. This would be more efficient if we could 
+            // actually know whether the undo operation affected this object
+            // rather than doing it after every undo.
+            hexMap.ClearChunkCache();
         }
 
         /// <summary>

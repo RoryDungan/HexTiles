@@ -556,6 +556,16 @@ namespace HexTiles
         {
             return Tiles;
         }
+
+        /// <summary>
+        /// Clears the internal cache of chunks, which will be lazily rebuilt next 
+        /// time it's needed by scanning the scene hierarchy. Needed to be done after
+        /// a chunk is deleted by an undo action.
+        /// </summary>
+        public void ClearChunkCache()
+        {
+            chunks = null;
+        }
     }
 
     /// <summary>
