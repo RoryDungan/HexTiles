@@ -307,7 +307,7 @@ namespace HexTiles.Editor
                         }
                     })
                 .End()
-                .State("Erase")
+                .State<EraseState>("Erase")
                     .Enter(evt => selectedToolIndex = 3)
                     .Update((state, dt) => 
                     {
@@ -746,6 +746,14 @@ namespace HexTiles.Editor
 
             public float PaintOffset;
 
+            public HashSet<HexChunk> ModifiedChunks = new HashSet<HexChunk>();
+        }
+
+        /// <summary>
+        /// State for when we're erasing tiles.
+        /// </summary>
+        private class EraseState : AbstractState
+        {
             public HashSet<HexChunk> ModifiedChunks = new HashSet<HexChunk>();
         }
 
