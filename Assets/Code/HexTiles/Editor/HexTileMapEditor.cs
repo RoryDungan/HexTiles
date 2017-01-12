@@ -1,13 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
-using UnityEditor;
-using System;
-using RSG;
-using System.Linq;
-using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
-using UnityEditor.AnimatedValues;
 using System.Collections.Generic;
+using System.Linq;
+using RSG;
+using UnityEditor;
+using UnityEditor.AnimatedValues;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HexTiles.Editor
 {
@@ -230,7 +230,7 @@ namespace HexTiles.Editor
                     })
                     .Event("MouseUp", state => 
                     {
-                        // Flush list of modified chunksso that they are not included in 
+                        // Flush list of modified chunks so that they are not included in 
                         // the next undo action.
                         state.ModifiedChunks.Clear();
                     })
@@ -338,6 +338,13 @@ namespace HexTiles.Editor
                             {
                                 foreach (var tile in centerTile.Coordinates.CoordinateRange(brushSize - 1))
                                 {
+                                    var chunk = hexMap.FindChunkForCoordinates(tile);
+                                    if (chunk != null && !state.ModifiedChunks.Contains(chunk))
+                                    {
+                                        RecordChunkModifiedUndo(chunk);
+                                        state.ModifiedChunks.Add(chunk);
+                                    }
+
                                     // Destroy tile
                                     removedTile |= hexMap.TryRemovingTile(tile);
                                 }
@@ -348,6 +355,12 @@ namespace HexTiles.Editor
                                 MarkSceneDirty();
                             }
                         }
+                    })
+                    .Event("MouseUp", state =>
+                    {
+                        // Flush list of modified chunks so that they are not included in 
+                        // the next undo action.
+                        state.ModifiedChunks.Clear();
                     })
                 .End()
                 .State<SettingsState>("Settings")
