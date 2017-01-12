@@ -307,7 +307,7 @@ namespace HexTiles.Editor
                         }
                     })
                 .End()
-                .State<EraseState>("Erase")
+                .State<ChunkEditingState>("Erase")
                     .Enter(evt => selectedToolIndex = 3)
                     .Update((state, dt) => 
                     {
@@ -754,19 +754,17 @@ namespace HexTiles.Editor
         /// <summary>
         /// State for when we're painting tiles.
         /// </summary>
-        private class PaintState : AbstractState
+        private class PaintState : ChunkEditingState
         {
             public float PaintHeight;
 
             public float PaintOffset;
-
-            public HashSet<HexChunk> ModifiedChunks = new HashSet<HexChunk>();
         }
 
         /// <summary>
-        /// State for when we're erasing tiles.
+        /// Base class for states that modify tile chunks.
         /// </summary>
-        private class EraseState : AbstractState
+        private class ChunkEditingState : AbstractState
         {
             public HashSet<HexChunk> ModifiedChunks = new HashSet<HexChunk>();
         }
