@@ -207,7 +207,7 @@ namespace HexTiles
             Gizmos.color = color;
 
             var verts = HexMetrics.GetHexVertices(tileDiameter)
-                .Select(v => v + position)
+                .Select(v => (transform.localToWorldMatrix * v) + (Vector4)position)
                 .ToArray();
 
             for (var i = 0; i < verts.Length; i++)
