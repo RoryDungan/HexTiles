@@ -683,6 +683,7 @@ namespace HexTiles.Editor
 
         /// <summary>
         /// Callback triggered when an undo is performed.
+        /// </summary>
         private void OnUndoPerformed()
         {
             // This must be done in case the undo operation deleted a chunk
