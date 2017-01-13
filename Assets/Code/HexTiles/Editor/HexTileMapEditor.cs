@@ -628,6 +628,9 @@ namespace HexTiles.Editor
                     case HexTileMap.HexCoordinateFormat.OffsetOddQ:
                         labelText = hexCoords.ToOffset().ToString();
                         break;
+                    case HexTileMap.HexCoordinateFormat.OriginalCoords:
+                        labelText = hexCoords.ToOriginalCoords().ToString();
+                        break;
                 }
                 Handles.Label(position, labelText);
             }
