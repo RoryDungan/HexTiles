@@ -88,6 +88,16 @@ namespace HexTiles
             return new Vector2(Q, R + (Q - (Q&1)) / 2f);
         }
 
+        /// <summary>
+        /// Return the value of this position in original coordnates.
+        /// </summary>
+        public Vector2 ToOriginalCoords()
+        {
+            var y = -Q;
+            var x = R + Q;
+            return new Vector2(x, y);
+        }
+
         // override object.GetHashCode
         // Taken from http://stackoverflow.com/questions/5221396/what-is-an-appropriate-gethashcode-algorithm-for-a-2d-point-struct-avoiding
         public override int GetHashCode()
