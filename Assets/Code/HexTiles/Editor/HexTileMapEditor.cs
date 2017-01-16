@@ -242,7 +242,7 @@ namespace HexTiles.Editor
                         hexMap.NextTilePositions = null;
                     })
                 .End()
-                .State("Material paint")
+                .State<ChunkEditingState>("Material paint")
                     .Enter(state =>
                     {
                         selectedToolIndex = 2;
@@ -299,12 +299,30 @@ namespace HexTiles.Editor
                                     .Where(coords => hexMap.ContainsTile(coords));
                                 foreach (var coords in tilesUnderBrush)
                                 {
-                                    hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
+                                    var chunk = hexMap.FindChunkForCoordinates(coords);
+                                    if (chunk != null && !state.ModifiedChunks.Contains(chunk))
+                                    {
+                                        RecordChunkModifiedUndo(chunk);
+                                        state.ModifiedChunks.Add(chunk);
+                                    }
+
+                                    var action = hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
+
+                                    if (action.Operation == ModifiedTileInfo.ChunkOperation.Added)
+                                    {
+                                        RecordChunkAddedUndo(action.Chunk);
+                                    }
                                 }
                             }
 
                             Event.current.Use();
                         }
+                    })
+                    .Event("MouseUp", state => 
+                    {
+                        // Flush list of modified chunks so that they are not included in 
+                        // the next undo action.
+                        state.ModifiedChunks.Clear();
                     })
                 .End()
                 .State<ChunkEditingState>("Erase")
