@@ -8,7 +8,7 @@ namespace HexTiles.Editor
 {
     public class HexTileUtils : ScriptableObject
     {
-        [MenuItem("Tools/Count hex tiles")]
+        [MenuItem("Hex tiles/Count hex tiles", false, 0)]
         static void CountTilesClicked()
         {
             var chunks = GameObject.FindObjectsOfType<HexChunk>();
@@ -20,7 +20,7 @@ namespace HexTiles.Editor
             EditorUtility.DisplayDialog("Hex tile count", message, "Ok");
         }
 
-        [MenuItem("Tools/Regenerate all hex tiles in all HexTileMaps")]
+        [MenuItem("Hex tiles/Regenerate all hex tiles in all HexTileMaps", false, 1)]
         static void RegenerateAllHexTiles()
         {
             foreach (var map in GameObject.FindObjectsOfType<HexTileMap>())
