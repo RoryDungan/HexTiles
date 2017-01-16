@@ -30,7 +30,19 @@ namespace HexTiles.Editor
             }
 
             EditorUtility.DisplayDialog("Finished regenerating tiles.", "Finished regenerating meshes for all hex tiles in all HexTileMaps.", "Ok");
+        }
 
+        [MenuItem("GameObject/Hex tile map", false, 10)]
+        static void CreateNewHexTileMap(MenuCommand menuCommand)
+        {
+            var go = new GameObject("Hex tile map");
+            GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+            go.AddComponent(typeof(HexTileMap));
+
+            Undo.RegisterCreatedObjectUndo(go, "Created new hex tile map");
+
+            Selection.activeGameObject = go;
+        }
         }
 
         /// <summary>
