@@ -523,7 +523,7 @@ namespace HexTiles.Editor
         /// </summary>
         private void RecordChunkModifiedUndo(HexChunk chunk)
         {
-            Undo.RecordObject(chunk, undoMessage);
+            Undo.RegisterCompleteObjectUndo(chunk, undoMessage);
             Undo.RecordObject(chunk.MeshFilter, undoMessage);
             Undo.RecordObject(chunk.MeshCollider, undoMessage);
         }
