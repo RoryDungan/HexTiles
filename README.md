@@ -31,11 +31,11 @@ If you're interested in getting involved feel free to check out the [roadmap on 
 
 # Getting started
 ## Importing into your own project
-To get started, simply copy the whole `Assets/Code/HexTiles` folder as well as `Assets/Plugins/Fluent-State-Machine.dll` into your Unity project. This has been tested on Unity 5.4 but should work on earlier versions of 5.x as well. Note that Fluent-State-Machine is only required by the editor so if you want you can set it to be editor-only and not be included in your builds.
+To get started, simply copy the whole `Assets/Code/HexTiles` folder as well as `Assets/Plugins/Fluent-State-Machine.dll` into your Unity project. This has been tested on Unity 5.5 but should work on earlier versions of 5.x as well. Note that Fluent-State-Machine is only required by the editor and does not need to be included in your builds.
 
 # Basic use
 ## Creating a tile map
-Add the "Hex tile map" prefab to your scene, select it and you will see the inspector for the tile editor which should look something like this:
+To create a new hex tile map, go to the _GameObject_ menu or right click anywhere in the _Hierarchy_ window in Unity and select _Hex tile map_ from the list of types of objects to create. This will add a new object named "Hex tile map" to your scene. Select it and you will see the inspector for the tile editor which should look something like this:
 
 ![Default inspector](Documentation/Default-inspector.png)
 
