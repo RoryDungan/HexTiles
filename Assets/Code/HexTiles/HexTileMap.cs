@@ -382,7 +382,7 @@ namespace HexTiles
         /// Find a chunk with bounds that match the specified coordinates, and the specified material.
         /// Returns null if none was found.
         /// </summary>
-        private HexChunk FindChunkForCoordinatesAndMaterial(HexCoords coordinates, Material material)
+        public HexChunk FindChunkForCoordinatesAndMaterial(HexCoords coordinates, Material material)
         {
             // Try to find existing chunk.
             var matchingChunks = Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))

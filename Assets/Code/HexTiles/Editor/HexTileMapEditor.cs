@@ -199,11 +199,18 @@ namespace HexTiles.Editor
                                 {
                                     // Keep track of which chunks we've modified so that 
                                     // we only record undo actions for each once.
-                                    var chunk = hexMap.FindChunkForCoordinates(hex);
-                                    if (chunk != null && !state.ModifiedChunks.Contains(chunk))
+                                    var oldChunk = hexMap.FindChunkForCoordinates(hex);
+                                    if (oldChunk != null && !state.ModifiedChunks.Contains(oldChunk))
                                     {
-                                        RecordChunkModifiedUndo(chunk);
-                                        state.ModifiedChunks.Add(chunk);
+                                        RecordChunkModifiedUndo(oldChunk);
+                                        state.ModifiedChunks.Add(oldChunk);
+                                    }
+
+                                    var newChunk = hexMap.FindChunkForCoordinatesAndMaterial(hex, hexMap.CurrentMaterial);
+                                    if (newChunk != null && newChunk != oldChunk && !state.ModifiedChunks.Contains(newChunk))
+                                    {
+                                        RecordChunkModifiedUndo(newChunk);
+                                        state.ModifiedChunks.Add(newChunk);
                                     }
 
                                     // TODO: add feature for disabling wireframe again.
