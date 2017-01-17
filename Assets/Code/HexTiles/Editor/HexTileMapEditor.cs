@@ -303,31 +303,7 @@ namespace HexTiles.Editor
                                     .Where(coords => hexMap.ContainsTile(coords));
                                 foreach (var coords in tilesUnderBrush)
                                 {
-                                    var oldChunk = hexMap.FindChunkForCoordinates(coords);
-                                    // Skip if the material is already the same.
-                                    if (oldChunk.Material == hexMap.CurrentMaterial)
-                                    {
-                                        continue;
-                                    }
-
-                                    if (oldChunk != null && !state.ModifiedChunks.Contains(oldChunk))
-                                    {
-                                        RecordChunkModifiedUndo(oldChunk);
-                                        state.ModifiedChunks.Add(oldChunk);
-                                    }
-                                    var newChunk = hexMap.FindChunkForCoordinatesAndMaterial(coords, hexMap.CurrentMaterial);
-                                    if (newChunk != null && newChunk != oldChunk && !state.ModifiedChunks.Contains(newChunk))
-                                    {
-                                        RecordChunkModifiedUndo(newChunk);
-                                        state.ModifiedChunks.Add(newChunk);
-                                    }
-
-                                    var action = hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
-
-                                    if (action.Operation == ModifiedTileInfo.ChunkOperation.Added)
-                                    {
-                                        RecordChunkAddedUndo(action.Chunk);
-                                    }
+                                    ReplaceMaterialOnTile(coords, state.ModifiedChunks);
                                 }
                             }
 
@@ -516,6 +492,41 @@ namespace HexTiles.Editor
         }
 
         /// <summary>
+        /// Replace the material on the specified tile with the currently selected
+        /// material. A HashSet of the chunks that have been modified so far in this 
+        /// action must be passed in so that this can record which chunks were affected
+        /// for the purposes for registering undo actions.
+        /// </summary>
+        private void ReplaceMaterialOnTile(HexCoords coords, HashSet<HexChunk> modifiedChunks)
+        {
+            var oldChunk = hexMap.FindChunkForCoordinates(coords);
+            // Skip if the material is already the same.
+            if (oldChunk.Material == hexMap.CurrentMaterial)
+            {
+                return;
+            }
+
+            if (oldChunk != null && !modifiedChunks.Contains(oldChunk))
+            {
+                RecordChunkModifiedUndo(oldChunk);
+                modifiedChunks.Add(oldChunk);
+            }
+            var newChunk = hexMap.FindChunkForCoordinatesAndMaterial(coords, hexMap.CurrentMaterial);
+            if (newChunk != null && newChunk != oldChunk && !modifiedChunks.Contains(newChunk))
+            {
+                RecordChunkModifiedUndo(newChunk);
+                modifiedChunks.Add(newChunk);
+            }
+
+            var action = hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
+
+            if (action.Operation == ModifiedTileInfo.ChunkOperation.Added)
+            {
+                RecordChunkAddedUndo(action.Chunk);
+            }
+        }
+
+        /// <summary>
         /// Applies the material stored in hexMap.CurrentMaterial to all the tiles in hexMap
         /// </summary>
         private void ApplyCurrentMaterialToAllTiles()
@@ -524,37 +535,7 @@ namespace HexTiles.Editor
 
             foreach (var tile in hexMap.GetAllTiles().ToArray())
             {
-                // Early out if the material is already the same.
-                if (tile.Material == hexMap.CurrentMaterial)
-                {
-                    continue;
-                }
-
-                // Record existing tile undo
-                var oldChunk = hexMap.FindChunkForCoordinates(tile.Position.Coordinates);
-                if (oldChunk != null && !modifiedChunks.Contains(oldChunk))
-                {
-                    RecordChunkModifiedUndo(oldChunk);
-                    modifiedChunks.Add(oldChunk);
-                }
-
-                // Replace tile
-                var tileInfo = hexMap.ReplaceMaterialOnTile(tile.Position.Coordinates, hexMap.CurrentMaterial);
-
-                // Record new tile undo
-                if (!modifiedChunks.Contains(tileInfo.Chunk))
-                {
-                    switch (tileInfo.Operation)
-                    {
-                        case ModifiedTileInfo.ChunkOperation.Added:
-                            RecordChunkAddedUndo(tileInfo.Chunk);
-                            break;
-                        case ModifiedTileInfo.ChunkOperation.Modified:
-                            RecordChunkModifiedUndo(tileInfo.Chunk);
-                            break;
-                    }
-                    modifiedChunks.Add(tileInfo.Chunk);
-                }
+                ReplaceMaterialOnTile(tile.Position.Coordinates, modifiedChunks);
             }
         }
 
