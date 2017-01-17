@@ -658,8 +658,6 @@ namespace HexTiles.Editor
             // Init anim bools
             showTileCoordinateFormat = new AnimBool(Repaint);
 
-            SetWireframeVisible(hexMap.DrawWireframeWhenSelected);
-
             Initialise();
 
             Undo.undoRedoPerformed += OnUndoPerformed;
@@ -811,17 +809,6 @@ namespace HexTiles.Editor
             public int Button;
 
             public Vector2 Position;
-        }
-
-        /// <summary>
-        /// Show or hide wireframe outline of all tiles while the tile map is selected.
-        /// </summary>
-        private void SetWireframeVisible(bool visible)
-        {
-            foreach (var renderer in hexMap.GetComponentsInChildren<Renderer>())
-            {
-                EditorUtility.SetSelectedWireframeHidden(renderer, !visible);
-            }
         }
     }
 }
