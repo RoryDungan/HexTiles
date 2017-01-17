@@ -304,6 +304,12 @@ namespace HexTiles.Editor
                                 foreach (var coords in tilesUnderBrush)
                                 {
                                     var oldChunk = hexMap.FindChunkForCoordinates(coords);
+                                    // Skip if the material is already the same.
+                                    if (oldChunk.Material == hexMap.CurrentMaterial)
+                                    {
+                                        continue;
+                                    }
+
                                     if (oldChunk != null && !state.ModifiedChunks.Contains(oldChunk))
                                     {
                                         RecordChunkModifiedUndo(oldChunk);
