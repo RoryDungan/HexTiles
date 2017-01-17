@@ -517,7 +517,7 @@ namespace HexTiles.Editor
         /// </summary>
         private void ApplyCurrentMaterialToAllTiles()
         {
-            foreach (var tile in hexMap.GetAllTiles())
+            foreach (var tile in hexMap.GetAllTiles().ToArray())
             {
                 hexMap.ReplaceMaterialOnTile(tile.Position.Coordinates, hexMap.CurrentMaterial);
             }
