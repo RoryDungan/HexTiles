@@ -303,11 +303,17 @@ namespace HexTiles.Editor
                                     .Where(coords => hexMap.ContainsTile(coords));
                                 foreach (var coords in tilesUnderBrush)
                                 {
-                                    var chunk = hexMap.FindChunkForCoordinates(coords);
-                                    if (chunk != null && !state.ModifiedChunks.Contains(chunk))
+                                    var oldChunk = hexMap.FindChunkForCoordinates(coords);
+                                    if (oldChunk != null && !state.ModifiedChunks.Contains(oldChunk))
                                     {
-                                        RecordChunkModifiedUndo(chunk);
-                                        state.ModifiedChunks.Add(chunk);
+                                        RecordChunkModifiedUndo(oldChunk);
+                                        state.ModifiedChunks.Add(oldChunk);
+                                    }
+                                    var newChunk = hexMap.FindChunkForCoordinatesAndMaterial(coords, hexMap.CurrentMaterial);
+                                    if (newChunk != null && newChunk != oldChunk && !state.ModifiedChunks.Contains(newChunk))
+                                    {
+                                        RecordChunkModifiedUndo(newChunk);
+                                        state.ModifiedChunks.Add(newChunk);
                                     }
 
                                     var action = hexMap.ReplaceMaterialOnTile(coords, hexMap.CurrentMaterial);
