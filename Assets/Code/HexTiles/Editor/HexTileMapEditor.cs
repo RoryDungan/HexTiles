@@ -673,7 +673,7 @@ namespace HexTiles.Editor
                         labelText = hexCoords.ToString();
                         break;
                     case HexTileMap.HexCoordinateFormat.OffsetOddQ:
-                        labelText = hexCoords.ToOffset().ToString();
+                        labelText = hexCoords.ToOffset().ToString("0");
                         break;
                 }
                 Handles.Label(position, labelText);
