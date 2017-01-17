@@ -224,9 +224,6 @@ namespace HexTiles.Editor
                                     {
                                         RecordChunkAddedUndo(action.Chunk);
                                     }
-
-                                    // TODO: find a way of making this work for chunks
-                                    //EditorUtility.SetSelectedWireframeHidden(newTile.GetComponent<Renderer>(), !hexMap.DrawWireframeWhenSelected);
                                 }
 
                                 hexMap.SelectedTile = centerSelectedTileCoords;
@@ -400,19 +397,6 @@ namespace HexTiles.Editor
                     .Update((state, dt) =>
                     {
                         EditorUtilities.ShowHelpBox("Settings", "Configure options for the whole tile map.");
-
-                        // TODO: This has been commented out because it doesn't currently work with the new 
-                        // hex chunks system. I'm not sure if any artists/designers even used it anyway, so 
-                        // it may not be needed anyway - Rory 13/09/2016
-                        //var shouldShowWireframe = EditorGUILayout.Toggle("Show wireframe outline", hexMap.DrawWireframeWhenSelected);
-                        //if (shouldShowWireframe != hexMap.DrawWireframeWhenSelected)
-                        //{
-                        //    SetWireframeVisible(shouldShowWireframe);
-                        //    hexMap.DrawWireframeWhenSelected = shouldShowWireframe;
-
-                        //    SceneView.RepaintAll();
-                        //    MarkSceneDirty();
-                        //}
 
                         var shouldDrawPositionHandles = EditorGUILayout.Toggle("Show tile positions", hexMap.DrawHexPositionHandles);
                         if (shouldDrawPositionHandles != hexMap.DrawHexPositionHandles)
