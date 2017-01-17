@@ -290,9 +290,12 @@ namespace HexTiles
 
         /// <summary>
         /// Refresh the meshes of any chunks that have been modified.
+        /// Returns true if any changes have been made.
         /// </summary>
-        public void UpdateTileChunks()
+        public bool UpdateTileChunks()
         {
+            var updatedChunk = false;
+
             var oldChunks = Chunks.ToArray();
             for (int i = 0; i < oldChunks.Length; i++)
             {
@@ -301,6 +304,7 @@ namespace HexTiles
                 {
                     Chunks.Remove(oldChunks[i]);
                     Utils.Destroy(oldChunks[i].gameObject);
+                    updatedChunk = true;
                     continue;
                 }
 
@@ -308,8 +312,11 @@ namespace HexTiles
                 if (oldChunks[i].Dirty)
                 {
                     oldChunks[i].GenerateMesh();
+                    updatedChunk = true;
                 }
             }
+
+            return updatedChunk;
         }
 
         //public HexChunk FindChunkForCoordinates

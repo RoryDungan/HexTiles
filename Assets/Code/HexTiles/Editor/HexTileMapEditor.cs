@@ -723,7 +723,10 @@ namespace HexTiles.Editor
 
             rootState.Update(Time.deltaTime);
 
-            hexMap.UpdateTileChunks();
+            if (hexMap.UpdateTileChunks())
+            {
+                SceneView.RepaintAll();
+            }
         }
 
         /// <summary>
