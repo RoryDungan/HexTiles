@@ -293,11 +293,21 @@ namespace HexTiles
         /// </summary>
         public void UpdateTileChunks()
         {
-            for (int i = 0; i < Chunks.Count; i++)
+            var oldChunks = Chunks.ToArray();
+            for (int i = 0; i < oldChunks.Length; i++)
             {
-                if (Chunks[i].Dirty)
+                // Remove the chunk if it has no tiles in it.
+                if (oldChunks[i].Tiles.Count <= 0)
                 {
-                    Chunks[i].GenerateMesh();
+                    Chunks.Remove(oldChunks[i]);
+                    Utils.Destroy(oldChunks[i].gameObject);
+                    continue;
+                }
+
+                // Re-generate meshes.
+                if (oldChunks[i].Dirty)
+                {
+                    oldChunks[i].GenerateMesh();
                 }
             }
         }
