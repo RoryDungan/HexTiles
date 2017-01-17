@@ -392,7 +392,7 @@ namespace HexTiles
         /// </summary>
         public HexChunk FindChunkForCoordinates(HexCoords coordinates)
         {
-            return Chunks.Where(c => coordinates.IsWithinBounds(c.lowerBounds, c.upperBounds))
+            return Chunks.Where(c => c.Tiles.Where(tile => tile.Coordinates == coordinates).Any())
                 .FirstOrDefault();
         }
 
