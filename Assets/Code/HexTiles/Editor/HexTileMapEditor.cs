@@ -514,9 +514,41 @@ namespace HexTiles.Editor
         /// </summary>
         private void ApplyCurrentMaterialToAllTiles()
         {
+            var modifiedChunks = new HashSet<HexChunk>();
+
             foreach (var tile in hexMap.GetAllTiles().ToArray())
             {
-                hexMap.ReplaceMaterialOnTile(tile.Position.Coordinates, hexMap.CurrentMaterial);
+                // Early out if the material is already the same.
+                if (tile.Material == hexMap.CurrentMaterial)
+                {
+                    continue;
+                }
+
+                // Record existing tile undo
+                var oldChunk = hexMap.FindChunkForCoordinates(tile.Position.Coordinates);
+                if (oldChunk != null && !modifiedChunks.Contains(oldChunk))
+                {
+                    RecordChunkModifiedUndo(oldChunk);
+                    modifiedChunks.Add(oldChunk);
+                }
+
+                // Replace tile
+                var tileInfo = hexMap.ReplaceMaterialOnTile(tile.Position.Coordinates, hexMap.CurrentMaterial);
+
+                // Record new tile undo
+                if (!modifiedChunks.Contains(tileInfo.Chunk))
+                {
+                    switch (tileInfo.Operation)
+                    {
+                        case ModifiedTileInfo.ChunkOperation.Added:
+                            RecordChunkAddedUndo(tileInfo.Chunk);
+                            break;
+                        case ModifiedTileInfo.ChunkOperation.Modified:
+                            RecordChunkModifiedUndo(tileInfo.Chunk);
+                            break;
+                    }
+                    modifiedChunks.Add(tileInfo.Chunk);
+                }
             }
         }
 
