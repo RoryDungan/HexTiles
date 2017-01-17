@@ -43,7 +43,6 @@ namespace HexTiles.Editor
 
             Selection.activeGameObject = go;
         }
-        }
 
         /// <summary>
         /// Mark the scene for a specified object dirty
