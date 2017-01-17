@@ -71,7 +71,8 @@ namespace HexTiles
         public enum HexCoordinateFormat
         {
             Axial,
-            OffsetOddQ
+            OffsetOddQ,
+            WorldSpacePosition
         }
 
         /// <summary>

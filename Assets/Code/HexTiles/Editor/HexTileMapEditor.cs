@@ -675,6 +675,9 @@ namespace HexTiles.Editor
                     case HexTileMap.HexCoordinateFormat.OffsetOddQ:
                         labelText = hexCoords.ToOffset().ToString("0");
                         break;
+                    case HexTileMap.HexCoordinateFormat.WorldSpacePosition:
+                        labelText = position.ToString();
+                        break;
                 }
                 Handles.Label(position, labelText);
             }
