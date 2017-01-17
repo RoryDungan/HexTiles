@@ -20,8 +20,7 @@ namespace HexTiles
         public enum ChunkOperation 
         {
             Added,
-            Modified,
-            Removed
+            Modified
         }
 
         public ModifiedTileInfo(HexChunk chunk, ChunkOperation operation) 
