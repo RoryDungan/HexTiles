@@ -558,8 +558,8 @@ namespace HexTiles.Editor
         private void RecordChunkModifiedUndo(HexChunk chunk)
         {
             Undo.RegisterCompleteObjectUndo(chunk, undoMessage);
-            Undo.RecordObject(chunk.MeshFilter, undoMessage);
-            Undo.RecordObject(chunk.MeshCollider, undoMessage);
+            Undo.RegisterCompleteObjectUndo(chunk.MeshFilter, undoMessage);
+            Undo.RegisterCompleteObjectUndo(chunk.MeshCollider, undoMessage);
         }
 
         /// <summary>
