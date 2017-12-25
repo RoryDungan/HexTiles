@@ -624,7 +624,7 @@ namespace HexTiles.Editor
 
                     rootState.TriggerEvent("MouseUp");
                     break;
-                case EventType.layout:
+                case EventType.Layout:
                     HandleUtility.AddDefaultControl(controlId);
                     break;
             }
