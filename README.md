@@ -31,7 +31,7 @@ If you're interested in getting involved feel free to check out the [roadmap on 
 
 # Getting started
 ## Importing into your own project
-To get started, simply copy the whole `Assets/Code/HexTiles` folder as well as `Assets/Plugins/Fluent-State-Machine.dll` into your Unity project. This requires Unity 5.3 or later and has been tested on up to Unity 2017.3.0. Note that Fluent-State-Machine is only required by the editor and does not need to be included in your builds.
+To get started, simply copy the whole `Assets/Code/HexTiles` folder as well as `Assets/Plugins/Fluent-State-Machine.dll` into your Unity project. This requires Unity 5.3 or later and has been tested on up to Unity 2018.1.0. Note that Fluent-State-Machine is only required by the editor and does not need to be included in your builds.
 
 # Basic use
 ## Creating a tile map
